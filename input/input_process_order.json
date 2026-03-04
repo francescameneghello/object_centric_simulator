@@ -1,0 +1,159 @@
+{
+    "start_simulation": "2026-01-01 09:00:00",
+    "objects": {
+        "order": {
+            "n_traces": 1,
+            "path_petrinet": "../input/order_objects.pnml",
+            "start_timestamp": "2026-04-03 09:00:00",
+            "interTriggerTimer": {
+                "type": "distribution",
+                "name": "exponential",
+                "parameters": {
+                    "scale": 300
+                }
+            },
+            "processing_time": {
+                "Place Order": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 2689.43,
+                        "scale": 1525.64
+                    }
+                },
+                "Pay CC": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 1525
+                    }
+                },
+                "Pay BT": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1555,
+                        "high": 968
+                    }
+                },
+                "Add Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 7200
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role 1": {
+                    "resources": ["A", "B"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                },
+                "Role 2": {
+                    "resources": ["C"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "generator_by": [],
+            "probability": {
+                "Pay BT": 0.30,
+                "Pay CC": 0.70,
+                "Add Item": 0.0,
+                "sfl_Flow_1kzzg2v": 1.0
+            },
+            "generator": {
+                "Place Order": ["item", ["uniform", 2, 3] ],
+                "Add Item": ["item", ["uniform", 1, 2] ]
+            },
+            "generate": ["item_objects"],
+            "resource_table": {
+                "Place Order": "Role 1",
+                "Pay CC": "Role 2",
+                "Pay BT": "Role 2",
+                "Add Item": "Role 1"
+            },
+            "object_constraints": {
+                "Pay CC": ["item", ["Pick Item"], "All"],
+                "Pay BT": ["item", ["Pick Item"], "All"]
+            }
+        },
+        "item": {
+            "start_timestamp": "",
+            "path_petrinet": "../input/item_objects.pnml",
+            "interTriggerTimer": {
+            },
+            "processing_time": {
+                "Pick Item": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 2689.43,
+                        "scale": 1525.64
+                    }
+                },
+                "Remove Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 1525
+                    }
+                },
+                "Load": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1555,
+                        "high": 968
+                    }
+                },
+                "Deliver": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 7200
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role 1": {
+                    "resources": ["A", "B"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                },
+                "Role 2": {
+                    "resources": ["C"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "generator_by": ["order_objects"],
+            "generator": [],
+            "resource_table": {
+                "Remove Item": "Role 1",
+                "Pick Item": "Role 2",
+                "Load": "Role 2",
+                "Deliver": "Role 1"
+            },
+            "probability": {
+                "Pick Item": 1.0,
+                "Remove Item": 0.0
+            },
+            "object_constraints": {
+                "Load": ["order", ["Pay CC", "Pay BT"], "All"]
+            }
+
+        }
+    }
+}

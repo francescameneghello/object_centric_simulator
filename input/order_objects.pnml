@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pnml>
+  <net id="" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text></text>
+    </name>
+    <page id="n0">
+      <place id="ent_Gateway_1a3ciob">
+        <name>
+          <text>ent_Gateway_1a3ciob</text>
+        </name>
+      </place>
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="exi_Gateway_04ndfn8">
+        <name>
+          <text>exi_Gateway_04ndfn8</text>
+        </name>
+      </place>
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="exi_Gateway_13ebpvt">
+        <name>
+          <text>exi_Gateway_13ebpvt</text>
+        </name>
+      </place>
+      <place id="ent_Gateway_0nns2ns">
+        <name>
+          <text>ent_Gateway_0nns2ns</text>
+        </name>
+      </place>
+      <transition id="Gateway_0nns2ns">
+        <name>
+          <text>Gateway_0nns2ns</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="ebeabadc-d4bc-43ca-b187-d180e611feae"/>
+      </transition>
+      <transition id="sfl_Flow_1kzzg2v">
+        <name>
+          <text>sfl_Flow_1kzzg2v</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="3abe15d2-0253-470d-916d-5d8a1c10226f"/>
+      </transition>
+      <transition id="Activity_06hsr94">
+        <name>
+          <text>Pay BT</text>
+        </name>
+      </transition>
+      <transition id="Activity_0wcu6hl">
+        <name>
+          <text>Place Order</text>
+        </name>
+      </transition>
+      <transition id="Gateway_1a3ciob">
+        <name>
+          <text>Gateway_1a3ciob</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="416c5d77-5fd0-4d97-8170-9f17961e5951"/>
+      </transition>
+      <transition id="Activity_1ofeyaj">
+        <name>
+          <text>Pay CC</text>
+        </name>
+      </transition>
+      <transition id="Activity_0snpkwp">
+        <name>
+          <text>Add Item</text>
+        </name>
+      </transition>
+      <arc id="140503818187536" source="Activity_0wcu6hl" target="ent_Gateway_1a3ciob"/>
+      <arc id="140503818187344" source="Activity_0snpkwp" target="ent_Gateway_1a3ciob"/>
+      <arc id="140503818188112" source="Gateway_0nns2ns" target="exi_Gateway_13ebpvt"/>
+      <arc id="140503818140016" source="exi_Gateway_13ebpvt" target="sfl_Flow_1kzzg2v"/>
+      <arc id="140503818187632" source="Activity_06hsr94" target="ent_Gateway_0nns2ns"/>
+      <arc id="140503818188688" source="exi_Gateway_13ebpvt" target="Activity_0snpkwp"/>
+      <arc id="140503818188592" source="source" target="Activity_0wcu6hl"/>
+      <arc id="140503818033856" source="ent_Gateway_1a3ciob" target="Gateway_1a3ciob"/>
+      <arc id="140503818187728" source="sfl_Flow_1kzzg2v" target="sink"/>
+      <arc id="140503818188496" source="exi_Gateway_04ndfn8" target="Activity_1ofeyaj"/>
+      <arc id="140503818188400" source="Gateway_1a3ciob" target="exi_Gateway_04ndfn8"/>
+      <arc id="140503818116592" source="ent_Gateway_0nns2ns" target="Gateway_0nns2ns"/>
+      <arc id="140503818188016" source="Activity_1ofeyaj" target="ent_Gateway_0nns2ns"/>
+      <arc id="140503818188784" source="exi_Gateway_04ndfn8" target="Activity_06hsr94"/>
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>
