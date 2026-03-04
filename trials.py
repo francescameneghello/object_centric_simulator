@@ -1,55 +1,93 @@
 import simpy
 
 
-def object_a(env, mailboxes):
-    print(f"{env.now}: A starting work")
-    yield env.timeout(1)
+class BroadcastChannel:
+    def __init__(self, env):
+        self.env = env
+        self.subscribers = []
 
-    yield mailboxes["B"].put(("A", "READY"))
-    print(f"{env.now}: A sends READY to B")
+    def subscribe(self, condition=None):
+        evt = self.env.event()
+        self.subscribers.append((evt, condition))
+        return evt
+
+    def publish(self, message):
+        for evt, condition in self.subscribers:
+            if not evt.triggered:
+                if condition is None or condition(message):
+                    evt.succeed(message)
+
+        # Remove triggered subscribers
+        self.subscribers = [
+            (evt, cond) for evt, cond in self.subscribers
+            if not evt.triggered
+        ]
 
 
-def object_c(env, mailboxes):
-    print(f"{env.now}: C starting work")
-    yield env.timeout(3)
+# -------------------------
+# Processes
+# -------------------------
 
-    yield mailboxes["B"].put(("C", "READY"))
-    print(f"{env.now}: C sends READY to B")
-
-
-def object_b(env, mailboxes):
-    print(f"{env.now}: B starting work")
+def publisher(env, channel):
     yield env.timeout(2)
+    print(f"{env.now}: Publishing ('A', 'REMOVE')")
+    channel.publish(("A", "REMOVE"))
 
-    events = [
-        mailboxes["B"].get(lambda m: m == ("A", "READY")),
-        mailboxes["B"].get(lambda m: m == ("C", "READY"))
-    ]
+    yield env.timeout(2)
+    print(f"{env.now}: Publishing ('A', 'READY')")
+    channel.publish(("A", "READY"))
 
-    results = yield simpy.AllOf(env, events)
-    #results = yield simpy.AnyOf(env, events)
+    yield env.timeout(2)
+    print(f"{env.now}: Publishing ('C', 'DONE')")
+    channel.publish(("C", "DONE"))
 
-    '''received = []
 
-    while len(received) < 2:
-        msg = yield mailboxes["B"].get(lambda m: m[1] == "READY")
-        received.append(msg)
+def subscriber_wait_ready(env, name, channel):
+    print(f"{env.now}: {name} waiting for READY")
 
-    print("Received at least 2 messages:", received)'''
+    evt = channel.subscribe(lambda m: m[1] == "READY")
+    msg = yield evt
 
-    print("Received both:", list(results.values()))
+    print(f"{env.now}: {name} received READY -> {msg}")
 
+
+def subscriber_wait_done(env, name, channel):
+    print(f"{env.now}: {name} waiting for DONE")
+
+    evt = channel.subscribe(lambda m: m[1] == "DONE")
+    msg = yield evt
+
+    print(f"{env.now}: {name} received DONE -> {msg}")
+
+    yield env.timeout(2)
+    evt = channel.subscribe(lambda m: m[1] == "DONE")
+    msg = yield evt
+
+    print(f"{env.now}: {name} received DONE -> {msg}")
+
+
+# -------------------------
+# Simulation Setup
+# -------------------------
 
 env = simpy.Environment()
+channel = BroadcastChannel(env)
 
-mailboxes = {
-    "A": simpy.FilterStore(env),
-    "B": simpy.FilterStore(env),
-    "C": simpy.FilterStore(env)
-}
-
-env.process(object_a(env, mailboxes))
-env.process(object_b(env, mailboxes))
-env.process(object_c(env, mailboxes))
+env.process(publisher(env, channel))
+env.process(subscriber_wait_ready(env, "Subscriber1", channel))
+env.process(subscriber_wait_done(env, "Subscriber2", channel))
 
 env.run()
+'''received = []
+
+while len(received) < 2:
+    msg = yield mailboxes["B"].get(lambda m: m[1] == "READY")
+    received.append(msg)
+
+print("Received at least 2 messages:", received)
+
+results = yield simpy.AllOf(env, events)
+#results = yield simpy.AnyOf(env, events)
+'''
+
+

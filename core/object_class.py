@@ -56,7 +56,7 @@ class Object(object):
             name_obj = self._object_params["generator"][next_act][0]
             for i in range(0, n_obj):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
-                id = f"{name_obj}_{self._id_object}"
+                id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
                 self._mailboxes[id] = simpy.FilterStore(env)
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
                                'sequential', self._writer, name_obj, self._mailboxes, self)
@@ -154,10 +154,14 @@ class Object(object):
                 self._buffer.set_feature("end_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
                 self._buffer.print_values()
                 self.prefix.add_activity(trans.label)
-
                 self.check_generator(env, trans.label)
-                ### sent massege in mailboxes
-                yield self._mailboxes[self._id].put((self._id, trans.label))
+
+                ### sent massege in mailboxes, add hoc to work
+                if 'item' in self.object_created:
+                    for i in range(0, len(self.object_created['item'])):
+                        yield self._mailboxes[self._id].put((self._id, trans.label))
+                else:
+                    yield self._mailboxes[self._id].put((self._id, trans.label))
 
                 resource.release(request_resource)
                 self._process._release_single_resource(resource._get_name(), single_resource)
