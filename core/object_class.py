@@ -18,7 +18,7 @@ class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
                  params: Parameters, process: SimulationProcess, prefix: Prefix, type: str, writer: csv.writer,
-                 name_object: str, mailboxes, father = None):
+                 name_object: str, mailboxes = None, father = None):
         self._id = id
         self._process = process
         self._start_time = params.START_SIMULATION
@@ -35,7 +35,9 @@ class Object(object):
         #    self.see_activity = True
         self._writer = writer
         self._buffer = Buffer(writer, [])
-        self.object_created = {}
+        self.object_referred = {}
+        if father:
+            self.object_referred.setdefault(father._name_object, {})[father._id] = father
         self._id_object = 0
         self._father = father
         self._mailboxes = mailboxes
@@ -52,16 +54,16 @@ class Object(object):
 
     def check_generator(self, env, next_act):
         if next_act in self._object_params["generator"]:
-            n_obj = 2 ### da cambiare con distribuzioni
+            n_obj = 2 if next_act == 'Place Order' else 1 ### da cambiare con distribuzioni
             name_obj = self._object_params["generator"][next_act][0]
             for i in range(0, n_obj):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
                 id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
-                self._mailboxes[id] = simpy.FilterStore(env)
+                self._process.add_object_mailboxes(name_obj, id)
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
                                'sequential', self._writer, name_obj, self._mailboxes, self)
                 obj_sim = env.process(obj_class.simulation(env))
-                self.object_created.setdefault(name_obj, []).append([obj_class, obj_sim])
+                self.object_referred.setdefault(name_obj, {})[id] = obj_class
                 self._id_object += 1
 
     def check_constraints(self, env, next_act):
@@ -69,15 +71,30 @@ class Object(object):
         if next_act in self._object_params["object_constraints"]:
             #"Pay CC": ["item", ["Pick Item"], "All"],
             info = self._object_params["object_constraints"][next_act]
-            keys = [k for k in self._mailboxes if info[0] in k]
-            obj_to_wait = [
-                self._mailboxes[k].get(
-                    lambda m, key=k: m[0] == key and m[1] in info[1]
-                )
-                for k in keys
-            ]
-            #yield simpy.AllOf(env, events)
-            #obj_to_wait = self.object_created[self._object_params["object_constraints"][next_act][0]]
+            ### treats differences if it has a "child-father" relationship or not
+            if info[0] in self._object_params["generator_by"] or info[0] in self._object_params["generate"]:
+                ## delete finished object
+                allowed_keys = set(self._process.get_object_mailboxes(info[0]).keys())
+                for k in list(self.object_referred.get(info[0], {}).keys()):
+                    if k not in allowed_keys:
+                        del self.object_referred[info[0]][k]
+                target_object = self.object_referred[info[0]]
+                id_target_object = list(target_object.keys())
+                obj_to_wait = [
+                    self._process.get_object_mailboxes(info[0])[k].get(
+                        lambda m, key=k: m[0] == key and m[1] in info[1]
+                    )
+                    for k in id_target_object
+                ]
+            else: ### case truck and items
+                ### "Ship": ["item", ["Load"], "All"]
+                mailboxes_obj = self._process.get_object_mailboxes(info[0])
+                obj_to_wait = [
+                    mailbox.get(
+                        lambda message, key=key: message[0] == key and message[1] in info[1]
+                    )
+                    for key, mailbox in mailboxes_obj.items()
+                ]
         return obj_to_wait
 
     def simulation(self, env: simpy.Environment):
@@ -95,9 +112,9 @@ class Object(object):
             yield resource_trace_request
             if trans and trans.label:  ### next transition to execute
                 obj_to_wait = self.check_constraints(env, trans.label)
-                if obj_to_wait:
-                    print(obj_to_wait)
-                    yield AllOf(env, obj_to_wait)
+                messages = yield AllOf(env, obj_to_wait)
+                if obj_to_wait != []:
+                    print(self._id, messages)
                 self._buffer.reset()
                 self._buffer.set_feature("id_case", self._id)
                 self._buffer.set_feature("activity", trans.label)
@@ -156,12 +173,11 @@ class Object(object):
                 self.prefix.add_activity(trans.label)
                 self.check_generator(env, trans.label)
 
-                ### sent massege in mailboxes, add hoc to work
-                if 'item' in self.object_created:
-                    for i in range(0, len(self.object_created['item'])):
-                        yield self._mailboxes[self._id].put((self._id, trans.label))
-                else:
-                    yield self._mailboxes[self._id].put((self._id, trans.label))
+                amount_of_message = 1
+                for obj_type in self.object_referred:
+                    amount_of_message += len(self.object_referred[obj_type])
+                mail = self._process.get_specific_obj_mailboxes(self._name_object, self._id)
+                for _ in range(amount_of_message): yield mail.put((self._id, trans.label))
 
                 resource.release(request_resource)
                 self._process._release_single_resource(resource._get_name(), single_resource)
@@ -173,6 +189,7 @@ class Object(object):
         #if self._type == 'parallel':
         #    self._parallel_object._set_last_events(self._am)
         #if self._type == 'sequential':
+        self._process.delete_specific_obj_mailboxes(self._name_object, self._id)
         resource_trace.release(resource_trace_request)
 
     def _get_resource_role(self, activity):

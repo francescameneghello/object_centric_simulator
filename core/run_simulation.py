@@ -34,10 +34,11 @@ def setup(env: simpy.Environment, params, i, name, f):
                 yield env.timeout(itime)
                 time_trace = start_simulation_object + timedelta(seconds=env.now)
                 net, im, fm = pm4py.read_pnml(params.objects[obj]["path_petrinet"])
-                id= f"{obj}_{i}"
-                mailboxes = {id: simpy.FilterStore(env)}
+                id = f"{obj}_{i}"
+                #mailboxes = {id: simpy.FilterStore(env)}
+                simulation_process.add_object_mailboxes(obj, id)
                 env.process(Object(id, net, im, params, simulation_process, prefix, 'sequential', writer,
-                                  obj, mailboxes).simulation(env))
+                                  obj).simulation(env))
 
 
 def run_simulation(path_parameter: str, name: str, n_simulation=1):

@@ -72,7 +72,7 @@
                 "Place Order": ["item", ["uniform", 2, 3] ],
                 "Add Item": ["item", ["uniform", 1, 2] ]
             },
-            "generate": ["item_objects"],
+            "generate": ["item"],
             "resource_table": {
                 "Place Order": "Role 1",
                 "Pay CC": "Role 2",
@@ -138,8 +138,9 @@
                     }
                 }
             },
-            "generator_by": ["order_objects"],
+            "generator_by": ["order"],
             "generator": [],
+            "generate": [],
             "resource_table": {
                 "Remove Item": "Role 1",
                 "Pick Item": "Role 2",
@@ -151,9 +152,72 @@
                 "Remove Item": 0.0
             },
             "object_constraints": {
-                "Load": ["order", ["Pay CC", "Pay BT"], "All"]
+                "Load": ["order", ["Pay CC", "Pay BT"], "All"],
+                "Deliver": ["truck", ["Ship"], "All"]
             }
 
+        },
+        "truck": {
+            "n_traces": 1,
+            "path_petrinet": "../input/truck_objects.pnml",
+            "start_timestamp": "2026-04-03 09:00:00",
+            "interTriggerTimer": {
+                "type": "distribution",
+                "name": "exponential",
+                "parameters": {
+                    "scale": 300
+                }
+            },
+            "processing_time": {
+                "Prepare": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 2689.43,
+                        "scale": 1525.64
+                    }
+                },
+                "Ship": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 1525
+                    }
+                },
+                "Go Back": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1555,
+                        "high": 968
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role truck": {
+                    "resources": ["A", "B"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "generator_by": [],
+            "probability": {
+                "Go Back": 0.5,
+                "sfl_Flow_0s5j80m": 0.5
+            },
+            "generator": {
+            },
+            "generate": [],
+            "resource_table": {
+                "Prepare": "Role truck",
+                "Ship": "Role truck",
+                "Go Back": "Role truck"
+            },
+            "object_constraints": {
+                 "Ship": ["item", ["Load"], "All"]
+            }
         }
     }
 }

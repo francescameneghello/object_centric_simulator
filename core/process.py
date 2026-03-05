@@ -14,6 +14,19 @@ class SimulationProcess(object):
         self._resource_events = self._define_resource_events(env)
         self._resource_trace = simpy.Resource(env, math.inf)
         self._am_parallel = []
+        self.mailboxes = {}
+
+    def get_object_mailboxes(self, object_type):
+        return self.mailboxes[object_type]
+
+    def get_specific_obj_mailboxes(self, object_type, id):
+        return self.mailboxes[object_type][id]
+
+    def delete_specific_obj_mailboxes(self, object_type, id):
+        del self.mailboxes[object_type][id]
+
+    def add_object_mailboxes(self, object_type, id):
+        self.mailboxes.setdefault(object_type, {})[id] = simpy.FilterStore(self._env)
 
     def define_single_role(self):
         """
