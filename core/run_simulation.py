@@ -10,7 +10,6 @@ from utility import *
 import random
 import pm4py
 #from inter_trigger_timer import InterTriggerTimer
-#from result_analysis import Result
 from datetime import timedelta
 import warnings
 import sys
@@ -25,17 +24,15 @@ def setup(env: simpy.Environment, params, i, name, f):
     ### launch all the independent object
     for obj in params.objects:
         if not params.objects[obj]["generator_by"]:
-            n_traces = params.objects[obj]["n_traces"]
-            interval = random.randint(0, 600)
+            n_objects = params.objects[obj]["n_objects"]
+            interval = random.randint(0, 600) ### Da sistemare con InterTriggerTimer class
             start_simulation_object = params.START_SIMULATION
-            for i in range(0, n_traces):
+            for i in range(0, n_objects):
                 prefix = Prefix()
                 itime = interval
                 yield env.timeout(itime)
-                time_trace = start_simulation_object + timedelta(seconds=env.now)
                 net, im, fm = pm4py.read_pnml(params.objects[obj]["path_petrinet"])
                 id = f"{obj}_{i}"
-                #mailboxes = {id: simpy.FilterStore(env)}
                 simulation_process.add_object_mailboxes(obj, id)
                 env.process(Object(id, net, im, params, simulation_process, prefix, 'sequential', writer,
                                   obj).simulation(env))
@@ -48,9 +45,6 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
             env = simpy.Environment()
             env.process(setup(env, params, i, name, f))
             env.run()
-    #result = Result("output_{}".format(NAME), Parameters(PATH_PARAMETERS, N_TRACES))
-    #result._analyse()
-
 
 def main(path_parameter: str, name: str):
     print(path_parameter, name)

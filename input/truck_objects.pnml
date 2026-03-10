@@ -5,16 +5,6 @@
       <text></text>
     </name>
     <page id="n0">
-      <place id="exi_Gateway_0m6zgcd">
-        <name>
-          <text>exi_Gateway_0m6zgcd</text>
-        </name>
-      </place>
-      <place id="ent_Gateway_1y45gkj">
-        <name>
-          <text>ent_Gateway_1y45gkj</text>
-        </name>
-      </place>
       <place id="source">
         <name>
           <text>source</text>
@@ -28,17 +18,21 @@
           <text>sink</text>
         </name>
       </place>
-      <transition id="sfl_Flow_0s5j80m">
+      <place id="exi_Gateway_0m6zgcd">
         <name>
-          <text>sfl_Flow_0s5j80m</text>
+          <text>exi_Gateway_0m6zgcd</text>
         </name>
-        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="f5d076f8-8ec8-4a65-98e7-c1a2159c5d33"/>
-      </transition>
-      <transition id="Activity_0vjshdk">
+      </place>
+      <place id="ent_Activity_1c90e7u">
         <name>
-          <text>Go Back</text>
+          <text>ent_Activity_1c90e7u</text>
         </name>
-      </transition>
+      </place>
+      <place id="ent_Gateway_1y45gkj">
+        <name>
+          <text>ent_Gateway_1y45gkj</text>
+        </name>
+      </place>
       <transition id="Activity_1c90e7u">
         <name>
           <text>Ship</text>
@@ -49,14 +43,32 @@
           <text>Prepare</text>
         </name>
       </transition>
-      <arc id="140503330944096" source="source" target="Activity_0mtzvjj"/>
-      <arc id="140503330943616" source="Activity_1c90e7u" target="exi_Gateway_0m6zgcd"/>
-      <arc id="140503330943904" source="Activity_0mtzvjj" target="ent_Gateway_1y45gkj"/>
-      <arc id="140503330944288" source="exi_Gateway_0m6zgcd" target="Activity_0vjshdk"/>
-      <arc id="140503330943424" source="Activity_0vjshdk" target="ent_Gateway_1y45gkj"/>
-      <arc id="140503330923232" source="exi_Gateway_0m6zgcd" target="sfl_Flow_0s5j80m"/>
-      <arc id="140503330944192" source="ent_Gateway_1y45gkj" target="Activity_1c90e7u"/>
-      <arc id="140503330943712" source="sfl_Flow_0s5j80m" target="sink"/>
+      <transition id="Activity_109k2az">
+        <name>
+          <text>Load</text>
+        </name>
+      </transition>
+      <transition id="sfl_Flow_0s5j80m">
+        <name>
+          <text>sfl_Flow_0s5j80m</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="60a4715b-ddf2-4069-a6a4-4e8f03dc1f70"/>
+      </transition>
+      <transition id="Activity_0vjshdk">
+        <name>
+          <text>Go Back</text>
+        </name>
+      </transition>
+      <arc id="140554013752912" source="ent_Gateway_1y45gkj" target="Activity_109k2az"/>
+      <arc id="140554013752048" source="Activity_109k2az" target="ent_Activity_1c90e7u"/>
+      <arc id="140554013752816" source="exi_Gateway_0m6zgcd" target="Activity_0vjshdk"/>
+      <arc id="140554013677360" source="exi_Gateway_0m6zgcd" target="sfl_Flow_0s5j80m"/>
+      <arc id="140554013752720" source="Activity_0vjshdk" target="ent_Gateway_1y45gkj"/>
+      <arc id="140554013752624" source="Activity_0mtzvjj" target="ent_Gateway_1y45gkj"/>
+      <arc id="140554013752336" source="Activity_1c90e7u" target="exi_Gateway_0m6zgcd"/>
+      <arc id="140554013753008" source="source" target="Activity_0mtzvjj"/>
+      <arc id="140554013752144" source="sfl_Flow_0s5j80m" target="sink"/>
+      <arc id="140554013676016" source="ent_Activity_1c90e7u" target="Activity_1c90e7u"/>
     </page>
     <finalmarkings>
       <marking>

@@ -52,18 +52,26 @@ class Object(object):
                     delete.append(p)
         return delete
 
+    def sample_distribution(self, distribution, parameters):
+        n_sample = getattr(np.random, distribution)(**parameters, size=1)[0]
+        if n_sample < 0:
+            print("WARNING: Negative value", n_sample)
+            n_sample = 0
+        return int(n_sample)
+
     def check_generator(self, env, next_act):
-        if next_act in self._object_params["generator"]:
-            n_obj = 2 if next_act == 'Place Order' else 1 ### da cambiare con distribuzioni
-            name_obj = self._object_params["generator"][next_act][0]
+        if next_act in self._object_params["task_generator"]:
+            # "Place Order": {"obj": "item", "name": "uniform", "parameters": {"low": 2, "high": 3} },
+            name_obj = self._object_params["task_generator"][next_act]["obj"]
+            n_obj = self.sample_distribution(self._object_params["task_generator"][next_act]["name"], self._object_params["task_generator"][next_act]["parameters"])
             for i in range(0, n_obj):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
                 id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
                 self._process.add_object_mailboxes(name_obj, id)
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
                                'sequential', self._writer, name_obj, self._mailboxes, self)
-                obj_sim = env.process(obj_class.simulation(env))
                 self.object_referred.setdefault(name_obj, {})[id] = obj_class
+                env.process(obj_class.simulation(env))
                 self._id_object += 1
 
     def check_constraints(self, env, next_act):
@@ -74,15 +82,15 @@ class Object(object):
             ### treats differences if it has a "child-father" relationship or not
             if info[0] in self._object_params["generator_by"] or info[0] in self._object_params["generate"]:
                 ## delete finished object
-                allowed_keys = set(self._process.get_object_mailboxes(info[0]).keys())
+                allowed_keys = set(self._process.get_object_mailboxes(info[0]).keys()) ## tutte le chiavi del tipo info[0]
                 for k in list(self.object_referred.get(info[0], {}).keys()):
                     if k not in allowed_keys:
-                        del self.object_referred[info[0]][k]
-                target_object = self.object_referred[info[0]]
+                        del self.object_referred[info[0]][k]  ### eventuale cancellazione oggetti morti
+                target_object = self.object_referred[info[0]] ### oggetti riferiti a me
                 id_target_object = list(target_object.keys())
                 obj_to_wait = [
                     self._process.get_object_mailboxes(info[0])[k].get(
-                        lambda m, key=k: m[0] == key and m[1] in info[1]
+                        lambda act, key=k: act[1] in info[1]
                     )
                     for k in id_target_object
                 ]
@@ -91,7 +99,7 @@ class Object(object):
                 mailboxes_obj = self._process.get_object_mailboxes(info[0])
                 obj_to_wait = [
                     mailbox.get(
-                        lambda message, key=key: message[0] == key and message[1] in info[1]
+                        lambda message, key=key: message[1] in info[1]
                     )
                     for key, mailbox in mailboxes_obj.items()
                 ]
@@ -101,32 +109,32 @@ class Object(object):
         """
             The main function to handle the simulation of a single trace
         """
-        trans = self.next_transition(env)
+        transition = self.next_transitionition(env)
         ### register trace in process ###
         request_resource = None
         resource_trace = self._process._get_resource_trace()
         resource_trace_request = resource_trace.request() #if self._type == 'sequential' else None
 
-        while trans is not None:
+        while transition is not None:
             #if not self.see_activity and self._type == 'sequential':
             yield resource_trace_request
-            if trans and trans.label:  ### next transition to execute
-                obj_to_wait = self.check_constraints(env, trans.label)
+            if transition and transition.label:  ### next transitionition to execute
+                obj_to_wait = self.check_constraints(env, transition.label)
                 messages = yield AllOf(env, obj_to_wait)
                 if obj_to_wait != []:
                     print(self._id, messages)
                 self._buffer.reset()
                 self._buffer.set_feature("id_case", self._id)
-                self._buffer.set_feature("activity", trans.label)
+                self._buffer.set_feature("activity", transition.label)
                 self._buffer.set_feature("prefix",
                                          self.prefix.get_prefix(self._start_time + timedelta(seconds=env.now)))
                 self._buffer.set_feature("attribute_event", {})
 
                 ### call predictor for waiting time
-                if trans.label in self._object_params["resource_table"]:
-                    resource = self._process._get_resource(self._object_params["resource_table"][trans.label])
+                if transition.label in self._object_params["resource_table"]:
+                    resource = self._process._get_resource(self._object_params["resource_table"][transition.label])
                 else:
-                    raise ValueError('Not resource/role defined for this activity', trans.label)
+                    raise ValueError('Not resource/role defined for this activity', transition.label)
 
                 # self._buffer.set_feature("wip_wait", 0 if type != 'sequential' else resource_trace.count-1)
                 self._buffer.set_feature("wip_wait", resource_trace.count)
@@ -135,14 +143,14 @@ class Object(object):
                 self._buffer.set_feature("role", resource._get_name())
 
                 ### register event in process ###
-                resource_task = self._process._get_resource_event(trans.label)
+                resource_task = self._process._get_resource_event(transition.label)
                 self._buffer.set_feature("wip_activity", resource_task.count)
 
                 queue = 0 if len(resource._queue) == 0 else len(resource._queue[-1])
                 self._buffer.set_feature("queue", queue)
                 self._buffer.set_feature("enabled_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
 
-                waiting = 0 #self.define_waiting_time(trans.label)
+                waiting = 0 #self.define_waiting_time(transition.label)
                 #if self.see_activity:
                 #    yield env.timeout(waiting)
 
@@ -163,28 +171,30 @@ class Object(object):
                 stop = resource.to_time_schedule(self._start_time + timedelta(seconds=env.now))
                 yield env.timeout(stop)
                 self._buffer.set_feature("start_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
-                duration = 300 #self.define_processing_time(trans.label)
+                duration = 300 #self.define_processing_time(transition.label)
 
                 yield env.timeout(duration)
 
                 self._buffer.set_feature("wip_end", resource_trace.count)
                 self._buffer.set_feature("end_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
                 self._buffer.print_values()
-                self.prefix.add_activity(trans.label)
-                self.check_generator(env, trans.label)
+                self.prefix.add_activity(transition.label)
+                self.check_generator(env, transition.label)
 
                 amount_of_message = 1
                 for obj_type in self.object_referred:
                     amount_of_message += len(self.object_referred[obj_type])
                 mail = self._process.get_specific_obj_mailboxes(self._name_object, self._id)
-                for _ in range(amount_of_message): yield mail.put((self._id, trans.label))
+                if transition.label == 'Packing':
+                    print(amount_of_message, self._id, transition.label)
+                for _ in range(amount_of_message): yield mail.put((self._id, transition.label))
 
                 resource.release(request_resource)
                 self._process._release_single_resource(resource._get_name(), single_resource)
                 resource_task.release(resource_task_request)
 
-            self._update_marking(trans)
-            trans = self.next_transition(env) if self._am else None
+            self._update_marking(transition)
+            transition = self.next_transitionition(env) if self._am else None
 
         #if self._type == 'parallel':
         #    self._parallel_object._set_last_events(self._am)
@@ -199,8 +209,8 @@ class Object(object):
             resource_object.append(self._process._get_resource(e))
         return resource_object
 
-    def _update_marking(self, trans):
-        self._am = semantics.execute(trans, self._net, self._am)
+    def _update_marking(self, transition):
+        self._am = semantics.execute(transition, self._net, self._am)
 
     def _delete_tokens(self, name):
         to_delete = []
@@ -229,20 +239,20 @@ class Object(object):
         else:
             raise ValueError("ERROR: Invalid input, specify the probability as AUTO, float number or CUSTOM ", prob)
 
-    def _retrieve_check_paths(self, all_enabled_trans):
+    def _retrieve_check_paths(self, all_enabled_transition):
         prob = []
-        for trans in all_enabled_trans:
+        for transition in all_enabled_transition:
             try:
-                if trans.label:
-                    prob.append(self._object_params["probability"][trans.label])
+                if transition.label:
+                    prob.append(self._object_params["probability"][transition.label])
                 else:
-                    prob.append(self._object_params["probability"][trans.name])
+                    prob.append(self._object_params["probability"][transition.name])
             except:
-                print('ERROR: Not all path probabilities are defined. Define all paths: ', all_enabled_trans)
+                print('ERROR: Not all path probabilities are defined. Define all paths: ', all_enabled_transition)
 
         return prob
 
-    def define_xor_next_activity(self, all_enabled_trans):
+    def define_xor_next_activity(self, all_enabled_transition):
         """ Three different methods to decide which path following from XOR gateway:
         * Random choice: each path has equal probability to be chosen (AUTO)
         ```json
@@ -269,20 +279,20 @@ class Object(object):
         }
         ```
         """
-        prob = ['AUTO'] if not self._object_params["probability"] else self._retrieve_check_paths(all_enabled_trans)
+        prob = ['AUTO'] if not self._object_params["probability"] else self._retrieve_check_paths(all_enabled_transition)
         self._check_type_paths(prob)
         if prob[0] == 'AUTO':
-            next = random.choices(list(range(0, len(all_enabled_trans), 1)))[0]
+            next = random.choices(list(range(0, len(all_enabled_transition), 1)))[0]
         elif prob[0] == 'CUSTOM':
-            next = self.call_custom_xor_function(all_enabled_trans)
+            next = self.call_custom_xor_function(all_enabled_transition)
         elif type(prob[0] == float()):
             if self._check_probability(prob):
                 value = [*range(0, len(prob), 1)]
                 next = int(random.choices(value, prob)[0])
             else:
-                next = random.choices(list(range(0, len(all_enabled_trans), 1)))[0]
+                next = random.choices(list(range(0, len(all_enabled_transition), 1)))[0]
 
-        return all_enabled_trans[next]
+        return all_enabled_transition[next]
 
     def define_processing_time(self, activity):
         """ Three different methods are available to define the processing time for each activity:
@@ -363,24 +373,24 @@ class Object(object):
 
         return duration
 
-    def next_transition(self, env):
+    def next_transitionition(self, env):
         """
         Method to define the next activity in the petrinet.
         """
-        all_enabled_trans = semantics.enabled_transitions(self._net, self._am)
-        all_enabled_trans = list(all_enabled_trans)
-        all_enabled_trans.sort(key=lambda x: x.name)
-        if len(all_enabled_trans) == 0:
+        all_enabled_transition = semantics.enabled_transitions(self._net, self._am)
+        all_enabled_transition = list(all_enabled_transition)
+        all_enabled_transition.sort(key=lambda x: x.name)
+        if len(all_enabled_transition) == 0:
             return None
-        elif len(all_enabled_trans) == 1:
-            return all_enabled_trans[0]
+        elif len(all_enabled_transition) == 1:
+            return all_enabled_transition[0]
         else:
-            return self.define_xor_next_activity(all_enabled_trans)
+            return self.define_xor_next_activity(all_enabled_transition)
 
     '''
-    parallel next transition:
+    parallel next transitionition:
     if len(self._am) == 1:
-                return self.define_xor_next_activity(all_enabled_trans)
+                return self.define_xor_next_activity(all_enabled_transition)
             else:
                 events = []
                 for token in self._am:
@@ -407,7 +417,7 @@ class Object(object):
         """
         return custom.custom_waiting_time(self._buffer)
 
-    def call_custom_xor_function(self, all_enabled_trans):
+    def call_custom_xor_function(self, all_enabled_transition):
         """
             Call to the custom functions in the file *custom_function.py*.
         """

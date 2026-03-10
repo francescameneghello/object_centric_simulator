@@ -5,24 +5,6 @@
       <text></text>
     </name>
     <page id="n0">
-      <place id="ent_Activity_17e2v1d">
-        <name>
-          <text>ent_Activity_17e2v1d</text>
-        </name>
-      </place>
-      <place id="exi_Gateway_02kq95r">
-        <name>
-          <text>exi_Gateway_02kq95r</text>
-        </name>
-      </place>
-      <place id="source">
-        <name>
-          <text>source</text>
-        </name>
-        <initialMarking>
-          <text>1</text>
-        </initialMarking>
-      </place>
       <place id="sink">
         <name>
           <text>sink</text>
@@ -33,42 +15,60 @@
           <text>ent_Activity_07llv1o</text>
         </name>
       </place>
-      <transition id="Activity_0sgxqzb">
+      <place id="ent_Activity_17e2v1d">
         <name>
-          <text>Remove Item</text>
+          <text>ent_Activity_17e2v1d</text>
         </name>
-      </transition>
-      <transition id="Activity_07llv1o">
+      </place>
+      <place id="source">
         <name>
-          <text>Deliver</text>
+          <text>source</text>
         </name>
-      </transition>
-      <transition id="f5212dde-854e-40ff-aef7-278ef851c4da">
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="exi_Gateway_02kq95r">
         <name>
-          <text>f5212dde-854e-40ff-aef7-278ef851c4da</text>
+          <text>exi_Gateway_02kq95r</text>
         </name>
-        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="11f87529-e2b3-436c-9cfe-3792559e6b56"/>
-      </transition>
+      </place>
       <transition id="Activity_15pe1ez">
         <name>
           <text>Pick Item</text>
         </name>
       </transition>
-      <transition id="Activity_17e2v1d">
+      <transition id="Activity_07llv1o">
         <name>
-          <text>Load</text>
+          <text>Delivered</text>
         </name>
       </transition>
-      <arc id="140503567934128" source="f5212dde-854e-40ff-aef7-278ef851c4da" target="exi_Gateway_02kq95r"/>
-      <arc id="140503567878416" source="ent_Activity_07llv1o" target="Activity_07llv1o"/>
-      <arc id="140503567934032" source="Activity_17e2v1d" target="ent_Activity_07llv1o"/>
-      <arc id="140503567876160" source="source" target="f5212dde-854e-40ff-aef7-278ef851c4da"/>
-      <arc id="140503567934512" source="exi_Gateway_02kq95r" target="Activity_15pe1ez"/>
-      <arc id="140503567876688" source="ent_Activity_17e2v1d" target="Activity_17e2v1d"/>
-      <arc id="140503567934416" source="exi_Gateway_02kq95r" target="Activity_0sgxqzb"/>
-      <arc id="140503567933840" source="Activity_0sgxqzb" target="sink"/>
-      <arc id="140503567934224" source="Activity_15pe1ez" target="ent_Activity_17e2v1d"/>
-      <arc id="140503567933744" source="Activity_07llv1o" target="sink"/>
+      <transition id="56ef4f52-2252-4715-9f23-e6e7f5d663f5">
+        <name>
+          <text>56ef4f52-2252-4715-9f23-e6e7f5d663f5</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="a2b7a243-938b-42d3-af05-3b7ecf1b4666"/>
+      </transition>
+      <transition id="Activity_0sgxqzb">
+        <name>
+          <text>Remove Item</text>
+        </name>
+      </transition>
+      <transition id="Activity_17e2v1d">
+        <name>
+          <text>Packing</text>
+        </name>
+      </transition>
+      <arc id="140554013751040" source="ent_Activity_17e2v1d" target="Activity_17e2v1d"/>
+      <arc id="140554333365728" source="56ef4f52-2252-4715-9f23-e6e7f5d663f5" target="exi_Gateway_02kq95r"/>
+      <arc id="140554013878448" source="ent_Activity_07llv1o" target="Activity_07llv1o"/>
+      <arc id="140554333366016" source="exi_Gateway_02kq95r" target="Activity_0sgxqzb"/>
+      <arc id="140554333365056" source="Activity_15pe1ez" target="ent_Activity_17e2v1d"/>
+      <arc id="140554333365440" source="Activity_07llv1o" target="sink"/>
+      <arc id="140554333365824" source="Activity_17e2v1d" target="ent_Activity_07llv1o"/>
+      <arc id="140554333365536" source="Activity_0sgxqzb" target="sink"/>
+      <arc id="140554333365920" source="exi_Gateway_02kq95r" target="Activity_15pe1ez"/>
+      <arc id="140554013905008" source="source" target="56ef4f52-2252-4715-9f23-e6e7f5d663f5"/>
     </page>
     <finalmarkings>
       <marking>

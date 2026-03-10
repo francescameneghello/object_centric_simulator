@@ -44,6 +44,7 @@ class Prefix(object):
 class Buffer(object):
 
     def __init__(self, writer, values=None):
+        ##### aggiungere feature object centric
         self.buffer = {
             "id_case": -1,
             "activity": None,

@@ -2,9 +2,8 @@
     "start_simulation": "2026-01-01 09:00:00",
     "objects": {
         "order": {
-            "n_traces": 1,
+            "n_objects": 1,
             "path_petrinet": "../input/order_objects.pnml",
-            "start_timestamp": "2026-04-03 09:00:00",
             "interTriggerTimer": {
                 "type": "distribution",
                 "name": "exponential",
@@ -40,12 +39,26 @@
                         "low": 3600,
                         "high": 7200
                     }
+                },
+                "Payment Complete": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 7200
+                    }
+                },
+                "Check out": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 3600,
+                        "high": 7200
+                    }
                 }
             },
             "waiting_time": {},
             "resource": {
                 "Role 1": {
-                    "resources": ["A", "B"],
+                    "resources": ["Pete", "Sue"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
                         "hour_min": 0,
@@ -53,7 +66,7 @@
                     }
                 },
                 "Role 2": {
-                    "resources": ["C"],
+                    "resources": ["Bob"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
                         "hour_min": 0,
@@ -61,27 +74,30 @@
                     }
                 }
             },
-            "generator_by": [],
-            "probability": {
-                "Pay BT": 0.30,
-                "Pay CC": 0.70,
-                "Add Item": 0.0,
-                "sfl_Flow_1kzzg2v": 1.0
-            },
-            "generator": {
-                "Place Order": ["item", ["uniform", 2, 3] ],
-                "Add Item": ["item", ["uniform", 1, 2] ]
-            },
-            "generate": ["item"],
             "resource_table": {
                 "Place Order": "Role 1",
                 "Pay CC": "Role 2",
                 "Pay BT": "Role 2",
-                "Add Item": "Role 1"
+                "Add Item": "Role 1",
+                "Payment Complete": "Role 2",
+                "Check out": "Role 1"
             },
+            "probability": {
+                "Pay BT": 0.30,
+                "Pay CC": 0.70,
+                "sfl_Flow_0yvy5mh": 0.7,
+                "sfl_Flow_0icvvwb": 0.30,
+                "sfl_Flow_1hvnet8": 0.90,
+                "sfl_Flow_0jhrfrk": 0.10
+            },
+            "generator_by": [],
+            "task_generator": {
+                "Place Order": {"obj": "item", "name": "uniform", "parameters": {"low": 2, "high": 3} },
+                "Add Item": {"obj": "item", "name": "uniform", "parameters": {"low": 1, "high": 1} }
+            },
+            "generate": ["item"],
             "object_constraints": {
-                "Pay CC": ["item", ["Pick Item"], "All"],
-                "Pay BT": ["item", ["Pick Item"], "All"]
+                "Check Out": ["item", ["Pick Item"], "All"]
             }
         },
         "item": {
@@ -104,14 +120,14 @@
                         "high": 1525
                     }
                 },
-                "Load": {
+                "Packing": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1555,
                         "high": 968
                     }
                 },
-                "Deliver": {
+                "Delivered": {
                     "name": "uniform",
                     "parameters": {
                         "low": 3600,
@@ -138,27 +154,28 @@
                     }
                 }
             },
-            "generator_by": ["order"],
-            "generator": [],
-            "generate": [],
             "resource_table": {
                 "Remove Item": "Role 1",
                 "Pick Item": "Role 2",
                 "Load": "Role 2",
-                "Deliver": "Role 1"
+                "Delivered": "Role 1",
+                "Packing": "Role 1"
             },
             "probability": {
-                "Pick Item": 1.0,
-                "Remove Item": 0.0
+                "Pick Item": 0.8,
+                "Remove Item": 0.2
             },
+            "generator_by": ["order"],
+            "task_generator": [],
+            "generate": [],
             "object_constraints": {
-                "Load": ["order", ["Pay CC", "Pay BT"], "All"],
-                "Deliver": ["truck", ["Ship"], "All"]
+                "Packing":  ["order", ["Payment Complete"], "All"],
+                "Delivered": ["truck", ["Ship"], "All"]
             }
 
         },
         "truck": {
-            "n_traces": 1,
+            "n_objects": 1,
             "path_petrinet": "../input/truck_objects.pnml",
             "start_timestamp": "2026-04-03 09:00:00",
             "interTriggerTimer": {
@@ -170,6 +187,13 @@
             },
             "processing_time": {
                 "Prepare": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 2689.43,
+                        "scale": 1525.64
+                    }
+                },
+                "Load": {
                     "name": "normal",
                     "parameters": {
                         "loc": 2689.43,
@@ -202,21 +226,22 @@
                     }
                 }
             },
+            "resource_table": {
+                "Prepare": "Role truck",
+                "Ship": "Role truck",
+                "Go Back": "Role truck",
+                "Load": "Role truck"
+            },
             "generator_by": [],
             "probability": {
                 "Go Back": 0.5,
                 "sfl_Flow_0s5j80m": 0.5
             },
-            "generator": {
+            "task_generator": {
             },
             "generate": [],
-            "resource_table": {
-                "Prepare": "Role truck",
-                "Ship": "Role truck",
-                "Go Back": "Role truck"
-            },
             "object_constraints": {
-                 "Ship": ["item", ["Load"], "All"]
+                "Load": ["item", ["Packing"], "All"]
             }
         }
     }
