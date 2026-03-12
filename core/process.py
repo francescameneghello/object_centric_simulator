@@ -15,11 +15,27 @@ class SimulationProcess(object):
         self._resource_trace = simpy.Resource(env, math.inf)
         self._am_parallel = []
         self.mailboxes = {}
+        self.relation_ships = {}
+
+    def set_relation_ships(self, id_obj_1, id_obj_2):
+        self.relation_ships.setdefault(id_obj_1, []).append(id_obj_2)
+        self.relation_ships.setdefault(id_obj_2, []).append(id_obj_1)
+
+    def remove_relation_ships(self, id_obj):
+        del self.relation_ships[id_obj]
+        for o in self.relation_ships:
+            self.relation_ships[o] = [x for x in self.relation_ships[o] if x != id_obj]
+
+    def get_relation_ships(self, id_obj):
+        return self.relation_ships[id_obj] if id_obj in self.relation_ships else []
+
 
     def get_object_mailboxes(self, object_type):
         return self.mailboxes[object_type]
 
     def get_specific_obj_mailboxes(self, object_type, id):
+        #if self.mailboxes[object_type][id].items != []:
+        #    print(self.mailboxes[object_type][id].items)
         return self.mailboxes[object_type][id]
 
     def delete_specific_obj_mailboxes(self, object_type, id):

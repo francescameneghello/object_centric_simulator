@@ -61,6 +61,7 @@ class Buffer(object):
             "ro_single": -1,
             "queue": -1,
             "prefix": Prefix,
+            "relation_ships": [],
             "attribute_case": dict(),
             "attribute_event": dict()
         }
@@ -85,7 +86,11 @@ class Buffer(object):
         return self.buffer[feature]
 
     def print_values(self):
-        print(*self.buffer.values())
+        keys_to_print = ["id_case", "activity", "enabled_time", "start_time",
+                         "end_time", "role", "resource", "prefix", "relation_ships"]
+        subset = {k: self.buffer[k] for k in keys_to_print if k in self.buffer}
+        print(*subset.values())
+        #print(*self.buffer.values())
         self.writer.writerow(self.buffer.values())
 
     def get_buffer_keys(self):
@@ -103,4 +108,5 @@ class Buffer(object):
         self.buffer["ro_total"] = []
         self.buffer["ro_single"] = -1
         self.buffer["queue"] = -1
+        self.buffer['relation_ships'] = []
         self.buffer["attribute_event"] = dict()

@@ -35,9 +35,6 @@ class Object(object):
         #    self.see_activity = True
         self._writer = writer
         self._buffer = Buffer(writer, [])
-        self.object_referred = {}
-        if father:
-            self.object_referred.setdefault(father._name_object, {})[father._id] = father
         self._id_object = 0
         self._father = father
         self._mailboxes = mailboxes
@@ -70,40 +67,37 @@ class Object(object):
                 self._process.add_object_mailboxes(name_obj, id)
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
                                'sequential', self._writer, name_obj, self._mailboxes, self)
-                self.object_referred.setdefault(name_obj, {})[id] = obj_class
+                self._process.set_relation_ships(self._id, id)
                 env.process(obj_class.simulation(env))
                 self._id_object += 1
 
     def check_constraints(self, env, next_act):
         obj_to_wait = []
+        new_relation_ship = []
         if next_act in self._object_params["object_constraints"]:
-            #"Pay CC": ["item", ["Pick Item"], "All"],
             info = self._object_params["object_constraints"][next_act]
-            ### treats differences if it has a "child-father" relationship or not
-            if info[0] in self._object_params["generator_by"] or info[0] in self._object_params["generate"]:
-                ## delete finished object
-                allowed_keys = set(self._process.get_object_mailboxes(info[0]).keys()) ## tutte le chiavi del tipo info[0]
-                for k in list(self.object_referred.get(info[0], {}).keys()):
-                    if k not in allowed_keys:
-                        del self.object_referred[info[0]][k]  ### eventuale cancellazione oggetti morti
-                target_object = self.object_referred[info[0]] ### oggetti riferiti a me
-                id_target_object = list(target_object.keys())
+            ### Two options for the contrainst: 1) extracts from relation_ships existed of the object the one related to obj type in input (info[0])
+            ### or 2) create new relation_ships
+            id_target_object = [x for x in self._process.get_relation_ships(self._id) if any(i in x for i in info[0])]
+            if id_target_object:
                 obj_to_wait = [
                     self._process.get_object_mailboxes(info[0])[k].get(
-                        lambda act, key=k: act[1] in info[1]
+                        lambda message, key=k: message[1] in info[1]
                     )
                     for k in id_target_object
                 ]
-            else: ### case truck and items
-                ### "Ship": ["item", ["Load"], "All"]
+            else:
+                ### in this case we have to define the relation_ships later when we wait the at least X or all
                 mailboxes_obj = self._process.get_object_mailboxes(info[0])
+                new_relation_ship = list(mailboxes_obj.keys())
                 obj_to_wait = [
                     mailbox.get(
                         lambda message, key=key: message[1] in info[1]
                     )
                     for key, mailbox in mailboxes_obj.items()
                 ]
-        return obj_to_wait
+                print(next_act, ":", self._id, obj_to_wait, new_relation_ship)
+        return obj_to_wait, new_relation_ship
 
     def simulation(self, env: simpy.Environment):
         """
@@ -119,10 +113,12 @@ class Object(object):
             #if not self.see_activity and self._type == 'sequential':
             yield resource_trace_request
             if transition and transition.label:  ### next transitionition to execute
-                obj_to_wait = self.check_constraints(env, transition.label)
-                messages = yield AllOf(env, obj_to_wait)
+                obj_to_wait, new_relation_ships = self.check_constraints(env, transition.label)
+                messages = yield AllOf(env, obj_to_wait) #### aggiungere qua loop che aggiorna, cosi da evitare anche "partenze a vuoto"
                 if obj_to_wait != []:
                     print(self._id, messages)
+                    for obj in new_relation_ships:
+                        self._process.set_relation_ships(self._id, obj)
                 self._buffer.reset()
                 self._buffer.set_feature("id_case", self._id)
                 self._buffer.set_feature("activity", transition.label)
@@ -177,17 +173,16 @@ class Object(object):
 
                 self._buffer.set_feature("wip_end", resource_trace.count)
                 self._buffer.set_feature("end_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
+                self._buffer.set_feature("relation_ships", self._process.get_relation_ships(self._id))
                 self._buffer.print_values()
                 self.prefix.add_activity(transition.label)
                 self.check_generator(env, transition.label)
 
-                amount_of_message = 1
-                for obj_type in self.object_referred:
-                    amount_of_message += len(self.object_referred[obj_type])
+                object_referred = self._process.get_relation_ships(self._id)
                 mail = self._process.get_specific_obj_mailboxes(self._name_object, self._id)
                 if transition.label == 'Packing':
-                    print(amount_of_message, self._id, transition.label)
-                for _ in range(amount_of_message): yield mail.put((self._id, transition.label))
+                    object_referred = ['truck_0']
+                for _ in range(len(object_referred)): yield mail.put((self._id, transition.label))
 
                 resource.release(request_resource)
                 self._process._release_single_resource(resource._get_name(), single_resource)
@@ -200,6 +195,7 @@ class Object(object):
         #    self._parallel_object._set_last_events(self._am)
         #if self._type == 'sequential':
         self._process.delete_specific_obj_mailboxes(self._name_object, self._id)
+        self._process.remove_relation_ships(self._id)
         resource_trace.release(resource_trace_request)
 
     def _get_resource_role(self, activity):
