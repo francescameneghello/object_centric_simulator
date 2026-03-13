@@ -18,17 +18,25 @@ class SimulationProcess(object):
         self.relation_ships = {}
 
     def set_relation_ships(self, id_obj_1, id_obj_2):
-        self.relation_ships.setdefault(id_obj_1, []).append(id_obj_2)
-        self.relation_ships.setdefault(id_obj_2, []).append(id_obj_1)
+        if id_obj_1 in self.relation_ships:
+            self.relation_ships[id_obj_1].add(id_obj_2)
+        else:
+            self.relation_ships[id_obj_1] = {id_obj_2}
+        if id_obj_2 in self.relation_ships:
+            self.relation_ships[id_obj_2].add(id_obj_1)
+        else:
+            self.relation_ships[id_obj_2] = {id_obj_1}
 
     def remove_relation_ships(self, id_obj):
         del self.relation_ships[id_obj]
         for o in self.relation_ships:
-            self.relation_ships[o] = [x for x in self.relation_ships[o] if x != id_obj]
+            self.relation_ships[o].discard(id_obj)
 
     def get_relation_ships(self, id_obj):
-        return self.relation_ships[id_obj] if id_obj in self.relation_ships else []
+        return self.relation_ships[id_obj] if id_obj in self.relation_ships else {}
 
+    def print_relation_ships(self):
+        print(self.relation_ships)
 
     def get_object_mailboxes(self, object_type):
         return self.mailboxes[object_type]

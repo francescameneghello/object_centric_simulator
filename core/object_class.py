@@ -14,6 +14,8 @@ from utility import Buffer, ParallelObject
 #import custom_function as custom
 
 
+CON_ACT = ['Pick Item', 'Payment Complete', 'Ship', 'Packing']
+
 class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
@@ -96,7 +98,7 @@ class Object(object):
                     )
                     for key, mailbox in mailboxes_obj.items()
                 ]
-                print(next_act, ":", self._id, obj_to_wait, new_relation_ship)
+                #print(next_act, ":", self._id, obj_to_wait, new_relation_ship)
         return obj_to_wait, new_relation_ship
 
     def simulation(self, env: simpy.Environment):
@@ -113,12 +115,23 @@ class Object(object):
             #if not self.see_activity and self._type == 'sequential':
             yield resource_trace_request
             if transition and transition.label:  ### next transitionition to execute
-                obj_to_wait, new_relation_ships = self.check_constraints(env, transition.label)
-                messages = yield AllOf(env, obj_to_wait) #### aggiungere qua loop che aggiorna, cosi da evitare anche "partenze a vuoto"
-                if obj_to_wait != []:
-                    print(self._id, messages)
-                    for obj in new_relation_ships:
-                        self._process.set_relation_ships(self._id, obj)
+
+                if transition.label in self._object_params["object_constraints"]:
+                    satisfied = False
+                    while not satisfied:
+                        obj_to_wait, new_relation_ships = self.check_constraints(env, transition.label)
+                        #if transition.label == 'Check out':
+                            #print('Existing relationship check_out')
+                            #print(self._process.print_relation_ships())
+                        if obj_to_wait:
+                            messages = yield AllOf(env, obj_to_wait)
+                            for obj in new_relation_ships:
+                                self._process.set_relation_ships(self._id, obj)
+                                #self._process.print_relation_ships()
+                            print(self._id, messages)
+                            satisfied = True
+                        else:
+                            yield env.timeout(1)
                 self._buffer.reset()
                 self._buffer.set_feature("id_case", self._id)
                 self._buffer.set_feature("activity", transition.label)
@@ -168,22 +181,23 @@ class Object(object):
                 yield env.timeout(stop)
                 self._buffer.set_feature("start_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
                 duration = 300 #self.define_processing_time(transition.label)
-
                 yield env.timeout(duration)
 
                 self._buffer.set_feature("wip_end", resource_trace.count)
                 self._buffer.set_feature("end_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
-                self._buffer.set_feature("relation_ships", self._process.get_relation_ships(self._id))
-                self._buffer.print_values()
                 self.prefix.add_activity(transition.label)
                 self.check_generator(env, transition.label)
 
-                object_referred = self._process.get_relation_ships(self._id)
-                mail = self._process.get_specific_obj_mailboxes(self._name_object, self._id)
-                if transition.label == 'Packing':
-                    object_referred = ['truck_0']
-                for _ in range(len(object_referred)): yield mail.put((self._id, transition.label))
+                #### aggiungere se e' una attivita' che dipende dalle alter (per adesso messa ad hoc sopra)
+                if transition.label in CON_ACT:
+                    object_referred = self._process.get_relation_ships(self._id)
+                    mail = self._process.get_specific_obj_mailboxes(self._name_object, self._id)
+                    if not object_referred:
+                        object_referred = [self._id]
+                    for _ in range(len(object_referred)): yield mail.put((self._id, transition.label))
 
+                self._buffer.set_feature("relation_ships", self._process.get_relation_ships(self._id))
+                self._buffer.print_values()
                 resource.release(request_resource)
                 self._process._release_single_resource(resource._get_name(), single_resource)
                 resource_task.release(resource_task_request)
