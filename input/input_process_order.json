@@ -85,8 +85,8 @@
             "probability": {
                 "Pay BT": 0.30,
                 "Pay CC": 0.70,
-                "sfl_Flow_0yvy5mh": 0.3,
-                "sfl_Flow_0icvvwb": 0.7,
+                "sfl_Flow_0yvy5mh": 1.0,
+                "sfl_Flow_0icvvwb": 0.0,
                 "sfl_Flow_1hvnet8": 0.90,
                 "sfl_Flow_0jhrfrk": 0.10
             },
@@ -97,7 +97,7 @@
             },
             "generate": ["item"],
             "object_constraints": {
-                "Check out": ["item", ["Pick Item"], "All"]
+                "Check out": ["item", ["Pick Item", "Remove Item"], "All"]
             }
         },
         "item": {
@@ -162,8 +162,8 @@
                 "Packing": "Role 1"
             },
             "probability": {
-                "Pick Item": 1.0,
-                "Remove Item": 0.0
+                "Pick Item": 0.5,
+                "Remove Item": 0.5
             },
             "generator_by": ["order"],
             "task_generator": [],

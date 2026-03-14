@@ -14,7 +14,7 @@ from utility import Buffer, ParallelObject
 #import custom_function as custom
 
 
-CON_ACT = ['Pick Item', 'Payment Complete', 'Ship', 'Packing']
+CON_ACT = ['Pick Item', 'Payment Complete', 'Ship', 'Packing', 'Remove Item']
 
 class Object(object):
 
@@ -120,15 +120,10 @@ class Object(object):
                     satisfied = False
                     while not satisfied:
                         obj_to_wait, new_relation_ships = self.check_constraints(env, transition.label)
-                        #if transition.label == 'Check out':
-                            #print('Existing relationship check_out')
-                            #print(self._process.print_relation_ships())
                         if obj_to_wait:
                             messages = yield AllOf(env, obj_to_wait)
                             for obj in new_relation_ships:
                                 self._process.set_relation_ships(self._id, obj)
-                                #self._process.print_relation_ships()
-                            print(self._id, messages)
                             satisfied = True
                         else:
                             yield env.timeout(1)
