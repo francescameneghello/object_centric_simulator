@@ -2,6 +2,27 @@ import simpy
 from role_simulator import RoleSimulator
 import math
 from parameters import Parameters
+from simpy import Event
+
+
+class MessageBoard:
+    def __init__(self, env):
+        self.env = env
+        self.messages = []          # Stores all messages
+        self.new_message_event = simpy.Event(env)  # Event for notifying listeners
+
+    def add_message(self, msg):
+        self.messages.append(msg)
+        # Trigger a new event to notify listeners
+        if not self.new_message_event.triggered:
+            self.new_message_event.succeed(value=msg)
+        # Prepare a new event for the next message
+        self.new_message_event = simpy.Event(self.env)
+
+    def remove_message(self, msg_list):
+        for msg in msg_list:
+            if msg in self.messages:
+                self.messages.remove(msg)
 
 
 class SimulationProcess(object):
@@ -14,8 +35,9 @@ class SimulationProcess(object):
         self._resource_events = self._define_resource_events(env)
         self._resource_trace = simpy.Resource(env, math.inf)
         self._am_parallel = []
-        self.mailboxes = {}
+        self.board = MessageBoard(env)
         self.relation_ships = {}
+        self.existing_objects = {}
 
     def set_relation_ships(self, id_obj_1, id_obj_2):
         if id_obj_1 in self.relation_ships:
@@ -38,19 +60,17 @@ class SimulationProcess(object):
     def print_relation_ships(self):
         print(self.relation_ships)
 
-    def get_object_mailboxes(self, object_type):
-        return self.mailboxes[object_type]
+    def add_object(self, object, object_type, id_object):
+        self.existing_objects.setdefault(object_type, {})[id_object] = object
 
-    def get_specific_obj_mailboxes(self, object_type, id):
-        #if self.mailboxes[object_type][id].items != []:
-        #    print(self.mailboxes[object_type][id].items)
-        return self.mailboxes[object_type][id]
+    def get_specific_type(self, object_type):
+        return self.existing_objects[object_type]
 
-    def delete_specific_obj_mailboxes(self, object_type, id):
-        del self.mailboxes[object_type][id]
+    def get_specific_object(self, object_type, id):
+        return self.existing_objects[object_type][id]
 
-    def add_object_mailboxes(self, object_type, id):
-        self.mailboxes.setdefault(object_type, {})[id] = simpy.FilterStore(self._env)
+    def delete_specific_object(self, object_type, id):
+        del self.existing_objects[object_type][id]
 
     def define_single_role(self):
         """

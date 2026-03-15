@@ -33,9 +33,9 @@ def setup(env: simpy.Environment, params, i, name, f):
                 yield env.timeout(itime)
                 net, im, fm = pm4py.read_pnml(params.objects[obj]["path_petrinet"])
                 id = f"{obj}_{i}"
-                simulation_process.add_object_mailboxes(obj, id)
-                env.process(Object(id, net, im, params, simulation_process, prefix, 'sequential', writer,
-                                  obj).simulation(env))
+                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj)
+                simulation_process.add_object(obj_class, obj, id)
+                env.process(obj_class.simulation(env))
 
 
 def run_simulation(path_parameter: str, name: str, n_simulation=1):
@@ -44,7 +44,7 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
             params = Parameters(path_parameter)
             env = simpy.Environment()
             env.process(setup(env, params, i, name, f))
-            env.run()
+            env.run() #until=31536000
 
 def main(path_parameter: str, name: str):
     print(path_parameter, name)

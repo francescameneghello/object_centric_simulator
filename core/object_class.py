@@ -11,16 +11,19 @@ import numpy as np
 import copy
 import csv
 from utility import Buffer, ParallelObject
+import asyncio
+from reactivex import operators as ops
 #import custom_function as custom
 
 
-CON_ACT = ['Pick Item', 'Payment Complete', 'Ship', 'Packing', 'Remove Item']
+CON_ACT = {'Pick Item': 'order', 'Payment Complete':'item', 'Ship':'item', 'Packing': 'truck', 'Remove Item':'order'}
+
 
 class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
                  params: Parameters, process: SimulationProcess, prefix: Prefix, type: str, writer: csv.writer,
-                 name_object: str, mailboxes = None, father = None):
+                 name_object: str, father=None):
         self._id = id
         self._process = process
         self._start_time = params.START_SIMULATION
@@ -39,7 +42,7 @@ class Object(object):
         self._buffer = Buffer(writer, [])
         self._id_object = 0
         self._father = father
-        self._mailboxes = mailboxes
+        self._last_activity = None
         #print(self._name_object, self._object_params)
         #self._buffer.set_feature("attribute_case", custom.case_function_attribute(self._id, time))
 
@@ -66,40 +69,26 @@ class Object(object):
             for i in range(0, n_obj):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
                 id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
-                self._process.add_object_mailboxes(name_obj, id)
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
-                               'sequential', self._writer, name_obj, self._mailboxes, self)
+                               'sequential', self._writer, name_obj, self)
+                self._process.add_object(obj_class, name_obj, id)
                 self._process.set_relation_ships(self._id, id)
                 env.process(obj_class.simulation(env))
                 self._id_object += 1
 
-    def check_constraints(self, env, next_act):
-        obj_to_wait = []
-        new_relation_ship = []
-        if next_act in self._object_params["object_constraints"]:
-            info = self._object_params["object_constraints"][next_act]
-            ### Two options for the contrainst: 1) extracts from relation_ships existed of the object the one related to obj type in input (info[0])
-            ### or 2) create new relation_ships
-            id_target_object = [x for x in self._process.get_relation_ships(self._id) if any(i in x for i in info[0])]
-            if id_target_object:
-                obj_to_wait = [
-                    self._process.get_object_mailboxes(info[0])[k].get(
-                        lambda message, key=k: message[1] in info[1]
-                    )
-                    for k in id_target_object
-                ]
-            else:
-                ### in this case we have to define the relation_ships later when we wait the at least X or all
-                mailboxes_obj = self._process.get_object_mailboxes(info[0])
-                new_relation_ship = list(mailboxes_obj.keys())
-                obj_to_wait = [
-                    mailbox.get(
-                        lambda message, key=key: message[1] in info[1]
-                    )
-                    for key, mailbox in mailboxes_obj.items()
-                ]
-                #print(next_act, ":", self._id, obj_to_wait, new_relation_ship)
-        return obj_to_wait, new_relation_ship
+    def check_constraints(self, next_act):
+        #print(f"[{env.now}] {self._id} received new message: {msg}")
+        #print(f"[{env.now}] {self._id} sees all messages: {self._process.board.messages}")
+        info = self._object_params["object_constraints"][next_act]
+        id_target_object = {x for x in self._process.get_relation_ships(self._id) if x.split('_')[0] == info[0]}
+        if id_target_object:
+            picked_items = {item_id for item_id, action in self._process.board.messages if action in info[1]}
+            return (True, []) if id_target_object <= picked_items else (False, [])
+        else:
+            type_objects = self._process.get_specific_type(info[0])
+            new_relation_ship = list(type_objects.keys())
+            picked_items = {item_id for item_id, action in self._process.board.messages if action in info[1]}
+            return (True, new_relation_ship) if type_objects.keys() <= picked_items else (False, new_relation_ship)
 
     def simulation(self, env: simpy.Environment):
         """
@@ -115,18 +104,15 @@ class Object(object):
             #if not self.see_activity and self._type == 'sequential':
             yield resource_trace_request
             if transition and transition.label:  ### next transitionition to execute
-
                 if transition.label in self._object_params["object_constraints"]:
-                    satisfied = False
-                    while not satisfied:
-                        obj_to_wait, new_relation_ships = self.check_constraints(env, transition.label)
-                        if obj_to_wait:
-                            messages = yield AllOf(env, obj_to_wait)
-                            for obj in new_relation_ships:
-                                self._process.set_relation_ships(self._id, obj)
-                            satisfied = True
-                        else:
-                            yield env.timeout(1)
+                    proceed = False
+                    new_relation_ships = []
+                    while not proceed:
+                        yield self._process.board.new_message_event
+                        proceed, new_relation_ships = self.check_constraints(transition.label)
+                    for obj in new_relation_ships:
+                        self._process.set_relation_ships(self._id, obj)
+
                 self._buffer.reset()
                 self._buffer.set_feature("id_case", self._id)
                 self._buffer.set_feature("activity", transition.label)
@@ -175,21 +161,17 @@ class Object(object):
                 stop = resource.to_time_schedule(self._start_time + timedelta(seconds=env.now))
                 yield env.timeout(stop)
                 self._buffer.set_feature("start_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
-                duration = 300 #self.define_processing_time(transition.label)
+                duration = self.define_processing_time(transition.label)
                 yield env.timeout(duration)
 
                 self._buffer.set_feature("wip_end", resource_trace.count)
                 self._buffer.set_feature("end_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
                 self.prefix.add_activity(transition.label)
                 self.check_generator(env, transition.label)
+                self._last_activity = transition.label
 
-                #### aggiungere se e' una attivita' che dipende dalle alter (per adesso messa ad hoc sopra)
                 if transition.label in CON_ACT:
-                    object_referred = self._process.get_relation_ships(self._id)
-                    mail = self._process.get_specific_obj_mailboxes(self._name_object, self._id)
-                    if not object_referred:
-                        object_referred = [self._id]
-                    for _ in range(len(object_referred)): yield mail.put((self._id, transition.label))
+                    self._process.board.add_message((self._id, transition.label))
 
                 self._buffer.set_feature("relation_ships", self._process.get_relation_ships(self._id))
                 self._buffer.print_values()
@@ -203,8 +185,8 @@ class Object(object):
         #if self._type == 'parallel':
         #    self._parallel_object._set_last_events(self._am)
         #if self._type == 'sequential':
-        self._process.delete_specific_obj_mailboxes(self._name_object, self._id)
         self._process.remove_relation_ships(self._id)
+        self._process.delete_specific_object(self._name_object, self._id)
         resource_trace.release(resource_trace_request)
 
     def _get_resource_role(self, activity):
@@ -325,11 +307,11 @@ class Object(object):
             ```
         """
         try:
-            if self._params.PROCESSING_TIME[activity]["name"] == 'custom':
+            if self._object_params["processing_time"][activity]["name"] == 'custom':
                 duration = self.call_custom_processing_time()
             else:
-                distribution = self._params.PROCESSING_TIME[activity]['name']
-                parameters = self._params.PROCESSING_TIME[activity]['parameters']
+                distribution = self._object_params["processing_time"][activity]['name']
+                parameters = self._object_params["processing_time"][activity]['parameters']
                 duration = getattr(np.random, distribution)(**parameters, size=1)[0]
                 if duration < 0:
                     print("WARNING: Negative processing time", duration)

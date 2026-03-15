@@ -85,8 +85,8 @@
             "probability": {
                 "Pay BT": 0.30,
                 "Pay CC": 0.70,
-                "sfl_Flow_0yvy5mh": 1.0,
-                "sfl_Flow_0icvvwb": 0.0,
+                "sfl_Flow_0yvy5mh": 0.5,
+                "sfl_Flow_0icvvwb": 0.5,
                 "sfl_Flow_1hvnet8": 0.90,
                 "sfl_Flow_0jhrfrk": 0.10
             },
@@ -109,15 +109,15 @@
                 "Pick Item": {
                     "name": "normal",
                     "parameters": {
-                        "loc": 2689.43,
-                        "scale": 1525.64
+                        "loc": 600,
+                        "scale": 200
                     }
                 },
                 "Remove Item": {
                     "name": "uniform",
                     "parameters": {
-                        "low": 3600,
-                        "high": 1525
+                        "low": 200,
+                        "high": 300
                     }
                 },
                 "Packing": {
@@ -162,8 +162,8 @@
                 "Packing": "Role 1"
             },
             "probability": {
-                "Pick Item": 0.5,
-                "Remove Item": 0.5
+                "Pick Item": 1.0,
+                "Remove Item": 0.0
             },
             "generator_by": ["order"],
             "task_generator": [],
@@ -189,29 +189,29 @@
                 "Prepare": {
                     "name": "normal",
                     "parameters": {
-                        "loc": 2689.43,
-                        "scale": 1525.64
+                        "loc": 1200,
+                        "scale": 600
                     }
                 },
                 "Load": {
                     "name": "normal",
                     "parameters": {
-                        "loc": 2689.43,
-                        "scale": 1525.64
+                        "loc": 1800,
+                        "scale": 600
                     }
                 },
                 "Ship": {
                     "name": "uniform",
                     "parameters": {
-                        "low": 3600,
-                        "high": 1525
+                        "low": 1525,
+                        "high": 3600
                     }
                 },
                 "Go Back": {
                     "name": "uniform",
                     "parameters": {
-                        "low": 1555,
-                        "high": 968
+                        "low": 968,
+                        "high": 1555
                     }
                 }
             },
