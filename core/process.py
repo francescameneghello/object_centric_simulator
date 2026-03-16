@@ -12,10 +12,19 @@ class MessageBoard:
         self.new_message_event = simpy.Event(env)  # Event for notifying listeners
 
     def add_message(self, msg):
-        self.messages.append(msg)
+        msg_id = msg[0]
+        # Find index of message with same id
+        idx = next((i for i, m in enumerate(self.messages) if m[0] == msg_id), None)
+
+        if idx is not None:
+            self.messages[idx] = msg  # overwrite existing message
+        else:
+            self.messages.append(msg)
+
         # Trigger a new event to notify listeners
         if not self.new_message_event.triggered:
             self.new_message_event.succeed(value=msg)
+
         # Prepare a new event for the next message
         self.new_message_event = simpy.Event(self.env)
 
@@ -49,10 +58,16 @@ class SimulationProcess(object):
         else:
             self.relation_ships[id_obj_2] = {id_obj_1}
 
-    def remove_relation_ships(self, id_obj):
+    def remove_element(self, id_obj):
         del self.relation_ships[id_obj]
         for o in self.relation_ships:
             self.relation_ships[o].discard(id_obj)
+
+    def remove_relation_ships(self, id_obj_1, id_obj_2):
+        if id_obj_1 in self.relation_ships:
+            self.relation_ships[id_obj_1].discard(id_obj_2)
+        if id_obj_2 in self.relation_ships:
+            self.relation_ships[id_obj_2].discard(id_obj_1)
 
     def get_relation_ships(self, id_obj):
         return self.relation_ships[id_obj] if id_obj in self.relation_ships else {}
@@ -64,7 +79,7 @@ class SimulationProcess(object):
         self.existing_objects.setdefault(object_type, {})[id_object] = object
 
     def get_specific_type(self, object_type):
-        return self.existing_objects[object_type]
+        return self.existing_objects[object_type] if object_type in self.existing_objects else {}
 
     def get_specific_object(self, object_type, id):
         return self.existing_objects[object_type][id]

@@ -98,6 +98,10 @@
             "generate": ["item"],
             "object_constraints": {
                 "Check out": ["item", ["Pick Item", "Remove Item"], "All"]
+            },
+            "create_relation_ship": {
+            },
+            "destroy_relation_ship": {
             }
         },
         "item": {
@@ -171,6 +175,10 @@
             "object_constraints": {
                 "Packing":  ["order", ["Payment Complete"], "All"],
                 "Delivered": ["truck", ["Ship"], "All"]
+            },
+            "create_relation_ship": {
+            },
+            "destroy_relation_ship": {
             }
 
         },
@@ -241,7 +249,13 @@
             },
             "generate": [],
             "object_constraints": {
-                "Load": ["item", ["Packing"], "All"]
+                "Load": ["item", ["Packing"], 1]
+            },
+            "create_relation_ship": {
+                "Load": "item"
+            },
+            "destroy_relation_ship": {
+                "Ship": "item"
             }
         }
     }
