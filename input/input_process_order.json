@@ -87,8 +87,8 @@
                 "Pay CC": 0.70,
                 "sfl_Flow_0yvy5mh": 0.5,
                 "sfl_Flow_0icvvwb": 0.5,
-                "sfl_Flow_1hvnet8": 0.90,
-                "sfl_Flow_0jhrfrk": 0.10
+                "sfl_Flow_1hvnet8": 1.0,
+                "sfl_Flow_0jhrfrk": 0.0
             },
             "generator_by": [],
             "task_generator": {
@@ -134,8 +134,8 @@
                 "Delivered": {
                     "name": "uniform",
                     "parameters": {
-                        "low": 3600,
-                        "high": 7200
+                        "low": 300,
+                        "high": 600
                     }
                 }
             },
@@ -166,8 +166,8 @@
                 "Packing": "Role 1"
             },
             "probability": {
-                "Pick Item": 1.0,
-                "Remove Item": 0.0
+                "Pick Item": 0.8,
+                "Remove Item": 0.2
             },
             "generator_by": ["order"],
             "task_generator": [],
@@ -179,11 +179,12 @@
             "create_relation_ship": {
             },
             "destroy_relation_ship": {
+                "Remove Item": "order"
             }
 
         },
         "truck": {
-            "n_objects": 1,
+            "n_objects": 2,
             "path_petrinet": "../input/truck_objects.pnml",
             "start_timestamp": "2026-04-03 09:00:00",
             "interTriggerTimer": {
@@ -226,7 +227,7 @@
             "waiting_time": {},
             "resource": {
                 "Role truck": {
-                    "resources": ["A", "B"],
+                    "resources": ["C", "D"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
                         "hour_min": 0,

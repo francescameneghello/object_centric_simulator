@@ -16,10 +16,10 @@ class MessageBoard:
         # Find index of message with same id
         idx = next((i for i, m in enumerate(self.messages) if m[0] == msg_id), None)
 
-        if idx is not None:
-            self.messages[idx] = msg  # overwrite existing message
-        else:
-            self.messages.append(msg)
+        #if idx is not None:
+        #    self.messages[idx] = msg  # overwrite existing message
+        #else:
+        self.messages.append(msg)
 
         # Trigger a new event to notify listeners
         if not self.new_message_event.triggered:

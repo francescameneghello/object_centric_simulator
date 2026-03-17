@@ -76,53 +76,48 @@ class Object(object):
                 env.process(obj_class.simulation(env))
                 self._id_object += 1
 
-    def check_constraints(self, next_act, env):
-        if next_act == 'Load':
-            print(f"***************{env.now} {self._id} received new message: {self._process.board.messages}***************")
-            print(env.now, self._process.relation_ships)
+    def check_constraints(self, next_act):
         info = self._object_params["object_constraints"][next_act]
-        id_target_object = {x for x in self._process.get_relation_ships(self._id) if x.split('_')[0] == info[0]}
-        if id_target_object:
-            mesg_list = [
-                msg for msg in self._process.board.messages
-                if msg[1] in info[1]
-            ]
-            picked_items = {msg[0] for msg in mesg_list}
-            matched = id_target_object & picked_items
-
-            if info[2] == "All":
-                proceed = matched == id_target_object
-            elif info[2] == "Any":
-                proceed = len(matched) >= 1
-            else:
-                proceed = len(matched) == int(info[2])
-
-            if proceed:
-                mesg_to_remove = [m for m in mesg_list if m[0] in matched]
-                self._process.board.remove_message(mesg_to_remove)
-                return True, matched
-
-            return False, []
-        else:
-            type_objects = self._process.get_specific_type(info[0])
-            mesg_list = [
-                msg for msg in self._process.board.messages
-                if msg[1] in info[1] and (not msg[2] or self._id in msg[2])
-            ]
-            picked_items = {msg[0] for msg in mesg_list}
-            matched = set(type_objects.keys()) & picked_items
+        if next_act in self._object_params["create_relation_ship"]:
+            proceed = False
+            type_objects = self._process.get_specific_type(info[0]).keys() ### retrieve type required
+            picked_messages = {(item_id, action, ref) for item_id, action, ref in self._process.board.messages if action in info[1]}
+            picked_items = {item_id for item_id, action, ref in picked_messages}
+            matched = type_objects & picked_items
             if info[2] == "All":
                 proceed = matched == set(type_objects.keys())
             elif info[2] == "Any":
                 proceed = len(matched) >= 1
             else:
-                proceed = len(matched) == int(info[2])
-
+                if len(matched) >= int(info[2]):
+                    matched = {random.choice(tuple(matched))}
+                    picked_messages = {(item_id, action, ref) for item_id, action, ref in picked_messages if item_id in matched}
+                    proceed = True
             if proceed:
-                mesg_to_remove = [m for m in mesg_list if m[0] in matched]
-                self._process.board.remove_message(mesg_to_remove)
+                for obj in matched:
+                    self._process.set_relation_ships(self._id, obj)
+                self._process.board.remove_message(picked_messages)
                 return True, matched
-            return False, []
+            else:
+                return False, []
+        else:  # act in self._object_params["destroy_relation_ship"] or existing relation-ship
+            info = self._object_params["object_constraints"][next_act]
+            id_target_object = {x for x in self._process.get_relation_ships(self._id) if x.split('_')[0] == info[0]}
+            picked_messages = {(item_id, action, ref) for item_id, action, ref in self._process.board.messages if action in info[1] and self._id in ref}
+            picked_items = {item_id for item_id, action, ref in picked_messages}
+            matched = id_target_object & picked_items
+            proceed = False
+            if (id_target_object or picked_items):
+                if info[2] == "All":
+                    proceed = matched == id_target_object
+                elif info[2] == "Any":
+                    proceed = len(matched) >= 1
+                else:
+                    proceed = len(matched) == int(info[2])
+            if proceed:
+                self._process.board.remove_message(picked_messages)
+            return proceed, matched
+
 
     def simulation(self, env: simpy.Environment):
         """
@@ -142,12 +137,9 @@ class Object(object):
                 if transition.label in self._object_params["object_constraints"]:
                     proceed = False
                     while not proceed:
-                        proceed, matched = self.check_constraints(transition.label, env)
+                        proceed, matched = self.check_constraints(transition.label)
                         if not proceed:
                             yield self._process.board.new_message_event
-                    if transition.label in self._object_params["create_relation_ship"]:
-                        for obj in matched:
-                            self._process.set_relation_ships(self._id, obj)
 
                 self._buffer.reset()
                 self._buffer.set_feature("id_case", self._id)
@@ -206,18 +198,25 @@ class Object(object):
                 self.check_generator(env, transition.label)
                 self._last_activity = transition.label
 
+                self._buffer.set_feature("relation_ships", self._define_relation_ship().copy())
                 if transition.label in CON_ACT:
-                    rel = self._process.get_relation_ships(self._id).copy()
-                    if self._father:
-                        rel -= {self._father._id}
                     if transition.label in self._object_params["destroy_relation_ship"]:
-                        ### SEND MESSAGE FOR EACH rel object cancelled!
                         rel = list(self._process.get_relation_ships(self._id))
-                        for m in rel: ### da sistemare, cancellare solo item e non tutte relazioni
+                        rel_obj = [x for x in rel if self._object_params["destroy_relation_ship"][transition.label] in x]
+                        for m in rel_obj:
                             self._process.remove_relation_ships(self._id, m)
-                    self._process.board.add_message((self._id, transition.label, rel))
+                            self._process.board.add_message((self._id, transition.label, m))
+                    else:
+                        if matched:
+                            for m in matched: self._process.board.add_message((self._id, transition.label, m))
+                        elif self._father:
+                            self._process.board.add_message((self._id, transition.label, self._father._id))
+                        else:
+                            obj = list(self._process.get_relation_ships(self._id))
+                            rel_obj = [x for x in obj if CON_ACT[transition.label] in x]
+                            for m in rel_obj:
+                                self._process.board.add_message((self._id, transition.label, m))
 
-                self._buffer.set_feature("relation_ships", matched)#self._define_relation_ship())
                 self._buffer.print_values()
                 resource.release(request_resource)
                 self._process._release_single_resource(resource._get_name(), single_resource)
@@ -237,7 +236,7 @@ class Object(object):
         relation_ship = self._process.get_relation_ships(self._id)
         if self._father:
             relation_ship.add(self._father._id)
-        return relation_ship
+        return relation_ship if relation_ship else {}
 
     def _get_resource_role(self, activity):
         elements = self._params.ROLE_ACTIVITY[activity.label]
