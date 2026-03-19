@@ -2,7 +2,7 @@
     "start_simulation": "2026-01-01 09:00:00",
     "objects": {
         "order": {
-            "n_objects": 20,
+            "n_objects": 100,
             "path_petrinet": "../input/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
@@ -64,7 +64,7 @@
             },
             "waiting_time": {},
             "resource": {
-                "Role 1": {
+                "Role 1 order": {
                     "resources": ["Pete", "Sue"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
@@ -72,7 +72,7 @@
                         "hour_max": 23
                     }
                 },
-                "Role 2": {
+                "Role 2 order": {
                     "resources": ["Bob"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
@@ -82,13 +82,13 @@
                 }
             },
             "resource_table": {
-                "Place Order": "Role 1",
-                "Pay CC": "Role 2",
-                "Pay BT": "Role 2",
-                "Add Item": "Role 1",
-                "Payment Complete": "Role 2",
-                "Check out": "Role 1",
-                "Close Order": "Role 1"
+                "Place Order": "Role 1 order",
+                "Pay CC": "Role 2 order",
+                "Pay BT": "Role 2 order",
+                "Add Item": "Role 1 order",
+                "Payment Complete": "Role 2 order",
+                "Check out": "Role 1 order",
+                "Close Order": "Role 1 order"
             },
             "probability": {
                 "Pay BT": "CUSTOM",
@@ -157,7 +157,7 @@
             },
             "waiting_time": {},
             "resource": {
-                "Role Order 1": {
+                "Role 1 item": {
                     "resources": ["Pete", "Sue"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
@@ -165,7 +165,7 @@
                         "hour_max": 23
                     }
                 },
-                "Role Order 2": {
+                "Role 2 item": {
                     "resources": ["Bob"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
@@ -175,12 +175,12 @@
                 }
             },
             "resource_table": {
-                "Remove Item": "Role Order 1",
-                "Select": "Role Order 1",
-                "Pick Item": "Role Order 2",
-                "Load": "Role Order 2",
-                "Delivered": "Role Order 1",
-                "Packing": "Role Order 1"
+                "Remove Item": "Role 1 item",
+                "Select": "Role 1 item",
+                "Pick Item": "Role 2 item",
+                "Load": "Role 2 item",
+                "Delivered": "Role 1 item",
+                "Packing": "Role 1 item"
             },
             "probability": {
                 "Pick Item": 0.9,
@@ -201,7 +201,7 @@
 
         },
         "truck": {
-            "n_objects": 1,
+            "n_objects": 10,
             "path_petrinet": "../input/truck_objects.pnml",
             "start_timestamp": "2026-04-03 09:00:00",
             "interTriggerTimer": {
@@ -267,7 +267,7 @@
             },
             "generate": [],
             "object_constraints": {
-                "Load": ["item", ["Packing"], 10]
+                "Load": ["item", ["Packing"], 10, 20]
             },
             "create_relation_ship": {
                 "Load": "item"

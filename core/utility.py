@@ -90,7 +90,6 @@ class Buffer(object):
                          "end_time", "role", "resource", "prefix", "relation_ships", "attribute_object"]
         subset = {k: self.buffer[k] for k in keys_to_print if k in self.buffer}
         print(*subset.values())
-        #print(*self.buffer.values())
         self.writer.writerow(self.buffer.values())
 
     def get_buffer_keys(self):

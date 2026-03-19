@@ -166,4 +166,3 @@ def custom_decision_mining(buffer: Buffer, objects_related: list, possible_trans
         return 2
     else:
         return 1
-    return 0

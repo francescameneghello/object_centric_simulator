@@ -74,6 +74,11 @@ class Object(object):
                 self._id_object += 1
 
     def check_constraints(self, next_act):
+        '''
+        How to define the constraints:
+        "Transition name": ["object type", ["name_activity_to_wait"], "All"/"Any"/"n"]
+        within an interval At least x and max y -----> "Transition name": ["object type", ["name_activity_to_wait"], x, y]
+        '''
         info = self._object_params["object_constraints"][next_act]
         if next_act in self._object_params["create_relation_ship"]:
             proceed = False
@@ -81,7 +86,13 @@ class Object(object):
             picked_messages = {(item_id, action, ref) for item_id, action, ref in self._process.board.messages if action in info[1]}
             picked_items = {item_id for item_id, action, ref in picked_messages}
             matched = type_objects & picked_items
-            if info[2] == "All":
+            if len(info) == 4:
+                if len(matched) >= int(info[2]):
+                    k = min(len(matched), int(info[3]))
+                    matched = set(random.sample(matched, k))
+                    picked_messages = {(item_id, action, ref) for item_id, action, ref in picked_messages if item_id in matched}
+                    proceed = True
+            elif info[2] == "All":
                 proceed = matched == set(type_objects.keys())
             elif info[2] == "Any":
                 proceed = len(matched) >= 1
@@ -353,7 +364,7 @@ class Object(object):
                 parameters = self._object_params["processing_time"][activity]['parameters']
                 duration = getattr(np.random, distribution)(**parameters, size=1)[0]
                 if duration < 0:
-                    print("WARNING: Negative processing time", duration)
+                    print(f"WARNING: Negative processing time {duration} of activity {activity}")
                     duration = 0
         except:
             raise ValueError("ERROR: The processing time of", activity, "is not defined in json file")
