@@ -15,6 +15,7 @@ class Parameters(object):
         self.objects = {}
         self.process_roles = {}
         self.all_activities = []
+        self.channels = {}
         """PATH_PARAMETERS: path of json file for others parameters. """
         self.read_metadata_file()
 
@@ -30,6 +31,10 @@ class Parameters(object):
                     self.objects[ob] = data["objects"][ob]
                     self._define_roles_resources(data["objects"][ob]['resource'])
                     self.all_activities += list(data["objects"][ob]["resource_table"].keys())
+                    for act in data["objects"][ob]["object_constraints"]:
+                        activities = data["objects"][ob]["object_constraints"][act][1]
+                        for a in activities:
+                            self.channels[a] = ob
         else:
             raise ValueError('Parameter file does not exist')
 

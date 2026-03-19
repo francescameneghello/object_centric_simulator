@@ -142,7 +142,7 @@
             "waiting_time": {},
             "resource": {
                 "Role 1": {
-                    "resources": ["A", "B"],
+                    "resources": ["Pete", "Sue"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
                         "hour_min": 0,
@@ -150,7 +150,7 @@
                     }
                 },
                 "Role 2": {
-                    "resources": ["C"],
+                    "resources": ["Bob"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
                         "hour_min": 0,

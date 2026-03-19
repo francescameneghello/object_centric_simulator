@@ -13,19 +13,9 @@ class MessageBoard:
 
     def add_message(self, msg):
         msg_id = msg[0]
-        # Find index of message with same id
-        idx = next((i for i, m in enumerate(self.messages) if m[0] == msg_id), None)
-
-        #if idx is not None:
-        #    self.messages[idx] = msg  # overwrite existing message
-        #else:
         self.messages.append(msg)
-
-        # Trigger a new event to notify listeners
         if not self.new_message_event.triggered:
             self.new_message_event.succeed(value=msg)
-
-        # Prepare a new event for the next message
         self.new_message_event = simpy.Event(self.env)
 
     def remove_message(self, msg_list):

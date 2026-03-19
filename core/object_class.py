@@ -13,10 +13,7 @@ import csv
 from utility import Buffer, ParallelObject
 import asyncio
 from reactivex import operators as ops
-#import custom_function as custom
-
-
-CON_ACT = {'Pick Item': 'order', 'Payment Complete':'item', 'Ship':'item', 'Packing': 'truck', 'Remove Item':'order'}
+import custom_function as custom
 
 
 class Object(object):
@@ -168,9 +165,9 @@ class Object(object):
                 self._buffer.set_feature("queue", queue)
                 self._buffer.set_feature("enabled_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
 
-                waiting = 0 #self.define_waiting_time(transition.label)
+                waiting = self.define_waiting_time(transition.label)
                 #if self.see_activity:
-                #    yield env.timeout(waiting)
+                yield env.timeout(waiting)
 
                 request_resource = resource.request()
                 yield request_resource
@@ -199,7 +196,7 @@ class Object(object):
                 self._last_activity = transition.label
 
                 self._buffer.set_feature("relation_ships", self._define_relation_ship().copy())
-                if transition.label in CON_ACT:
+                if transition.label in self._general_params.channels:
                     if transition.label in self._object_params["destroy_relation_ship"]:
                         rel = list(self._process.get_relation_ships(self._id))
                         rel_obj = [x for x in rel if self._object_params["destroy_relation_ship"][transition.label] in x]
@@ -213,7 +210,7 @@ class Object(object):
                             self._process.board.add_message((self._id, transition.label, self._father._id))
                         else:
                             obj = list(self._process.get_relation_ships(self._id))
-                            rel_obj = [x for x in obj if CON_ACT[transition.label] in x]
+                            rel_obj = [x for x in obj if self._general_params.channels[transition.label] in x]
                             for m in rel_obj:
                                 self._process.board.add_message((self._id, transition.label, m))
 
@@ -237,13 +234,6 @@ class Object(object):
         if self._father:
             relation_ship.add(self._father._id)
         return relation_ship if relation_ship else {}
-
-    def _get_resource_role(self, activity):
-        elements = self._params.ROLE_ACTIVITY[activity.label]
-        resource_object = []
-        for e in elements:
-            resource_object.append(self._process._get_resource(e))
-        return resource_object
 
     def _update_marking(self, transition):
         self._am = semantics.execute(transition, self._net, self._am)
@@ -395,11 +385,11 @@ class Object(object):
             ```
         """
         try:
-            if self._params.WAITING_TIME[next_act]["name"] == 'custom':
+            if self._object_params["waiting_time"][next_act]["name"] == 'custom':
                 duration = self.call_custom_waiting_time()
             else:
-                distribution = self._params.WAITING_TIME[next_act]['name']
-                parameters = self._params.WAITING_TIME[next_act]['parameters']
+                distribution = self._object_params["waiting_time"][next_act]['name']
+                parameters = self._object_params["waiting_time"][next_act]['parameters']
                 duration = getattr(np.random, distribution)(**parameters, size=1)[0]
                 if duration < 0:
                     print("WARNING: Negative waiting time", duration)
