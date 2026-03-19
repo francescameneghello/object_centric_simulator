@@ -40,8 +40,8 @@ class Object(object):
         self._id_object = 0
         self._father = father
         self._last_activity = None
-        #print(self._name_object, self._object_params)
-        #self._buffer.set_feature("attribute_case", custom.case_function_attribute(self._id, time))
+        self._attribute = custom.object_function_attribute(self._name_object)
+        self._buffer.set_feature("attribute_object", self._attribute)
 
     def _delete_places(self, places):
         delete = []
@@ -87,7 +87,7 @@ class Object(object):
                 proceed = len(matched) >= 1
             else:
                 if len(matched) >= int(info[2]):
-                    matched = {random.choice(tuple(matched))}
+                    matched = set(random.sample(matched, int(info[2])))
                     picked_messages = {(item_id, action, ref) for item_id, action, ref in picked_messages if item_id in matched}
                     proceed = True
             if proceed:
@@ -412,24 +412,6 @@ class Object(object):
             return all_enabled_transition[0]
         else:
             return self.define_xor_next_activity(all_enabled_transition)
-
-    '''
-    parallel next transitionition:
-    if len(self._am) == 1:
-                return self.define_xor_next_activity(all_enabled_transition)
-            else:
-                events = []
-                for token in self._am:
-                    name = token.name
-                    new_am = copy.copy(self._am)
-                    tokens_to_delete = self._delete_tokens(name)
-                    for p in tokens_to_delete:
-                        del new_am[p]
-                    path = env.process(
-                        Token(self._id, self._net, new_am, self._params, self._process, self.prefix, "parallel",
-                              self._writer, self._parallel_object, self._buffer._get_dictionary()).simulation(env))
-                    events.append(path)
-                return events
                 
     def call_custom_processing_time(self):
         """
@@ -447,5 +429,8 @@ class Object(object):
         """
             Call to the custom functions in the file *custom_function.py*.
         """
-        return custom.custom_decision_mining(self._buffer)
-    '''
+        objects_related_keys = self._process.get_relation_ships(self._id)
+        object_class_list = []
+        for key in objects_related_keys:
+            object_class_list.append(self._process.get_specific_object(key.split("_")[0], key))
+        return custom.custom_decision_mining(self._buffer, object_class_list, all_enabled_transition)

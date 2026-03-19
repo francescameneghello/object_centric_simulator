@@ -2,7 +2,7 @@
     "start_simulation": "2026-01-01 09:00:00",
     "objects": {
         "order": {
-            "n_objects": 1,
+            "n_objects": 20,
             "path_petrinet": "../input/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
@@ -24,6 +24,13 @@
                     "parameters": {
                         "low": 3600,
                         "high": 1525
+                    }
+                },
+                "Close Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 0,
+                        "high": 0
                     }
                 },
                 "Pay BT": {
@@ -80,15 +87,17 @@
                 "Pay BT": "Role 2",
                 "Add Item": "Role 1",
                 "Payment Complete": "Role 2",
-                "Check out": "Role 1"
+                "Check out": "Role 1",
+                "Close Order": "Role 1"
             },
             "probability": {
-                "Pay BT": 0.30,
-                "Pay CC": 0.70,
-                "sfl_Flow_0yvy5mh": 0.5,
-                "sfl_Flow_0icvvwb": 0.5,
-                "sfl_Flow_1hvnet8": 1.0,
-                "sfl_Flow_0jhrfrk": 0.0
+                "Pay BT": "CUSTOM",
+                "Pay CC": "CUSTOM",
+                "Close Order": "CUSTOM",
+                "sfl_Flow_0yvy5mh": 0.3,
+                "sfl_Flow_0icvvwb": 0.7,
+                "sfl_Flow_1hvnet8": 0.95,
+                "sfl_Flow_0jhrfrk": 0.05
             },
             "generator_by": [],
             "task_generator": {
@@ -111,6 +120,13 @@
             },
             "processing_time": {
                 "Pick Item": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 600,
+                        "scale": 200
+                    }
+                },
+                "Select": {
                     "name": "normal",
                     "parameters": {
                         "loc": 600,
@@ -141,7 +157,7 @@
             },
             "waiting_time": {},
             "resource": {
-                "Role 1": {
+                "Role Order 1": {
                     "resources": ["Pete", "Sue"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
@@ -149,7 +165,7 @@
                         "hour_max": 23
                     }
                 },
-                "Role 2": {
+                "Role Order 2": {
                     "resources": ["Bob"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
@@ -159,15 +175,16 @@
                 }
             },
             "resource_table": {
-                "Remove Item": "Role 1",
-                "Pick Item": "Role 2",
-                "Load": "Role 2",
-                "Delivered": "Role 1",
-                "Packing": "Role 1"
+                "Remove Item": "Role Order 1",
+                "Select": "Role Order 1",
+                "Pick Item": "Role Order 2",
+                "Load": "Role Order 2",
+                "Delivered": "Role Order 1",
+                "Packing": "Role Order 1"
             },
             "probability": {
-                "Pick Item": 0.8,
-                "Remove Item": 0.2
+                "Pick Item": 0.9,
+                "Remove Item": 0.1
             },
             "generator_by": ["order"],
             "task_generator": [],
@@ -184,7 +201,7 @@
 
         },
         "truck": {
-            "n_objects": 2,
+            "n_objects": 1,
             "path_petrinet": "../input/truck_objects.pnml",
             "start_timestamp": "2026-04-03 09:00:00",
             "interTriggerTimer": {
@@ -250,7 +267,7 @@
             },
             "generate": [],
             "object_constraints": {
-                "Load": ["item", ["Packing"], 1]
+                "Load": ["item", ["Packing"], 10]
             },
             "create_relation_ship": {
                 "Load": "item"

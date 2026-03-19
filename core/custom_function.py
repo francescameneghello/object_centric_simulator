@@ -35,27 +35,17 @@ from datetime import datetime
 import os
 
 
-def case_function_attribute(case: int, time: datetime):
+def object_function_attribute(object_type: str):
     """
         Function to add one or more attributes to each trace.
         Input parameters are case id number and trace start timestamp and return a dictionary.
         For example, we generate a trace attribute, the requested loan amount, to simulate the process from the BPIChallenge2012A.xes log.
     """
-    #return {"AMOUNT": random.randint(100, 99999)}
-    return {}
+    if object_type == 'item':
+        return {"Price": random.randint(50, 1000)}
+    else:
+        return {}
 
-
-def event_function_attribute(case: int, time: datetime):
-    """
-        Function to add one or more attributes to each event.
-        Input parameters are case id number and track start timestamp and return a dictionary.
-        In the following example, we assume that there are multiple bank branches where activities
-        are executed by day of the week. From Monday to Wednesday, activities are executed in the
-        Eindhoven branch otherwise in the Utrecht one.
-    """
-    #bank = "Utrecht" if time.weekday() > 3 else "Eindhoven"
-    #return {"bank_branch": bank}
-    return {}
 
 
 def custom_arrivals_time(case, previous):
@@ -135,21 +125,10 @@ def custom_waiting_time(buffer: Buffer):
     }
     ```
     """
-    input_feature = list()
-    buffer.print_values()
-    input_feature.append(buffer.get_feature("wip_wait"))
-    input_feature.append(buffer.get_feature("wip_activity"))
-    input_feature.append(buffer.get_feature("enabled_time").weekday())
-    input_feature.append(buffer.get_feature("enabled_time").hour)
-    input_feature.append(buffer.get_feature("ro_single"))
-    input_feature.append(buffer.get_feature("queue"))
-    loaded_model = pickle.load(
-        open(os.getcwd() + '/example/example_process_times/waiting_time_random_forest.pkl', 'rb'))
-    y_pred_f = loaded_model.predict([input_feature])
-    return int(y_pred_f[0])
+    return 0
 
 
-def custom_decision_mining(buffer: Buffer):
+def custom_decision_mining(buffer: Buffer, objects_related: list, possible_transitions: list):
     """
     Function to define the next activity from a decision point in the Petri net model.
     For example, we used a Random Forest model for the *decision mining* example.
@@ -178,16 +157,13 @@ def custom_decision_mining(buffer: Buffer):
         }
     ```
     """
-    input_feature = list()
-    prefix = buffer.get_feature("prefix")
-    input_feature.append(1 if 'A_PREACCEPTED' in prefix else 0)
-    input_feature.append(1 if 'A_ACCEPTED' in prefix else 0)
-    input_feature.append(1 if 'A_FINALIZED' in prefix else 0)
-    input_feature.append(buffer.get_feature("attribute_case")['AMOUNT'])
-    input_feature.append(buffer.get_feature("end_time").hour)
-    input_feature.append(buffer.get_feature("end_time").weekday())
-
-    loaded_model = pickle.load(
-        open(os.getcwd() + '/example/example_decision_mining/random_forest.pkl', 'rb'))
-    y_pred_f = loaded_model.predict([input_feature])
-    return int(y_pred_f[0])
+    total_cost_order = 0
+    for obj in objects_related:
+        total_cost_order += obj._attribute["Price"]
+    if total_cost_order == 0:
+        return 0 ## CLose Order
+    elif total_cost_order > 1000:
+        return 2
+    else:
+        return 1
+    return 0

@@ -62,7 +62,7 @@ class Buffer(object):
             "queue": -1,
             "prefix": Prefix,
             "relation_ships": [],
-            "attribute_case": dict(),
+            "attribute_object": dict(),
             "attribute_event": dict()
         }
         if values:
@@ -87,7 +87,7 @@ class Buffer(object):
 
     def print_values(self):
         keys_to_print = ["id_case", "activity", "enabled_time", "start_time",
-                         "end_time", "role", "resource", "prefix", "relation_ships"]
+                         "end_time", "role", "resource", "prefix", "relation_ships", "attribute_object"]
         subset = {k: self.buffer[k] for k in keys_to_print if k in self.buffer}
         print(*subset.values())
         #print(*self.buffer.values())

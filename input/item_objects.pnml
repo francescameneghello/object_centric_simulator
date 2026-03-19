@@ -5,19 +5,9 @@
       <text></text>
     </name>
     <page id="n0">
-      <place id="sink">
-        <name>
-          <text>sink</text>
-        </name>
-      </place>
       <place id="ent_Activity_07llv1o">
         <name>
           <text>ent_Activity_07llv1o</text>
-        </name>
-      </place>
-      <place id="ent_Activity_17e2v1d">
-        <name>
-          <text>ent_Activity_17e2v1d</text>
         </name>
       </place>
       <place id="source">
@@ -28,14 +18,29 @@
           <text>1</text>
         </initialMarking>
       </place>
+      <place id="ent_Activity_17e2v1d">
+        <name>
+          <text>ent_Activity_17e2v1d</text>
+        </name>
+      </place>
       <place id="exi_Gateway_02kq95r">
         <name>
           <text>exi_Gateway_02kq95r</text>
         </name>
       </place>
-      <transition id="Activity_15pe1ez">
+      <place id="sink">
         <name>
-          <text>Pick Item</text>
+          <text>sink</text>
+        </name>
+      </place>
+      <transition id="Activity_17e2v1d">
+        <name>
+          <text>Packing</text>
+        </name>
+      </transition>
+      <transition id="Activity_0jh2jzo">
+        <name>
+          <text>Select</text>
         </name>
       </transition>
       <transition id="Activity_07llv1o">
@@ -43,32 +48,26 @@
           <text>Delivered</text>
         </name>
       </transition>
-      <transition id="56ef4f52-2252-4715-9f23-e6e7f5d663f5">
+      <transition id="Activity_15pe1ez">
         <name>
-          <text>56ef4f52-2252-4715-9f23-e6e7f5d663f5</text>
+          <text>Pick Item</text>
         </name>
-        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="a2b7a243-938b-42d3-af05-3b7ecf1b4666"/>
       </transition>
       <transition id="Activity_0sgxqzb">
         <name>
           <text>Remove Item</text>
         </name>
       </transition>
-      <transition id="Activity_17e2v1d">
-        <name>
-          <text>Packing</text>
-        </name>
-      </transition>
-      <arc id="140554013751040" source="ent_Activity_17e2v1d" target="Activity_17e2v1d"/>
-      <arc id="140554333365728" source="56ef4f52-2252-4715-9f23-e6e7f5d663f5" target="exi_Gateway_02kq95r"/>
-      <arc id="140554013878448" source="ent_Activity_07llv1o" target="Activity_07llv1o"/>
-      <arc id="140554333366016" source="exi_Gateway_02kq95r" target="Activity_0sgxqzb"/>
-      <arc id="140554333365056" source="Activity_15pe1ez" target="ent_Activity_17e2v1d"/>
-      <arc id="140554333365440" source="Activity_07llv1o" target="sink"/>
-      <arc id="140554333365824" source="Activity_17e2v1d" target="ent_Activity_07llv1o"/>
-      <arc id="140554333365536" source="Activity_0sgxqzb" target="sink"/>
-      <arc id="140554333365920" source="exi_Gateway_02kq95r" target="Activity_15pe1ez"/>
-      <arc id="140554013905008" source="source" target="56ef4f52-2252-4715-9f23-e6e7f5d663f5"/>
+      <arc id="140554844903744" source="Activity_0sgxqzb" target="sink"/>
+      <arc id="140554844903168" source="Activity_15pe1ez" target="ent_Activity_17e2v1d"/>
+      <arc id="140554844903936" source="source" target="Activity_0jh2jzo"/>
+      <arc id="140554844903360" source="Activity_17e2v1d" target="ent_Activity_07llv1o"/>
+      <arc id="140554844904128" source="exi_Gateway_02kq95r" target="Activity_15pe1ez"/>
+      <arc id="140554844115344" source="ent_Activity_07llv1o" target="Activity_07llv1o"/>
+      <arc id="140554844118416" source="ent_Activity_17e2v1d" target="Activity_17e2v1d"/>
+      <arc id="140554844903648" source="Activity_0jh2jzo" target="exi_Gateway_02kq95r"/>
+      <arc id="140554844903840" source="Activity_07llv1o" target="sink"/>
+      <arc id="140554844904032" source="exi_Gateway_02kq95r" target="Activity_0sgxqzb"/>
     </page>
     <finalmarkings>
       <marking>

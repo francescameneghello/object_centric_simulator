@@ -6,6 +6,7 @@ from process import SimulationProcess
 from object_class import Object
 from parameters import Parameters
 import sys, getopt
+import numpy as np
 from utility import *
 import random
 import pm4py
@@ -25,10 +26,12 @@ def setup(env: simpy.Environment, params, i, name, f):
     for obj in params.objects:
         if not params.objects[obj]["generator_by"]:
             n_objects = params.objects[obj]["n_objects"]
-            interval = random.randint(0, 600) ### Da sistemare con InterTriggerTimer class
+            distribution = params.objects[obj]["interTriggerTimer"]['name']
+            parameters = params.objects[obj]["interTriggerTimer"]['parameters']
             start_simulation_object = params.START_SIMULATION
             for i in range(0, n_objects):
                 prefix = Prefix()
+                interval = getattr(np.random, distribution)(**parameters, size=1)[0]
                 itime = interval
                 yield env.timeout(itime)
                 net, im, fm = pm4py.read_pnml(params.objects[obj]["path_petrinet"])
@@ -44,7 +47,7 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
             params = Parameters(path_parameter)
             env = simpy.Environment()
             env.process(setup(env, params, i, name, f))
-            env.run() #until=31536000
+            env.run()
 
 def main(path_parameter: str, name: str):
     print(path_parameter, name)
