@@ -9,3 +9,6 @@
 
 __pycache__/
 *.py[cod]
+/collaboration_model.bpmn
+/To_petrinet.ipynb
+/motivating_example.drawio
