@@ -26,7 +26,7 @@ class Parameters(object):
         if os.path.exists(self.PATH_PARAMETERS):
             with open(self.PATH_PARAMETERS) as file:
                 data = json.load(file)
-                self.START_SIMULATION = self._check_default_parameters(data["start_simulation"], 'start_timestamp')
+                self.START_SIMULATION = self._check_default_parameters(data, 'start_simulation')
                 for ob in data["objects"]:
                     self.objects[ob] = data["objects"][ob]
                     self._define_roles_resources(data["objects"][ob]['resource'])
@@ -45,8 +45,8 @@ class Parameters(object):
                                                                       'hour_max': roles[key]['calendar']['hour_max']}]
 
     def _check_default_parameters(self, data, type):
-        if type == 'start_timestamp':
-            value = datetime.strptime(data['start_timestamp'], '%Y-%m-%d %H:%M:%S') if type in data else datetime.now()
+        if type == 'start_simulation':
+            value = datetime.strptime(data['start_simulation'], '%Y-%m-%d %H:%M:%S') if type in data else datetime.now()
         elif type == 'duration_simulation':
             value = data['duration_simulation']*86400 if type in data else 31536000
         return value

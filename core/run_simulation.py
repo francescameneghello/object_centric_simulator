@@ -33,12 +33,12 @@ def setup(env: simpy.Environment, params, i, name, f):
                 prefix = Prefix()
                 interval = getattr(np.random, distribution)(**parameters, size=1)[0]
                 itime = interval
-                yield env.timeout(itime)
+                yield env.timeout(0)
                 net, im, fm = pm4py.read_pnml(params.objects[obj]["path_petrinet"])
                 id = f"{obj}_{i}"
                 obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj)
                 simulation_process.add_object(obj_class, obj, id)
-                env.process(obj_class.simulation(env))
+                env.process(obj_class.simulation(itime, env))
 
 
 def run_simulation(path_parameter: str, name: str, n_simulation=1):
@@ -51,7 +51,7 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
 
 def main(path_parameter: str, name: str):
     print(path_parameter, name)
-    run_simulation(path_parameter, name)
+    run_simulation(path_parameter, name, n_simulation=1)
 
 
 if __name__ == "__main__":

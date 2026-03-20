@@ -70,7 +70,7 @@ class Object(object):
                                'sequential', self._writer, name_obj, self)
                 self._process.add_object(obj_class, name_obj, id)
                 self._process.set_relation_ships(self._id, id)
-                env.process(obj_class.simulation(env))
+                env.process(obj_class.simulation(0, env))
                 self._id_object += 1
 
     def check_constraints(self, next_act):
@@ -127,10 +127,13 @@ class Object(object):
             return proceed, matched
 
 
-    def simulation(self, env: simpy.Environment):
+    def simulation(self, inter_trigger_timer: int, env: simpy.Environment):
         """
             The main function to handle the simulation of a single trace
         """
+        ### wait before start
+
+        yield env.timeout(inter_trigger_timer)
         transition = self.next_transitionition(env)
         ### register trace in process ###
         request_resource = None
