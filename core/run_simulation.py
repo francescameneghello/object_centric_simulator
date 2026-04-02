@@ -18,7 +18,7 @@ import sys
 
 def setup(env: simpy.Environment, params, i, name, f):
     simulation_process = SimulationProcess(env, params)
-    utility.define_folder_output("output/output_{}".format(name))
+    utility.define_folder_output("output")
     writer = csv.writer(f)
     writer.writerow(Buffer(writer).get_buffer_keys())
 
@@ -43,7 +43,7 @@ def setup(env: simpy.Environment, params, i, name, f):
 
 def run_simulation(path_parameter: str, name: str, n_simulation=1):
     for i in range(0, n_simulation):
-        with open("output/output_{}/simulated_log_{}_{}".format(name, name, i) + ".csv", 'w') as f:
+        with open("output/simulated_log_{}_{}".format(name, i) + ".csv", 'w') as f:
             params = Parameters(path_parameter)
             env = simpy.Environment()
             env.process(setup(env, params, i, name, f))
@@ -56,4 +56,4 @@ def main(path_parameter: str, name: str):
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
-    main(path_parameter="../input/input_process_order.json", name="order_process")
+    main(path_parameter="../input/input_process_order_90.json", name="process_order_90")

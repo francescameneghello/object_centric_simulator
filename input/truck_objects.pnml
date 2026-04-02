@@ -1,8 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <pnml>
   <net id="" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
     <name>
-      <text></text>
+      <text />
     </name>
     <page id="n0">
       <place id="source">
@@ -18,57 +18,57 @@
           <text>sink</text>
         </name>
       </place>
-      <place id="exi_Gateway_0m6zgcd">
+      <place id="place_1">
         <name>
-          <text>exi_Gateway_0m6zgcd</text>
+          <text>place_1</text>
         </name>
       </place>
-      <place id="ent_Activity_1c90e7u">
+      <place id="place_2">
         <name>
-          <text>ent_Activity_1c90e7u</text>
+          <text>place_2</text>
         </name>
       </place>
-      <place id="ent_Gateway_1y45gkj">
+      <place id="place_3">
         <name>
-          <text>ent_Gateway_1y45gkj</text>
+          <text>place_3</text>
         </name>
       </place>
-      <transition id="Activity_1c90e7u">
+      <transition id="Ship">
         <name>
           <text>Ship</text>
         </name>
       </transition>
-      <transition id="Activity_0mtzvjj">
+      <transition id="Prepare">
         <name>
           <text>Prepare</text>
         </name>
       </transition>
-      <transition id="Activity_109k2az">
+      <transition id="Load">
         <name>
           <text>Load</text>
         </name>
       </transition>
-      <transition id="sfl_Flow_0s5j80m">
+      <transition id="tau_1">
         <name>
-          <text>sfl_Flow_0s5j80m</text>
+          <text>tau_1</text>
         </name>
-        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="60a4715b-ddf2-4069-a6a4-4e8f03dc1f70"/>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="60a4715b-ddf2-4069-a6a4-4e8f03dc1f70" />
       </transition>
-      <transition id="Activity_0vjshdk">
+      <transition id="Go Back">
         <name>
           <text>Go Back</text>
         </name>
       </transition>
-      <arc id="140554013752912" source="ent_Gateway_1y45gkj" target="Activity_109k2az"/>
-      <arc id="140554013752048" source="Activity_109k2az" target="ent_Activity_1c90e7u"/>
-      <arc id="140554013752816" source="exi_Gateway_0m6zgcd" target="Activity_0vjshdk"/>
-      <arc id="140554013677360" source="exi_Gateway_0m6zgcd" target="sfl_Flow_0s5j80m"/>
-      <arc id="140554013752720" source="Activity_0vjshdk" target="ent_Gateway_1y45gkj"/>
-      <arc id="140554013752624" source="Activity_0mtzvjj" target="ent_Gateway_1y45gkj"/>
-      <arc id="140554013752336" source="Activity_1c90e7u" target="exi_Gateway_0m6zgcd"/>
-      <arc id="140554013753008" source="source" target="Activity_0mtzvjj"/>
-      <arc id="140554013752144" source="sfl_Flow_0s5j80m" target="sink"/>
-      <arc id="140554013676016" source="ent_Activity_1c90e7u" target="Activity_1c90e7u"/>
+      <arc id="140554013752912" source="place_3" target="Load" />
+      <arc id="140554013752048" source="Load" target="place_2" />
+      <arc id="140554013752816" source="place_1" target="Go Back" />
+      <arc id="140554013677360" source="place_1" target="tau_1" />
+      <arc id="140554013752720" source="Go Back" target="place_3" />
+      <arc id="140554013752624" source="Prepare" target="place_3" />
+      <arc id="140554013752336" source="Ship" target="place_1" />
+      <arc id="140554013753008" source="source" target="Prepare" />
+      <arc id="140554013752144" source="tau_1" target="sink" />
+      <arc id="140554013676016" source="place_2" target="Ship" />
     </page>
     <finalmarkings>
       <marking>

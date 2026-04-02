@@ -2,15 +2,14 @@
     "start_simulation": "2026-01-01 09:00:00",
     "objects": {
         "truck": {
-            "n_objects": 10,
+            "n_objects": 3,
             "path_petrinet": "../input/truck_objects.pnml",
-            "start_timestamp": "2026-04-03 09:00:00",
             "interTriggerTimer": {
                 "type": "distribution",
                 "name": "uniform",
                 "parameters": {
-                    "low": 600,
-                    "high": 1200
+                    "low": 0,
+                    "high": 0
                 }
             },
             "processing_time": {
@@ -29,10 +28,10 @@
                     }
                 },
                 "Ship": {
-                    "name": "uniform",
+                    "name": "normal",
                     "parameters": {
-                        "low": 1525,
-                        "high": 7200
+                        "loc": 14000,
+                        "scale": 1800
                     }
                 },
                 "Go Back": {
@@ -46,11 +45,11 @@
             "waiting_time": {},
             "resource": {
                 "Role truck": {
-                    "resources": ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L"],
+                    "resources": ["C", "D", "E"],
                     "calendar": {
                         "days": [0, 1, 2, 3, 4, 5, 6],
-                        "hour_min": 9,
-                        "hour_max": 17
+                        "hour_min": 7,
+                        "hour_max": 19
                     }
                 }
             },
@@ -63,13 +62,13 @@
             "generator_by": [],
             "probability": {
                 "Go Back": 1.0,
-                "sfl_Flow_0s5j80m": 0.0
+                "tau_1": 0.0
             },
             "task_generator": {
             },
             "generate": [],
             "object_constraints": {
-                "Load": ["item", ["Packing"], 1, 10]
+                "Load": ["item", ["Packing"], 15, 20]
             },
             "create_relation_ship": {
                 "Load": "item"
@@ -79,14 +78,14 @@
             }
         },
         "order": {
-            "n_objects": 100,
+            "n_objects": 200,
             "path_petrinet": "../input/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
                 "name": "uniform",
                 "parameters": {
                         "low": 600,
-                        "high": 1200
+                        "high": 3600
                 }
             },
             "processing_time": {
@@ -141,6 +140,13 @@
                 }
             },
             "waiting_time": {
+                "Place Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 10,
+                        "high": 10
+                    }
+                }
             },
             "resource": {
                 "Role 1 order": {
@@ -173,10 +179,10 @@
                 "Pay BT": "CUSTOM",
                 "Pay CC": "CUSTOM",
                 "Close Order": "CUSTOM",
-                "sfl_Flow_0yvy5mh": 0.3,
-                "sfl_Flow_0icvvwb": 0.7,
-                "sfl_Flow_1hvnet8": 0.95,
-                "sfl_Flow_0jhrfrk": 0.05
+                "tau_3": 0.3,
+                "tau_4": 0.7,
+                "tau_2": 0.95,
+                "tau_1": 0.05
             },
             "generator_by": [],
             "task_generator": {
