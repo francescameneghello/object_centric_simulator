@@ -63,7 +63,7 @@ Here additional example are provided to simplify the specification of the parame
 
 1. Create channel 1:N between *order* and *item*. Transition *Place order* and *Add items* spawn new *Items*.
 
-   ![](./imgs/place_order.png)
+   ![](imgs/place_order.png)
 
 
     ```python
@@ -81,7 +81,7 @@ Here additional example are provided to simplify the specification of the parame
 
 2.  Sync channel 1:ALL between *order* and *item*. 
 
-    ![](./imgs/check_out.png)
+    ![](imgs/check_out.png)
 
     ```python
     "order": {
@@ -94,7 +94,7 @@ Here additional example are provided to simplify the specification of the parame
     
 3. Sync channel 1:1 *order* and *item*; Create channel 1:N *item* and *truck*, Sync channel 1:N *item* and *truck*
 
-    ![](./imgs/packing_deliver.png)
+    ![](imgs/packing_deliver.png)
 
     This example collects some new elements and some already explained previously. In particular, as soon as the payment of the order is confirmed, the item proceeds with the packing and delivery by trucks.
 
