@@ -73,11 +73,16 @@ Here additional example are provided to simplify the specification of the parame
             "Place Order": {"obj": "item", "name": "uniform", "parameters": {"low": 2, "high": 3} },
             "Add Item": {"obj": "item", "name": "uniform", "parameters": {"low": 1, "high": 1} }
         }
+    },
+
+    "item":{
+        "generator_by": ["order"],
     }
     ```
-    In this example the dictionary *generator_by* belonging to the *order* object is empty, *task_generator* refers to the transitions responsible for the "generation" of new object types, in this case the object type *order* instantiates new *items*. 
-    The values of both *Place Order* and *Add Item* keys are dictionaries themselves: "obj" refers to the type of objects that will be spawned when the transition is executed; "name" is the probability distribution used to decide how many objects to generates, in this case "uniform", with its own "parameters". 
-    On the other hand, in the *item* object specification of the input parameters, ```"generator_by": ["order"] ```, specifies this create channel between items and order. 
+    In this example the dictionary `"generator_by"` belonging to the *order* object is empty, `"task_generator"` refers to the transitions responsible for the "generation" of new object types, in this case the object type *order* instantiates new *items*. 
+    The values of both `"Place Order"` and `"Add Item"` keys are dictionaries themselves: `"obj"` refers to the type of objects that will be spawned when the transition is executed; `"name"` is the probability distribution used to decide how many objects to generates, in this case `"uniform"`, with its own `"parameters"`. 
+
+    On the other hand, in the *item* object specification of the input parameters, `"generator_by": ["order"]"`, specifies this create channel between items and order. 
 
 2.  Sync channel 1:ALL between *order* and *item*. 
 
@@ -89,8 +94,15 @@ Here additional example are provided to simplify the specification of the parame
     }
     ```
     <!--"object_constraints": {"Check out": {"obj": "item", trans": {"Pick Item", "Remove Item"}, "card": "All"}}, -->
-    An order can be checked out only when all its active items have been previously picked. This is represented respectively by the *item* element, the list containing the transitions (*Pick Item*, *Remove Item*) and the "card" *All*. 
-    In the *item* specification, the `"destroy_relationship"` field defines which relationships should be removed when a given action is executed. For example, `{"Remove Item": "order"}` means that executing the *Remove Item* action will destroy the relationship between *item* and *order*.
+    An order can be checked out only when all its active items have been previously picked. This is represented respectively by the *item* element, the list containing the transitions (`"Pick Item"`, `"Remove Item"`) and the "card" `"All"`, whcih specifies the cardinality of the channel. 
+
+    ```python
+    "item":{
+        "destroy_relation_ship": {"Remove Item": "order"}
+    }
+    ```
+
+    This example also shows the case in which an item is removed from an order. In the *item* specification, the `"destroy_relationship"` field defines which relationships should be removed when a given action is executed. For example, `{"Remove Item": "order"}` means that executing the *Remove Item* action will destroy the relationship between *item* and *order*.
     
 3. Sync channel 1:1 *order* and *item*; Create channel 1:N *item* and *truck*, Sync channel 1:N *item* and *truck*
 
@@ -116,4 +128,4 @@ Here additional example are provided to simplify the specification of the parame
         "destroy_relation_ship": {"Ship": "item"}
     }
     ```
-    The "object_constraints" refers to the *Load* transition that has to be executed on *item* objects that has to be packed. The parameters represent the minimun number of item to be loaded onto the truck and 20 is the capacity of the truck. 
+    The `"object_constraints"` refers to the *Load* transition that has to be executed on *item* objects that has to be packed. The parameters represent the minimun number of items to be loaded onto the truck (10) and the capacity of the truck (20). 
