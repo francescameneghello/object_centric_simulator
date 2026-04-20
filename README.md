@@ -90,11 +90,11 @@ Here additional example are provided to simplify the specification of the parame
 
     ```python
     "order": {
-        "object_constraints": {"Check out": ["item", ["Pick Item", "Remove Item"], "All"]},
+        "object_constraints": {"Check out": {"obj": "item", "trans": {"Pick Item"}, "card": "All"}},
     }
     ```
-    <!--"object_constraints": {"Check out": {"obj": "item", trans": {"Pick Item", "Remove Item"}, "card": "All"}}, -->
-    An order can be checked out only when all its active items have been previously picked. This is represented respectively by the *item* element, the list containing the transitions (`"Pick Item"`, `"Remove Item"`) and the "card" `"All"`, whcih specifies the cardinality of the channel. 
+    <!--"object_constraints": {"Check out": ["item", "Pick Item", "All"]}, OLD -->
+    An order can be checked out only when all its active items have been previously picked. This is represented respectively by the *item* element, the transition `"Pick Item"`,  and the "card" `"All"`, which specifies the cardinality of the channel.
 
     ```python
     "item":{
@@ -113,19 +113,21 @@ Here additional example are provided to simplify the specification of the parame
     ```python 
     "item":{
         "object_constraints": {
-            "Packing":  ["order", ["Payment Complete"],"All"],
-            "Delivered": ["truck", ["Ship"], "All"]
-        },
+            "Packing": {"obj": "order", "trans": ["Payment Complete"], "card": "All"},
+            "Delivered": {"obj": "truck", "trans": ["Ship"], "card": "All"}
+        }
     }
     ```
+    <!-- "object_constraints": { "Packing":  ["order", ["Payment Complete"],"All"], "Delivered": ["truck", ["Ship"], "All"]},} -->
 
     The truck ships the items it has loaded. Once the shipment is complete, two things happen: the *Delivered* transition is fired in the item process, and the relationship between *item* and *truck* is destroyed.
 
     ```python 
     "truck": {
-        "object_constraints": {"Load": ["item", ["Packing"], 10, 20]},
+        "object_constraints": {"Load": {"obj": "item", "trans": ["Packing"], "parameters": {"min": 10, "capcity": 20}}},
         "create_relation_ship": {"Load": "item"},
         "destroy_relation_ship": {"Ship": "item"}
     }
     ```
+    <!-- "object_constraints": {"Load": ["item", ["Packing"], 10, 20]}, -->
     The `"object_constraints"` refers to the *Load* transition that has to be executed on *item* objects that has to be packed. The parameters represent the minimun number of items to be loaded onto the truck (10) and the capacity of the truck (20). 
