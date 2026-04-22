@@ -31,12 +31,12 @@ def setup(env: simpy.Environment, params, i, name, f):
             start_simulation_object = params.START_SIMULATION
             for i in range(0, n_objects):
                 prefix = Prefix()
+                parallel_object = utility.ParallelObject()
                 interval = getattr(np.random, distribution)(**parameters, size=1)[0]
                 itime = interval
-                yield env.timeout(0)
                 net, im, fm = pm4py.read_pnml(params.objects[obj]["path_petrinet"])
                 id = f"{obj}_{i}"
-                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj)
+                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj, parallel_object)
                 simulation_process.add_object(obj_class, obj, id)
                 env.process(obj_class.simulation(itime, env))
 
@@ -46,7 +46,7 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
         with open("output/simulated_log_{}_{}".format(name, i) + ".csv", 'w') as f:
             params = Parameters(path_parameter)
             env = simpy.Environment()
-            env.process(setup(env, params, i, name, f))
+            setup(env, params, i, name, f)
             env.run()
 
 def main(path_parameter: str, name: str):

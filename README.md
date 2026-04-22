@@ -124,7 +124,7 @@ Here additional example are provided to simplify the specification of the parame
 
     ```python 
     "truck": {
-        "object_constraints": {"Load": {"obj": "item", "trans": ["Packing"], "parameters": {"min": 10, "capcity": 20}}},
+        "object_constraints": {"Load": {"obj": "item", "trans": ["Packing"], "parameters": {"min": 10, "capacity": 20}}},
         "create_relation_ship": {"Load": "item"},
         "destroy_relation_ship": {"Ship": "item"}
     }

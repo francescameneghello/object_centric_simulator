@@ -20,7 +20,7 @@ class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
                  params: Parameters, process: SimulationProcess, prefix: Prefix, type: str, writer: csv.writer,
-                 name_object: str, father=None):
+                 name_object: str, parallel_object: ParallelObject, father=None, values_buffer=None):
         self._id = id
         self._process = process
         self._start_time = params.START_SIMULATION
@@ -31,10 +31,10 @@ class Object(object):
         self._type = type
         self._name_object = name_object
         self._object_params = params.objects[name_object]
-        #if type == 'sequential':
-        #    self.see_activity = False
-        #else:
-        #    self.see_activity = True
+        if type == 'sequential':
+            self.see_activity = False
+        else:
+            self.see_activity = True
         self._writer = writer
         self._buffer = Buffer(writer, [])
         self._id_object = 0
@@ -42,6 +42,7 @@ class Object(object):
         self._last_activity = None
         self._attribute = custom.object_function_attribute(self._name_object)
         self._buffer.set_feature("attribute_object", self._attribute)
+        self._parallel_object = parallel_object
 
     def _delete_places(self, places):
         delete = []
@@ -67,7 +68,7 @@ class Object(object):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
                 id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
-                               'sequential', self._writer, name_obj, self)
+                               'sequential', self._writer, name_obj, parallel_object=ParallelObject(), father=self)
                 self._process.add_object(obj_class, name_obj, id)
                 self._process.set_relation_ships(self._id, id)
                 env.process(obj_class.simulation(0, env))
@@ -134,16 +135,25 @@ class Object(object):
         ### wait before start
 
         yield env.timeout(inter_trigger_timer)
-        transition = self.next_transitionition(env)
+        transition = self.next_transition(env)
         ### register trace in process ###
         request_resource = None
         resource_trace = self._process._get_resource_trace()
-        resource_trace_request = resource_trace.request() #if self._type == 'sequential' else None
+        resource_trace_request = resource_trace.request() if self._type == 'sequential' else None
 
         while transition is not None:
-            #if not self.see_activity and self._type == 'sequential':
-            yield resource_trace_request
-            if transition and transition.label:  ### next transitionition to execute
+            if not self.see_activity and self._type == 'sequential':
+                yield resource_trace_request
+            if type(transition) == list:
+                yield AllOf(env, transition)
+                am_after = self._parallel_object._get_last_events()
+                for d in self._delete_places(self._am):
+                    del self._am[d]
+                for t in am_after:
+                    self._am[t] = 1
+                transition = self.next_transition(env)
+
+            if transition and transition.label:  ### next transition to execute
                 matched = []
                 if transition.label in self._object_params["object_constraints"]:
                     proceed = False
@@ -234,14 +244,14 @@ class Object(object):
                 resource_task.release(resource_task_request)
 
             self._update_marking(transition)
-            transition = self.next_transitionition(env) if self._am else None
+            transition = self.next_transition(env) if self._am else None
 
-        #if self._type == 'parallel':
-        #    self._parallel_object._set_last_events(self._am)
-        #if self._type == 'sequential':
-        self._process.remove_element(self._id)
-        self._process.delete_specific_object(self._name_object, self._id)
-        resource_trace.release(resource_trace_request)
+        if self._type == 'parallel':
+            self._parallel_object._set_last_events(self._am)
+        if self._type == 'sequential':
+            self._process.remove_element(self._id)
+            self._process.delete_specific_object(self._name_object, self._id)
+            resource_trace.release(resource_trace_request)
 
     def _define_relation_ship(self):
         relation_ship = self._process.get_relation_ships(self._id)
@@ -413,7 +423,7 @@ class Object(object):
 
         return duration
 
-    def next_transitionition(self, env):
+    def next_transition(self, env):
         """
         Method to define the next activity in the petrinet.
         """
@@ -425,7 +435,21 @@ class Object(object):
         elif len(all_enabled_transition) == 1:
             return all_enabled_transition[0]
         else:
-            return self.define_xor_next_activity(all_enabled_transition)
+            if len(self._am) == 1:
+                return self.define_xor_next_activity(all_enabled_transition)
+            else:
+                events = []
+                for token in self._am:
+                    name = token.name
+                    new_am = copy.copy(self._am)
+                    tokens_to_delete = self._delete_tokens(name)
+                    for p in tokens_to_delete:
+                        del new_am[p]
+                    path = env.process(
+                        Object(self._id, self._net, new_am, self._general_params, self._process, self.prefix, "parallel",
+                             self._writer, self._name_object, self._parallel_object, values_buffer=self._buffer._get_dictionary()).simulation(0, env))
+                    events.append(path)
+                return events
                 
     def call_custom_processing_time(self):
         """
