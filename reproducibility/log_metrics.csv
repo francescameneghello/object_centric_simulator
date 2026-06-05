@@ -1,0 +1,6 @@
+file,total_execution_time_seconds,Load_count,Trucks_count,Trucks_resources,Trucks_min_hour,Trucks_max_hour,Load_items_min,Load_items_max,Load_items_median,Load_items_avg,Load_items_std,Delivered_items_count,Item_delivery_time_min,Item_delivery_time_max,Item_delivery_time_median,Item_delivery_time_avg,Item_delivery_time_std,delivered_diff_day_count,delivered_diff_day_percentage,Order_count,Add_Item_orders,Remove_Item_orders,Close_order_count
+simulated_log_process_order_90_0.csv,90787.0,0,3,3,9,9,,,,,,0,,,,,,,,184,2,45,0
+simulated_log_process_order_50_0.csv,339461.0,18,3,3,7,18,10.0,20.0,20.0,16.944444444444443,4.504536565863642,305,17055.0,105170.0,57044.0,55837.688524590165,19376.386828245235,212.0,0.6950819672131148,200,135,45,1
+simulated_log_process_order_toy_0.csv,15960.0,0,3,3,9,9,,,,,,0,,,,,,,,5,0,1,0
+simulated_log_process_order_100_0.csv,291074.0,14,3,3,7,18,20.0,20.0,20.0,20.0,0.0,280,18665.0,161453.0,59041.0,60088.12857142857,25585.577099558657,131.0,0.46785714285714286,200,136,54,0
+simulated_log_process_order_75_0.csv,272452.0,13,3,3,7,18,15.0,20.0,20.0,18.076923076923077,2.5318484177091665,235,13949.0,125691.0,37368.0,43685.846808510636,22702.851395944665,59.0,0.251063829787234,200,141,46,0

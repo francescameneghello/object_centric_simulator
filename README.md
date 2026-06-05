@@ -17,9 +17,18 @@ or you can use the configuration file called requirements.txt to install all spe
 pip install -r requirements.txt
 ```
 
+## Structure 
+* `input`: contains `bpmn_to_petrinet.py` to tranform each bpmn into a petri net, bpmn for each object type and the json file of input
+* `simulation`: code that runs the simulation
+* `analysis`
+    * `output_log`: contains all the simulated logs produced 
+    * `Log_nalaysis.py` and `Aggregated_analysis.py`: files to retrieve data for aggregated analysis of the log produced
+    * `ouput_analysis`: results of the analysis.
+
+
 ## Getting Started
 
-Once the packages are installed, <ins>inside the core folder</ins> you can run one or more simulations by specifying the following parameters in *main* function of *run_simulation.py*.
+Once the packages are installed, <ins>inside the simulation folder</ins> you can run one or more simulations by specifying the following parameters in *main* function of *run_simulation.py*.
 * `path_parameter`: specify the path to the simulation parameter file, in *json* format
 * `name`: name of the process to run
 * `n_simulation`: specify the total number of simulation to run
@@ -52,8 +61,8 @@ Then for each object insert that information:
 | task_generator | object / dict | Specifies whether any transition can generate another object, including the object type and the distribution used |
 | generate | list / array | List of objects type that can be generated |
 | object_constraints | object / dict | Specifies synchronization channels, rules, and involved transitions |
-| create_relation_ship | object / dict | Specifies transitions linked to a creation channel that establish relationships |
-| destroy_relation_ship | object / dict | Specifies transitions linked to a channel that remove relationships |
+| create_relationship | object / dict | Specifies transitions linked to a creation channel that establish relationships |
+| destroy_relationship | object / dict | Specifies transitions linked to a channel that remove relationships |
 
 
 This block defines all configuration parameters for a simulation object, including its creation, timing, resources, behavior, and relationships with other objects; detailed examples and exact usage can be found in the files inside the input_folder.
@@ -90,7 +99,7 @@ Here additional example are provided to simplify the specification of the parame
 
     ```python
     "order": {
-        "object_constraints": {"Check out": {"obj": "item", "trans": {"Pick Item"}, "card": "All"}},
+        "object_constraints": {"Check out": {"obj": "item", "trans": ["Pick Item", "Remove Item"], "card": "All"}},
     }
     ```
     <!--"object_constraints": {"Check out": ["item", "Pick Item", "All"]}, OLD -->
@@ -98,7 +107,7 @@ Here additional example are provided to simplify the specification of the parame
 
     ```python
     "item":{
-        "destroy_relation_ship": {"Remove Item": "order"}
+        "destroy_relationship": {"Remove Item": "order"}
     }
     ```
 
@@ -125,8 +134,8 @@ Here additional example are provided to simplify the specification of the parame
     ```python 
     "truck": {
         "object_constraints": {"Load": {"obj": "item", "trans": ["Packing"], "parameters": {"min": 10, "capacity": 20}}},
-        "create_relation_ship": {"Load": "item"},
-        "destroy_relation_ship": {"Ship": "item"}
+        "create_relationship": {"Load": "item"},
+        "destroy_relationship": {"Ship": "item"}
     }
     ```
     <!-- "object_constraints": {"Load": ["item", ["Packing"], 10, 20]}, -->

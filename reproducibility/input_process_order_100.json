@@ -1,0 +1,289 @@
+{
+    "start_simulation": "2026-01-01 09:00:00",
+    "objects": {
+        "truck": {
+            "n_objects": 3,
+            "path_petrinet": "../input/truck_objects.pnml",
+            "interTriggerTimer": {
+                "type": "distribution",
+                "name": "uniform",
+                "parameters": {
+                    "low": 0,
+                    "high": 0
+                }
+            },
+            "processing_time": {
+                "Prepare": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 1200,
+                        "scale": 600
+                    }
+                },
+                "Load": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 1800,
+                        "scale": 600
+                    }
+                },
+                "Ship": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 14000,
+                        "scale": 1800
+                    }
+                },
+                "Go Back": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 968,
+                        "high": 1555
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role truck": {
+                    "resources": ["C", "D", "E"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 7,
+                        "hour_max": 19
+                    }
+                }
+            },
+            "resource_table": {
+                "Prepare": "Role truck",
+                "Ship": "Role truck",
+                "Go Back": "Role truck",
+                "Load": "Role truck"
+            },
+            "generator_by": [],
+            "probability": {
+                "Go Back": 1.0,
+                "tau_1": 0.0
+            },
+            "task_generator": {
+            },
+            "generate": [],
+            "object_constraints": {
+                "Load": ["item", ["Packing"], 20, 20]
+            },
+            "create_relationship": {
+                "Load": "item"
+            },
+            "destroy_relationship": {
+                "Ship": "item"
+            }
+        },
+        "order": {
+            "n_objects": 200,
+            "path_petrinet": "../input/order_objects.pnml",
+            "interTriggerTimer": {
+                "type": "distribution",
+                "name": "uniform",
+                "parameters": {
+                        "low": 600,
+                        "high": 3600
+                }
+            },
+            "processing_time": {
+                "Place Order": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 1800,
+                        "scale": 600
+                    }
+                },
+                "Pay CC": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 180,
+                        "high": 300
+                    }
+                },
+                "Close Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 0,
+                        "high": 0
+                    }
+                },
+                "Pay BT": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1800,
+                        "high": 10000
+                    }
+                },
+                "Add Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 600,
+                        "high": 1800
+                    }
+                },
+                "Payment Complete": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 300,
+                        "high": 900
+                    }
+                },
+                "Check out": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 600,
+                        "high": 1200
+                    }
+                }
+            },
+            "waiting_time": {
+                "Place Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 10,
+                        "high": 10
+                    }
+                }
+            },
+            "resource": {
+                "Role 1 order": {
+                    "resources": ["Pete", "Sue", "Dylan", "Francy"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                },
+                "Role 2 order": {
+                    "resources": ["Bob", "Alice", "Carol", "Andrey"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "resource_table": {
+                "Place Order": "Role 1 order",
+                "Pay CC": "Role 2 order",
+                "Pay BT": "Role 2 order",
+                "Add Item": "Role 1 order",
+                "Payment Complete": "Role 2 order",
+                "Check out": "Role 1 order",
+                "Close Order": "Role 1 order"
+            },
+            "probability": {
+                "Pay BT": "CUSTOM",
+                "Pay CC": "CUSTOM",
+                "Close Order": "CUSTOM",
+                "tau_3": 0.3,
+                "tau_4": 0.7,
+                "tau_2": 0.95,
+                "tau_1": 0.05
+            },
+            "generator_by": [],
+            "task_generator": {
+                "Place Order": {"obj": "item", "name": "uniform", "parameters": {"low": 2, "high": 3} },
+                "Add Item": {"obj": "item", "name": "uniform", "parameters": {"low": 1, "high": 1} }
+            },
+            "generate": ["item"],
+            "object_constraints": {
+                "Check out": ["item", ["Pick Item", "Remove Item"], "All"]
+            },
+            "create_relationship": {
+            },
+            "destroy_relationship": {
+            }
+        },
+        "item": {
+            "start_timestamp": "",
+            "path_petrinet": "../input/item_objects.pnml",
+            "interTriggerTimer": {
+            },
+            "processing_time": {
+                "Pick Item": {
+                    "name": "normal",
+                    "parameters": {
+                        "loc": 300,
+                        "scale": 100
+                    }
+                },
+                "Select": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 60,
+                        "high": 60
+                    }
+                },
+                "Remove Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 200,
+                        "high": 300
+                    }
+                },
+                "Packing": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 600,
+                        "high": 1200
+                    }
+                },
+                "Delivered": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 300,
+                        "high": 600
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role 1 item": {
+                    "resources": ["Pete", "Sue", "Max", "Sara"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                },
+                "Role 2 item": {
+                    "resources": ["Bob", "Alice", "Denise", "Sue"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "resource_table": {
+                "Remove Item": "Role 1 item",
+                "Select": "Role 1 item",
+                "Pick Item": "Role 2 item",
+                "Load": "Role 2 item",
+                "Delivered": "Role 1 item",
+                "Packing": "Role 1 item"
+            },
+            "probability": {
+                "Pick Item": 0.9,
+                "Remove Item": 0.1
+            },
+            "generator_by": ["order"],
+            "task_generator": [],
+            "generate": [],
+            "object_constraints": {
+                "Packing":  ["order", ["Payment Complete"], "All"],
+                "Delivered": ["truck", ["Ship"], "All"]
+            },
+            "create_relationship": {
+            },
+            "destroy_relationship": {
+                "Remove Item": "order"
+            }
+
+        }
+    }
+}

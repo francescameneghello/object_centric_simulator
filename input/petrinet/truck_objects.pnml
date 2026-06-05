@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text />
+    </name>
+    <page id="n0">
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="place_1">
+        <name>
+          <text>place_1</text>
+        </name>
+      </place>
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="place_2">
+        <name>
+          <text>place_2</text>
+        </name>
+      </place>
+      <place id="place_3">
+        <name>
+          <text>place_3</text>
+        </name>
+      </place>
+      <transition id="Ship">
+        <name>
+          <text>Ship</text>
+        </name>
+      </transition>
+      <transition id="Load">
+        <name>
+          <text>Load</text>
+        </name>
+      </transition>
+      <transition id="Go Back">
+        <name>
+          <text>Go Back</text>
+        </name>
+      </transition>
+      <transition id="Prepare">
+        <name>
+          <text>Prepare</text>
+        </name>
+      </transition>
+      <transition id="tau_1">
+        <name>
+          <text>tau_1</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="04553cf4-8c8a-4001-9823-af8fb4b48b7f" />
+      </transition>
+      <arc id="124657707926528" source="place_2" target="Go Back" />
+      <arc id="124657707592832" source="Go Back" target="place_1" />
+      <arc id="124657707926144" source="Ship" target="place_2" />
+      <arc id="124657707804960" source="place_3" target="Ship" />
+      <arc id="124657707926432" source="place_1" target="Load" />
+      <arc id="124657707802176" source="place_2" target="tau_1" />
+      <arc id="124657707926336" source="source" target="Prepare" />
+      <arc id="124657707925952" source="tau_1" target="sink" />
+      <arc id="124657707926240" source="Load" target="place_3" />
+      <arc id="124657707593840" source="Prepare" target="place_1" />
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>

@@ -1,0 +1,4 @@
+object,n_objects,generate,generator_by,start_timestamp
+order,5,item,,2026-01-01 09:00:00
+truck,3,,,
+item,,,order,

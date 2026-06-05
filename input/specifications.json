@@ -1,0 +1,99 @@
+{
+  "start_simulation": "2026-01-01 09:00:00",
+  "objects": {
+    "truck": {
+      "n_objects": 2,
+      "object_constraints": {
+        "Load": {
+          "obj": "item",
+          "trans": [
+            "Packing"
+          ],
+          "card": [
+            2,
+            10
+          ]
+        }
+      },
+      "create_relationship": {
+        "Load": "item"
+      },
+      "destroy_relationship": {
+        "Ship": "item"
+      }
+    },
+    "order": {
+      "n_objects": 10,
+      "generator_by": [],
+      "generate": [
+        "item"
+      ],
+      "task_generator": {
+        "Place Order": {
+          "obj": "item",
+          "name": "uniform",
+          "parameters": {
+            "low": 2,
+            "high": 3
+          }
+        },
+        "Add Item": {
+          "obj": "item",
+          "name": "uniform",
+          "parameters": {
+            "low": 1,
+            "high": 1
+          }
+        }
+      },
+      "waiting_time": {
+           "Place Order": {
+                "name": "uniform",
+                "parameters": {
+                    "low": 10,
+                    "high": 10
+                }
+            }
+        },
+      "object_constraints": {
+        "Check out": {
+          "obj": "item",
+          "trans": [
+            "Pick Item",
+            "Remove Item"
+          ],
+          "card": "All"
+        }
+      },
+      "create_relationship": {},
+      "destroy_relationship": {}
+    },
+    "item": {
+      "generator_by": [
+        "order"
+      ],
+      "generate": [],
+      "task_generator": [],
+      "object_constraints": {
+        "Packing": {
+          "obj": "order",
+          "trans": [
+            "Payment Complete"
+          ],
+          "card": "All"
+        },
+        "Delivered": {
+          "obj": "truck",
+          "trans": [
+            "Ship"
+          ],
+          "card": "All"
+        }
+      },
+      "create_relationship": {},
+      "destroy_relationship": {
+        "Remove Item": "order"
+      }
+    }
+  }
+}

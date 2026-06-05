@@ -1,0 +1,287 @@
+{
+    "start_simulation": "2026-01-01 09:00:00",
+    "objects": {
+        "item": {
+            "path_petrinet": "petrinet/item_objects.pnml",
+            "interTriggerTimer": {},
+            "processing_time": {
+                "Select": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Remove Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Pick Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Packing": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Delivered": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role item": {
+                    "resources": ["item1", "item2", "item3"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "resource_table": {
+                "Select": "Role item",
+                "Remove Item": "Role item",
+                "Pick Item": "Role item",
+                "Packing": "Role item",
+                "Delivered": "Role item"
+            },
+            "probability": {
+                "Remove Item": "AUTO",
+                "Pick Item": "AUTO"
+            },
+            "generator_by": ["order"],
+            "generate": [],
+            "task_generator": [],
+            "object_constraints": {
+                "Packing": {
+                    "obj": "order",
+                    "trans": ["Payment Complete"],
+                    "card": "All"
+                },
+                "Delivered": {
+                    "obj": "truck",
+                    "trans": ["Ship"],
+                    "card": "All"
+                }
+            },
+            "create_relationship": {},
+            "destroy_relationship": {
+                "Remove Item": "order"
+            }
+        },
+        "order": {
+            "n_objects": 10,
+            "path_petrinet": "petrinet/order_objects.pnml",
+            "interTriggerTimer": {
+                "type": "distribution",
+                "name": "uniform",
+                "parameters": {
+                    "low": 1,
+                    "high": 10
+                }
+            },
+            "processing_time": {
+                "Place Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Check out": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Add Item": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Pay CC": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Pay BT": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Close Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Payment Complete": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role order": {
+                    "resources": ["order1", "order2", "order3"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "resource_table": {
+                "Place Order": "Role order",
+                "Check out": "Role order",
+                "Add Item": "Role order",
+                "Pay CC": "Role order",
+                "Pay BT": "Role order",
+                "Close Order": "Role order",
+                "Payment Complete": "Role order"
+            },
+            "probability": {
+                "tau_1": "AUTO",
+                "tau_4": "AUTO",
+                "Pay CC": "AUTO",
+                "Pay BT": "AUTO",
+                "Close Order": "AUTO",
+                "tau_2": "AUTO",
+                "tau_3": "AUTO"
+            },
+            "generator_by": [],
+            "generate": ["item"],
+            "task_generator": {
+                "Place Order": {
+                    "obj": "item",
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 2,
+                        "high": 3
+                    }
+                },
+                "Add Item": {
+                    "obj": "item",
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 1
+                    }
+                }
+            },
+            "object_constraints": {
+                "Check out": {
+                    "obj": "item",
+                    "trans": ["Pick Item", "Remove Item"],
+                    "card": "All"
+                }
+            },
+            "create_relationship": {},
+            "destroy_relationship": {}
+        },
+        "truck": {
+            "n_objects": 2,
+            "path_petrinet": "petrinet/truck_objects.pnml",
+            "interTriggerTimer": {
+                "type": "distribution",
+                "name": "uniform",
+                "parameters": {
+                    "low": 1,
+                    "high": 10
+                }
+            },
+            "processing_time": {
+                "Prepare": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Load": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Ship": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Go Back": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                }
+            },
+            "waiting_time": {},
+            "resource": {
+                "Role truck": {
+                    "resources": ["truck1", "truck2", "truck3"],
+                    "calendar": {
+                        "days": [0, 1, 2, 3, 4, 5, 6],
+                        "hour_min": 0,
+                        "hour_max": 23
+                    }
+                }
+            },
+            "resource_table": {
+                "Prepare": "Role truck",
+                "Load": "Role truck",
+                "Ship": "Role truck",
+                "Go Back": "Role truck"
+            },
+            "probability": {
+                "Go Back": "AUTO",
+                "tau_1": "AUTO"
+            },
+            "generator_by": [],
+            "generate": [],
+            "task_generator": {},
+            "object_constraints": {
+                "Load": {
+                    "obj": "item",
+                    "trans": ["Packing"],
+                    "card": [2, 10]
+                }
+            },
+            "create_relationship": {
+                "Load": "item"
+            },
+            "destroy_relationship": {
+                "Ship": "item"
+            }
+        }
+    }
+}

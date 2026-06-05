@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text />
+    </name>
+    <page id="n0">
+      <place id="place_1">
+        <name>
+          <text>place_1</text>
+        </name>
+      </place>
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="place_2">
+        <name>
+          <text>place_2</text>
+        </name>
+      </place>
+      <place id="place_3">
+        <name>
+          <text>place_3</text>
+        </name>
+      </place>
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <transition id="Pick Item">
+        <name>
+          <text>Pick Item</text>
+        </name>
+      </transition>
+      <transition id="Packing">
+        <name>
+          <text>Packing</text>
+        </name>
+      </transition>
+      <transition id="Remove Item">
+        <name>
+          <text>Remove Item</text>
+        </name>
+      </transition>
+      <transition id="Delivered">
+        <name>
+          <text>Delivered</text>
+        </name>
+      </transition>
+      <transition id="Select">
+        <name>
+          <text>Select</text>
+        </name>
+      </transition>
+      <arc id="124657707796608" source="place_1" target="Delivered" />
+      <arc id="124657707799056" source="place_3" target="Remove Item" />
+      <arc id="124657707798672" source="Delivered" target="sink" />
+      <arc id="124657707798288" source="Pick Item" target="place_2" />
+      <arc id="124657707798192" source="Remove Item" target="sink" />
+      <arc id="124657707798768" source="Select" target="place_3" />
+      <arc id="124657707591872" source="place_2" target="Packing" />
+      <arc id="124657707799248" source="source" target="Select" />
+      <arc id="124657707798864" source="Packing" target="place_1" />
+      <arc id="124657707799152" source="place_3" target="Pick Item" />
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>
