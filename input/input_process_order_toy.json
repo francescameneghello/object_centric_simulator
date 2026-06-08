@@ -78,7 +78,7 @@
             }
         },
         "order": {
-            "n_objects": 5,
+            "n_objects": 6,
             "path_petrinet": "../input/petrinet/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",

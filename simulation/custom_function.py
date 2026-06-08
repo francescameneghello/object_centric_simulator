@@ -62,6 +62,7 @@ def custom_cardinality_rule(process, current_object_id, available_items):
         When truck loads again other items, the function is called again, and the city attribute of the truck can be updated with the city of the new items.
     """
     min_same_city = 2  # Example parameter for the custom rule
+    max_same_city= 4
     items_dict = process.get_specific_type("item")
     truck = find_objects(process, current_object_id)
     
@@ -93,11 +94,12 @@ def custom_cardinality_rule(process, current_object_id, available_items):
     best_city = max(valid_groups, key=lambda city: len(valid_groups[city]))
 
     # choose the largest group
-    best_group = valid_groups[best_city]
+    best_group = list(valid_groups[best_city])
     
+    selected = set(best_group[:max_same_city])  # Limit to max_same_city items
     truck._attribute["City"] = best_city
 
-    return True, best_group
+    return True, selected
 
 
 # def custom_arrivals_time(case, previous):
