@@ -41,6 +41,8 @@ class Object(object):
         self._father = father
         self._last_activity = None
         self._attribute = custom.object_function_attribute(self._name_object)
+        if father is not None and hasattr(father, "_attribute") and father._attribute:
+            self._attribute.update(copy.deepcopy(father._attribute))
         self._buffer.set_feature("attribute_object", self._attribute)
         self._parallel_object = parallel_object
 
@@ -81,7 +83,7 @@ class Object(object):
         Name of the transition: {
             "obj": "item",
             "trans": ["Pick Item", "Remove Item"],
-            "card": "All" | "Any" | int | [min, max]
+            "card": "All" | "Any" | int | [min, max] | "CUSTOM"
         }
         """
 
@@ -139,6 +141,18 @@ class Object(object):
 
             elif cardinality == "Any":
                 proceed = len(matched) >= 1
+                selected_messages = {
+                    (item_id, action, ref)
+                    for item_id, action, ref in picked_messages
+                    if item_id in matched
+                }
+                
+            elif cardinality == "CUSTOM":
+                proceed, matched = custom.custom_cardinality_rule(
+                    process=self._process, 
+                    current_object_id = self._id,
+                    available_items=available,
+                )
                 selected_messages = {
                     (item_id, action, ref)
                     for item_id, action, ref in picked_messages

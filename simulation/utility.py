@@ -1,6 +1,6 @@
 """
 * Prefix: Class to track the sequence of activities observed for an object
-* Buffer: Class to store event features
+* Buffer: Class to store all the fields of one event.
 """
 
 import os

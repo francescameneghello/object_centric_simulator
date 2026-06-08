@@ -68,7 +68,7 @@
             },
             "generate": [],
             "object_constraints": {
-                "Load": {"obj": "item", "trans": ["Packing"], "card": [2, 4]}
+                "Load": {"obj": "item", "trans": ["Packing"], "card": "CUSTOM"}
             },
             "create_relationship": {
                 "Load": "item"
