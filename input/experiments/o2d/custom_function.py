@@ -34,6 +34,7 @@ import random
 import pickle
 from datetime import datetime
 import os
+from pathlib import Path
 
 
 def object_function_attribute(object_type: str):
@@ -102,16 +103,17 @@ def custom_cardinality_rule(process, current_object_id, available_items):
     return True, selected
 
 
-# def custom_arrivals_time(case, previous):
-#     """
-#     Function to define a new arrival of a trace. 
-#     The input parameters are the case id number and 
-#     the start timestamp of the previous trace.
-#     For example, we used an AutoRegression model 
-#     for the *arrivals example*.
-#     """
-#     loaded = AutoRegResults.load('example/example_arrivals/arrival_AutoReg_model.pkl')
-#     return loaded.predict(case+1, case+1)[0]
+def custom_arrivals_time(case, previous):
+    """
+    Function to define a new arrival of a trace. 
+    The input parameters are the case id number and 
+    the start timestamp of the previous trace.
+    For example, we used an AutoRegression model 
+    for the *arrivals example*.
+    """
+    loaded = AutoRegResults.load('example/example_arrivals/arrival_AutoReg_model.pkl')
+    return loaded.predict(case+1, case+1)[0]
+# return 0
 
 
 def custom_processing_time(buffer: Buffer):
@@ -137,7 +139,7 @@ def custom_processing_time(buffer: Buffer):
                 "queue": 151,
                 "prefix": "['Place Order', 'Check out']",
                 "relationships": "{'item_92_0', 'item_92_1'}",
-                "attribute_object": {},
+                "attribute_object": {'City': 'Bolzano'},
                 "attribute_event": {}
             }
     ```
@@ -152,6 +154,8 @@ def custom_processing_time(buffer: Buffer):
         open(os.getcwd()+'/example/example_process_times/processing_time_random_forest.pkl', 'rb'))
     y_pred_f = loaded_model.predict([input_feature])
     return int(y_pred_f[0])
+#se vuoi fare user distribution tua la definisci vuota e lascia return 0. l'input deve essere l'oggetto e il buffer 
+
 
 
 def custom_waiting_time(buffer: Buffer):
@@ -159,28 +163,29 @@ def custom_waiting_time(buffer: Buffer):
     Example of features that can be used to predict:
     ```json
     {
-        "id_case": 15,
-        "activity": "A_PARTLYSUBMITTED",
-        "enabled_time": "None",
-        "start_time": "None",
-        "end_time": "None",
-        "role": "Role 2",
-        "resource": "None",
-        "wip_wait": 21,
-        "wip_start": -1,
-        "wip_end": -1,
-        "wip_activity": 1,
-        "ro_total": [0.5, 1],
-        "ro_single": 1,
-        "queue": 13,
-        "prefix": ["A_SUBMITTED"],
-        "attribute_case": {"AMOUNT": 18207},
-        "attribute_event": {"bank_branch": "Eindhoven"}
-
-    }
+                "id_case": order_92,
+                "activity": "Check out",
+                "enabled_time": "2026-01-01 09:48:17",
+                "start_time": "2026-01-01 09:10:13",
+                "end_time": "2026-01-02 05:19:18",
+                "role": "Role 1 order",
+                "resource": "Sue",
+                "wip_wait": 167,
+                "wip_start": 483,
+                "wip_end": 483,
+                "wip_activity": 1,
+                "ro_total": "[0.0, 1.0, 0.0, 1.0, 0.0]",
+                "ro_single": 1.0,
+                "queue": 151,
+                "prefix": "['Place Order', 'Check out']",
+                "relationships": "{'item_92_0', 'item_92_1'}",
+                "attribute_object": {'City': 'Bolzano'},
+                "attribute_event": {}
+            }
     ```
     """
     return 0
+
 
 
 def custom_decision_mining(buffer: Buffer, objects_related: list, possible_transitions: list):
@@ -206,7 +211,7 @@ def custom_decision_mining(buffer: Buffer, objects_related: list, possible_trans
             "queue": 0,
             "prefix": "['Select', 'Pick Item']",
             "relationships": {'order_152'}
-            "attribute_object": {'Price': 58},
+            "attribute_object": {'Price': 58, 'City': 'Milano'},
             "attribute_event": {}
 
         }

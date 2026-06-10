@@ -33,19 +33,14 @@
           <text>place_3</text>
         </name>
       </place>
-      <transition id="Ship">
-        <name>
-          <text>Ship</text>
-        </name>
-      </transition>
-      <transition id="Load">
-        <name>
-          <text>Load</text>
-        </name>
-      </transition>
       <transition id="Go Back">
         <name>
           <text>Go Back</text>
+        </name>
+      </transition>
+      <transition id="Ship">
+        <name>
+          <text>Ship</text>
         </name>
       </transition>
       <transition id="Prepare">
@@ -53,22 +48,27 @@
           <text>Prepare</text>
         </name>
       </transition>
+      <transition id="Load">
+        <name>
+          <text>Load</text>
+        </name>
+      </transition>
       <transition id="tau_1">
         <name>
           <text>tau_1</text>
         </name>
-        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="04553cf4-8c8a-4001-9823-af8fb4b48b7f" />
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="bcc3d12c-eea0-46c4-803b-d77789aa3cfb" />
       </transition>
-      <arc id="124657707926528" source="place_2" target="Go Back" />
-      <arc id="124657707592832" source="Go Back" target="place_1" />
-      <arc id="124657707926144" source="Ship" target="place_2" />
-      <arc id="124657707804960" source="place_3" target="Ship" />
-      <arc id="124657707926432" source="place_1" target="Load" />
-      <arc id="124657707802176" source="place_2" target="tau_1" />
-      <arc id="124657707926336" source="source" target="Prepare" />
-      <arc id="124657707925952" source="tau_1" target="sink" />
-      <arc id="124657707926240" source="Load" target="place_3" />
-      <arc id="124657707593840" source="Prepare" target="place_1" />
+      <arc id="133576617170816" source="place_2" target="tau_1" />
+      <arc id="133576617077120" source="Ship" target="place_2" />
+      <arc id="133576617078800" source="place_2" target="Go Back" />
+      <arc id="133576617167648" source="place_1" target="Ship" />
+      <arc id="133576617079088" source="place_3" target="Load" />
+      <arc id="133576617076544" source="tau_1" target="sink" />
+      <arc id="133576617081680" source="source" target="Prepare" />
+      <arc id="133576617079760" source="Load" target="place_1" />
+      <arc id="133576617079376" source="Go Back" target="place_3" />
+      <arc id="133576617079280" source="Prepare" target="place_3" />
     </page>
     <finalmarkings>
       <marking>

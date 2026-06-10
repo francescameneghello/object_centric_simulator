@@ -4,7 +4,7 @@ objects:
   truck:
     n_objects: 2
     object_constraints:
-      Load: {"obj": "item", "trans": ["Packing"], "card": [2,10]}
+      Load: {"obj": "item", "trans": ["Packing"], "card": "CUSTOM"}
     create_relationship:
       Load: "item"
       

@@ -18,23 +18,45 @@ pip install -r requirements.txt
 ```
 
 ## Structure 
-* `input`: contains `bpmn_to_petrinet.py` to tranform each bpmn into a petri net, bpmn for each object type and the json file of input
+* `input`: 
+    * `experiments`: folder that contains all necessary data to run different experiments. 
+        * `o2d`: example folder for the order-2-delivery example. 
+            * `bpmn`: folder in which the <ins>user has to upload</ins> the bpmn file for each object type
+            * `petrinet`: folder that will store the produced petri net and png inage for each object type
+            * `custom_function.py`: <ins>user can specify additional custom rules</ins> for a specific experiment
+            * `specification.json`: <ins>user can insert some essential paramters</ins> to realize the input json file for the simulation
+    * `preparation.py`: script necesssary to convert bpmn files into petrinet and to costruct the final *input.json* file with the additional specifications 
 * `simulation`: code that runs the simulation
 * `analysis`
-    * `output_log`: contains all the simulated logs produced 
-    * `Log_nalaysis.py` and `Aggregated_analysis.py`: files to retrieve data for aggregated analysis of the log produced
-    * `ouput_analysis`: results of the analysis.
+    * `experiments`
+        * `o2d`
+            * `ouput_log`: folder that stores the output of the simulation. 
+        * SCRIPTS FOR GENERAL SIMULATION ANALYSIS
 
 
 ## Getting Started
 
-Once the packages are installed, <ins>inside the simulation folder</ins> you can run one or more simulations by specifying the following parameters in *main* function of *run_simulation.py*.
+### Preparation step
+Once the packages are installed, user can: 
+1. Upload the bpmn files for each object typ into `input/experiments/experiment_name/bpmn`
+2. Specify the channels between object types and additional parameters in `specification.json`
+3. Add `custom_function.py` for the experiment
+
+Then to prepare the input json for the simulation, inside `input/experiments`:
+```shell
+python preparation.py experiment_name
+```
+
+The `input.json` is created according to the parameters inserted in `specifications.json`. The empty fields of probabilities will be completed with default value, so it is very important that the user checks the parameters inserted in order to have meaningful simulation results. 
+
+### Simulation step
+<ins>Inside the simulation folder</ins> you can run one or more simulations by specifying the following parameters in *main* function of *run_simulation.py*.
 * `path_parameter`: specify the path to the simulation parameter file, in *json* format
 * `name`: name of the process to run
 * `n_simulation`: specify the total number of simulation to run
 
 ```shell
-python run_simulation.py
+python run_simulation.py experiment_name
 ```
 
 
@@ -102,7 +124,6 @@ Here additional example are provided to simplify the specification of the parame
         "object_constraints": {"Check out": {"obj": "item", "trans": ["Pick Item", "Remove Item"], "card": "All"}},
     }
     ```
-    <!--"object_constraints": {"Check out": ["item", "Pick Item", "All"]}, OLD -->
     An order can be checked out only when all its active items have been previously picked. This is represented respectively by the *item* element, the transition `"Pick Item"`,  and the "card" `"All"`, which specifies the cardinality of the channel.
 
     ```python
@@ -133,7 +154,7 @@ Here additional example are provided to simplify the specification of the parame
 
     ```python 
     "truck": {
-        "object_constraints": {"Load": {"obj": "item", "trans": ["Packing"], "parameters": {"min": 10, "capacity": 20}}},
+        "object_constraints": {"Load": {"obj": "item", "trans": ["Packing"], "card": [10,20] }},
         "create_relationship": {"Load": "item"},
         "destroy_relationship": {"Ship": "item"}
     }

@@ -116,13 +116,6 @@
                         "high": 5
                     }
                 },
-                "Pay CC": {
-                    "name": "uniform",
-                    "parameters": {
-                        "low": 1,
-                        "high": 5
-                    }
-                },
                 "Pay BT": {
                     "name": "uniform",
                     "parameters": {
@@ -131,6 +124,13 @@
                     }
                 },
                 "Close Order": {
+                    "name": "uniform",
+                    "parameters": {
+                        "low": 1,
+                        "high": 5
+                    }
+                },
+                "Pay CC": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
@@ -160,19 +160,19 @@
                 "Place Order": "Role order",
                 "Check out": "Role order",
                 "Add Item": "Role order",
-                "Pay CC": "Role order",
                 "Pay BT": "Role order",
                 "Close Order": "Role order",
+                "Pay CC": "Role order",
                 "Payment Complete": "Role order"
             },
             "probability": {
-                "tau_1": "AUTO",
+                "tau_3": "AUTO",
                 "tau_4": "AUTO",
-                "Pay CC": "AUTO",
                 "Pay BT": "AUTO",
                 "Close Order": "AUTO",
-                "tau_2": "AUTO",
-                "tau_3": "AUTO"
+                "Pay CC": "AUTO",
+                "tau_1": "AUTO",
+                "tau_2": "AUTO"
             },
             "generator_by": [],
             "generate": ["item"],
@@ -263,8 +263,8 @@
                 "Go Back": "Role truck"
             },
             "probability": {
-                "Go Back": "AUTO",
-                "tau_1": "AUTO"
+                "tau_1": "AUTO",
+                "Go Back": "AUTO"
             },
             "generator_by": [],
             "generate": [],
@@ -273,7 +273,7 @@
                 "Load": {
                     "obj": "item",
                     "trans": ["Packing"],
-                    "card": [2, 10]
+                    "card": "CUSTOM"
                 }
             },
             "create_relationship": {

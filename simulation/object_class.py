@@ -14,7 +14,6 @@ from utility import Buffer, ParallelObject
 import asyncio
 from reactivex import operators as ops
 import custom_function as custom
-#AGGIUSTARE L'IMPORT 
 
 class Object(object):
 
@@ -203,74 +202,6 @@ class Object(object):
                 self._process.board.remove_message(picked_messages)
 
             return proceed, matched
-        
-        
-    # def check_constraints(self, next_act):
-    #     '''
-    #     How to define the constraints:
-    #     "Transition name": ["object type", ["name_activity_to_wait"], "All"/"Any"/"n"]
-    #     within an interval At least x and max y -----> "Transition name": ["object type", ["name_activity_to_wait"], x, y]
-    #     '''
-    #     info = self._object_params["object_constraints"][next_act]
-        
-    #     obj_type = info.get("obj")
-    #     trans_list = info.get("trans", [])
-    #     cardinality = info.get("card")
-        
-    #     if next_act in self._object_params["create_relationship"]:
-    #         proceed = False
-    #         type_objects = self._process.get_specific_type(info[0]).keys() ### retrieve type required
-    #         picked_messages = {(item_id, action, ref) for item_id, action, ref in self._process.board.messages if action in info[1]}
-    #         picked_items = {item_id for item_id, action, ref in picked_messages}
-    #         matched = type_objects & picked_items
-            
-    #         if isinstance(cardinality, list):
-    #             min_val = int(cardinality[0])
-    #             max_val = int(cardinality[1])
-    #             if len(matched) >= min_val:
-    #                 k = min(len(matched), max_val)
-    #                 matched = set(random.sample(matched, k))
-    #                 picked_messages = {(item_id, action, ref) for item_id, action, ref in picked_messages if item_id in matched}
-    #                 proceed = True  
-    #             elif cardinality == "All":
-    #                 proceed = matched == set(type_objects)
-    #             elif cardinality == "Any":
-    #                 proceed = len(matched) >= 1 
-    #             else:
-    #                 req_amount = int(cardinality)
-    #                 if len(matched) >= req_amount:
-    #                     matched = set(random.sample(matched, req_amount))
-    #                     picked_messages = {(item_id, action, ref) for item_id, action, ref in picked_messages if item_id in matched}
-    #                     proceed = True
-                
-    #             if proceed:
-    #                 for obj in matched:
-    #                     self._process.set_relationships(self._id, obj)
-    #                 self._process.board.remove_message(picked_messages)
-    #                 return True, matched
-    #             else:
-    #                 return False, []                
-                                
-            
-    #     else:  # act in self._object_params["destroy_relationships"] or existing relationship
-    #         info = self._object_params["object_constraints"][next_act]
-    #         id_target_object = {x for x in self._process.get_relationships(self._id) if x.split('_')[0] == info[0]}
-    #         picked_messages = {(item_id, action, ref) for item_id, action, ref in self._process.board.messages if action in info[1] and self._id in ref}
-    #         picked_items = {item_id for item_id, action, ref in picked_messages}
-    #         matched = id_target_object & picked_items
-    #         proceed = False
-    #         if (id_target_object or picked_items):
-    #             if info[2] == "All":
-    #                 proceed = matched == id_target_object
-    #             elif info[2] == "Any":
-    #                 proceed = len(matched) >= 1
-    #             else:
-    #                 #proceed = len(matched) == int(info[2])
-    #                 proceed = len(matched) >= int(cardinality)
-    #         if proceed:
-    #             self._process.board.remove_message(picked_messages)
-    #         return proceed, matched
-
 
     def simulation(self, inter_trigger_timer: int, env: simpy.Environment):
         """
@@ -311,6 +242,9 @@ class Object(object):
                 self._buffer.set_feature("prefix",
                                          self.prefix.get_prefix(self._start_time + timedelta(seconds=env.now)))
                 self._buffer.set_feature("attribute_event", {})
+                #AGGIUNGERE self._buffer.update_object_attribute()
+                
+                
 
                 ### call predictor for waiting time
                 if transition.label in self._object_params["resource_table"]:

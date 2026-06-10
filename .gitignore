@@ -13,5 +13,5 @@ __pycache__/
 /To_petrinet.ipynb
 /motivating_example.drawio
 /input_parallel
-/analysis/output_log/
-/analysis/output_analysis/
+/analysis/experiments/*/output_log/
+/analysis/experiments/*/output_analysis/

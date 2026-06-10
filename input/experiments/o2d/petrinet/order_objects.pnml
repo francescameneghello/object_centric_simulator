@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pnml>
+  <net id="" type="http://www.pnml.org/version-2009/grammar/pnmlcoremodel">
+    <name>
+      <text />
+    </name>
+    <page id="n0">
+      <place id="source">
+        <name>
+          <text>source</text>
+        </name>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="place_1">
+        <name>
+          <text>place_1</text>
+        </name>
+      </place>
+      <place id="place_2">
+        <name>
+          <text>place_2</text>
+        </name>
+      </place>
+      <place id="place_3">
+        <name>
+          <text>place_3</text>
+        </name>
+      </place>
+      <place id="place_4">
+        <name>
+          <text>place_4</text>
+        </name>
+      </place>
+      <place id="sink">
+        <name>
+          <text>sink</text>
+        </name>
+      </place>
+      <place id="place_5">
+        <name>
+          <text>place_5</text>
+        </name>
+      </place>
+      <place id="place_6">
+        <name>
+          <text>place_6</text>
+        </name>
+      </place>
+      <transition id="tau_1">
+        <name>
+          <text>tau_1</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="83b6bf4c-6dd5-4b93-8ceb-ffdfc76dcc3a" />
+      </transition>
+      <transition id="Pay BT">
+        <name>
+          <text>Pay BT</text>
+        </name>
+      </transition>
+      <transition id="Add Item">
+        <name>
+          <text>Add Item</text>
+        </name>
+      </transition>
+      <transition id="tau_2">
+        <name>
+          <text>tau_2</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="06821aac-2124-4896-b971-1077c6754c26" />
+      </transition>
+      <transition id="tau_3">
+        <name>
+          <text>tau_3</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="25433823-c122-4294-a463-62b3d3529360" />
+      </transition>
+      <transition id="Pay CC">
+        <name>
+          <text>Pay CC</text>
+        </name>
+      </transition>
+      <transition id="tau_4">
+        <name>
+          <text>tau_4</text>
+        </name>
+        <toolspecific tool="ProM" version="6.4" activity="$invisible$" localNodeID="9f1b6403-afcf-4995-a0ba-74d133d3aafb" />
+      </transition>
+      <transition id="Check out">
+        <name>
+          <text>Check out</text>
+        </name>
+      </transition>
+      <transition id="Payment Complete">
+        <name>
+          <text>Payment Complete</text>
+        </name>
+      </transition>
+      <transition id="Close Order">
+        <name>
+          <text>Close Order</text>
+        </name>
+      </transition>
+      <transition id="Place Order">
+        <name>
+          <text>Place Order</text>
+        </name>
+      </transition>
+      <arc id="133576619136512" source="Add Item" target="place_5" />
+      <arc id="133576619131904" source="place_5" target="tau_1" />
+      <arc id="133576619136032" source="Pay CC" target="place_1" />
+      <arc id="133576619138624" source="place_1" target="Payment Complete" />
+      <arc id="133576619135072" source="tau_4" target="place_2" />
+      <arc id="133576619137664" source="Place Order" target="place_6" />
+      <arc id="133576619138720" source="place_3" target="Pay BT" />
+      <arc id="133576619137184" source="tau_3" target="place_4" />
+      <arc id="133576619075776" source="place_5" target="tau_2" />
+      <arc id="133576619133632" source="place_6" target="tau_3" />
+      <arc id="133576619138240" source="Pay BT" target="place_1" />
+      <arc id="133576619137760" source="tau_2" target="place_2" />
+      <arc id="133576619137280" source="tau_1" target="place_4" />
+      <arc id="133576619138816" source="place_3" target="Close Order" />
+      <arc id="133576619134208" source="place_6" target="tau_4" />
+      <arc id="133576619138336" source="Close Order" target="sink" />
+      <arc id="133576619137856" source="Check out" target="place_3" />
+      <arc id="133576619138912" source="source" target="Place Order" />
+      <arc id="133576619138432" source="place_2" target="Add Item" />
+      <arc id="133576619139008" source="place_3" target="Pay CC" />
+      <arc id="133576619138528" source="place_4" target="Check out" />
+      <arc id="133576619136992" source="Payment Complete" target="sink" />
+    </page>
+    <finalmarkings>
+      <marking>
+        <place idref="sink">
+          <text>1</text>
+        </place>
+      </marking>
+    </finalmarkings>
+  </net>
+</pnml>

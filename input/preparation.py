@@ -1,12 +1,136 @@
+from pathlib import Path
+import glob
 import os
-import json
-import csv
 import xml.etree.ElementTree as ET
+import pm4py
+from pm4py.algo.analysis.woflan import algorithm as woflan
+from pm4py.visualization.petri_net import visualizer as pn_visualizer
+import argparse
+import json
 from collections import defaultdict, deque
 import re
 import yaml
 
 
+def bpmn_to_pnml(file_path, output_folder):
+    """Transforms a BPMN file to PNML and verifies its initial soundness."""
+    bpmn_graph = pm4py.read_bpmn(file_path)
+    net, im, fm = pm4py.convert_to_petri_net(bpmn_graph)
+
+    is_sound = woflan.apply(net, im, fm, parameters={woflan.Parameters.RETURN_ASAP_WHEN_NOT_SOUND: True, woflan.Parameters.PRINT_DIAGNOSTICS: False, woflan.Parameters.RETURN_DIAGNOSTICS: False})
+
+    if not is_sound: 
+        print(f"Petri net derived from {file_path} is not sound.")
+        return None
+    pnml_path = str(Path(output_folder) / f"{Path(file_path).stem}.pnml")
+    pm4py.write_pnml(net, im, fm, pnml_path)
+    return pnml_path
+
+def rename_petrinet(input_pnml, output_pnml):
+    """Renames elements in the PNML and ensures it remains sound."""
+    tree = ET.parse(input_pnml)
+    root = tree.getroot()
+
+    # Remove namespace for easier parsing
+    for elem in root.iter():
+        if '}' in elem.tag:
+            elem.tag = elem.tag.split('}', 1)[1]
+
+    id_map = {}
+    place_counter = 1
+    tau_counter = 1
+
+    # 1. Rename places
+    for place in root.iter("place"):
+        if "id" not in place.attrib:
+            continue
+        old_id = place.attrib["id"]
+        if old_id in ["source", "sink"]:
+            continue
+
+        new_id = f"place_{place_counter}"
+        place_counter += 1
+        id_map[old_id] = new_id
+        place.attrib["id"] = new_id
+
+        name = place.find("name")
+        if name is not None:
+            text = name.find("text")
+            if text is not None:
+                text.text = new_id
+
+    # 2. Rename transitions
+    for trans in root.iter("transition"):
+        old_id = trans.attrib["id"]
+        name_text = None
+        name = trans.find("name")
+        if name is not None:
+            text = name.find("text")
+            if text is not None:
+                name_text = text.text
+
+        toolspecific = trans.find("toolspecific")
+
+        # 2.a Invisible transitions
+        if toolspecific is not None and toolspecific.attrib.get("activity") == "$invisible$":
+            new_id = f"tau_{tau_counter}"
+            tau_counter += 1
+            id_map[old_id] = new_id
+            trans.attrib["id"] = new_id
+            if name is not None and text is not None:
+                text.text = new_id
+        # 2.b Activities
+        else:
+            if name_text is None:
+                continue
+            new_id = f"{name_text}"
+            id_map[old_id] = new_id
+            trans.attrib["id"] = new_id
+
+    # 3. Update arcs
+    for arc in root.iter("arc"):
+        source = arc.attrib["source"]
+        target = arc.attrib["target"]
+        if source in id_map:
+            arc.attrib["source"] = id_map[source]
+        if target in id_map:
+            arc.attrib["target"] = id_map[target]
+
+    # 4. Update markings
+    for place in root.iter("place"):
+        if "idref" in place.attrib:
+            ref = place.attrib["idref"]
+            if ref in id_map:
+                place.attrib["idref"] = id_map[ref]
+
+    # 5. Check post-rename soundness using a temporary file
+    temp_pnml = output_pnml.replace('.pnml', '_temp.pnml')
+    tree.write(temp_pnml, encoding="utf-8", xml_declaration=True)
+    
+    net, im, fm = pm4py.read_pnml(temp_pnml)
+    is_sound = woflan.apply(net, im, fm, parameters={woflan.Parameters.RETURN_ASAP_WHEN_NOT_SOUND: True, woflan.Parameters.PRINT_DIAGNOSTICS: False, woflan.Parameters.RETURN_DIAGNOSTICS: False}
+    )
+
+    if is_sound:
+        os.replace(temp_pnml, output_pnml)
+        print("PNML successfully rewritten to:", output_pnml)
+        return True
+    else: 
+        if os.path.exists(temp_pnml):
+            os.remove(temp_pnml)
+        print("Renaming resulted in an unsound Petri net.")
+        return False
+
+def visualize_petrinet(input_pnml):
+    """Generates and saves the layout image."""
+    net, im, fm = pm4py.read_pnml(input_pnml)
+    gviz = pn_visualizer.apply(net, im, fm, variant=pn_visualizer.Variants.WO_DECORATION, parameters={'debug': True})
+    pn_visualizer.save(gviz, input_pnml.replace(".pnml", ".png"))
+    print("Figures saved (.png)")
+    
+    
+    
+### From pnml + spec to produce json file 
 def parse_pnml(pnml_path):
     tree = ET.parse(pnml_path)
     root = tree.getroot()
@@ -46,9 +170,6 @@ def parse_pnml(pnml_path):
 
 
 def read_specifications(yml_path):
-    specifications = {}
-    global_start_time = ""
-
     abs_path = os.path.abspath(yml_path)
     if not os.path.exists(abs_path):
         raise FileNotFoundError(f"YAML specifications not found: {abs_path}")
@@ -56,11 +177,14 @@ def read_specifications(yml_path):
     with open(abs_path, 'r', encoding="utf-8") as f:
         data = yaml.safe_load(f)
         
+    if data is None: 
+        raise ValueError(f"YAML file is empty or invalid: {abs_path}")
+        
     specifications = data.get("objects", {})
     global_start_time = data.get("start_simulation", "")
 
+    # IF JSON CHECK DIFFERNT CONDITION BUT FUNCTION STAYS THE SAME
     return specifications, global_start_time
-
 
 def build_ordered_transitions(all_transitions, places, arcs):
     place_out = defaultdict(list)
@@ -127,10 +251,10 @@ def build_probability(all_transitions, places, arcs):
 
 
 def get_object_name_from_path(pnml_path):
-    base = os.path.splitext(os.path.basename(pnml_path))[0]
-    return base.replace("_objects", "")
+    return os.path.splitext(os.path.basename(pnml_path))[0].replace("_objects", "")
 
-def build_object_template(pnml_path, specifications):
+
+def build_object_template(pnml_path, specifications, experiment_root):
     all_transitions, visible_transitions, places, arcs = parse_pnml(pnml_path)
 
     object_name = get_object_name_from_path(pnml_path)
@@ -158,7 +282,7 @@ def build_object_template(pnml_path, specifications):
 
     obj_dict = {
         **({"n_objects": n_objects} if not generator_by and n_objects is not None else {}),
-        "path_petrinet": pnml_path,
+        "path_petrinet": os.path.join("petrinet", os.path.basename(pnml_path)),
         "interTriggerTimer": (
             {}
             if generator_by
@@ -195,14 +319,14 @@ def build_object_template(pnml_path, specifications):
     return {object_name: obj_dict}
 
 
-def build_per_object_template(folder_path, specifications_path):
+def build_per_object_template(folder_path, specifications_path, experiment_root):
     specifications, global_start_time = read_specifications(specifications_path)
     objects = {}
 
     for file in os.listdir(folder_path):
         if file.endswith(".pnml"):
             path = os.path.join(folder_path, file)
-            objects.update(build_object_template(path, specifications))
+            objects.update(build_object_template(path, specifications, experiment_root))
 
     return {
         "start_simulation": global_start_time,
@@ -246,12 +370,63 @@ def dumps_compact_lists(obj, indent=4, level=0):
 
     return json.dumps(obj)
 
+
+
 if __name__ == "__main__":
-    folder = "petrinet"
-    specifications_yml = "specifications.yml"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("experiment_name")
+    args = parser.parse_args()
+    
+    project_root = Path(__file__).resolve().parent
+    experiment_dir = project_root / "experiments" / args.experiment_name     
+    if not experiment_dir.exists():
+        raise FileNotFoundError(
+            f"Experiment folder '{args.experiment_name}' does not exist in {experiment_dir.parent}"
+        )
+    
+    bpmn_dir = experiment_dir / "bpmn"
+    pnml_dir = experiment_dir / "petrinet"
+    spec_path = experiment_dir / "specifications.yml"
+    #if json: substitute with 
+    #spec_path = experiment_dir / "specifications.json"
+    output_json = experiment_dir / "input.json"
+    
+    #Check that bpmn folder exists and is nonempty 
+    if not bpmn_dir.exists():
+        raise FileNotFoundError(f"BPMN folder does not exist: {bpmn_dir}")
+    
+    bpmn_files = list(bpmn_dir.glob("*.bpmn"))
+    if len(bpmn_files) == 0:
+        raise ValueError(f"No BPMN files found in: {bpmn_dir}")
 
-    result = build_per_object_template(folder, specifications_yml)
 
-    with open("full_from_spec.json", "w", encoding="utf-8") as f:
-        f.write(dumps_compact_lists(result, indent=4))
-    print("multi-object simulation file generated")
+    pnml_dir.mkdir(exist_ok=True, parents=True)
+    
+    pattern = str(bpmn_dir / '*.bpmn')
+    
+    for file_path in glob.glob(pattern):
+        print(f"\nProcessing: {file_path}")
+
+        # 1. Transform step
+        pnml_path = bpmn_to_pnml(file_path, pnml_dir)
+        if pnml_path is None:
+            print("Stopped execution due to unsound network conversion.")
+            break
+
+        # 2. Rename step
+        rename_success = rename_petrinet(pnml_path, pnml_path)
+        if not rename_success:
+            print("Stopped execution due to unsound renaming layout.")
+            break
+
+        # 3. Visualize step
+        visualize_petrinet(pnml_path)
+        
+    if spec_path.exists():
+        result = build_per_object_template(str(pnml_dir), str(spec_path), str(experiment_dir))
+        
+        with open(output_json, "w", encoding="utf-8") as f:
+            f.write(dumps_compact_lists(result))
+        print(f"Full JSON template successfully written to: {output_json}")
+    else: 
+        print(f"Specifications file not found: {spec_path}")
