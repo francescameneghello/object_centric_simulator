@@ -150,7 +150,7 @@ class Object(object):
                 proceed, matched = custom.custom_cardinality_rule(
                     process=self._process, 
                     current_object_id = self._id,
-                    available_items=available,
+                    available_objects=available,
                 )
                 selected_messages = {
                     (item_id, action, ref)
@@ -237,14 +237,12 @@ class Object(object):
                             yield self._process.board.new_message_event
 
                 self._buffer.reset()
-                self._buffer.set_feature("id_case", self._id)
+                self._buffer.set_feature("obj_id", self._id)
                 self._buffer.set_feature("activity", transition.label)
                 self._buffer.set_feature("prefix",
                                          self.prefix.get_prefix(self._start_time + timedelta(seconds=env.now)))
-                self._buffer.set_feature("attribute_event", {})
-                #AGGIUNGERE self._buffer.update_object_attribute()
-                
-                
+                #self._buffer.update_object_attribute(transition.label, self._attribute, self._buffer)                
+                #AGGIUNGERE TODOFIX
 
                 ### call predictor for waiting time
                 if transition.label in self._object_params["resource_table"]:

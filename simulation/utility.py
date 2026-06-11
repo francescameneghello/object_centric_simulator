@@ -43,9 +43,8 @@ class Prefix(object):
 
 class Buffer(object):
     def __init__(self, writer, values=None):
-        # To add specific object centric atttributes 
         self.buffer = {
-            "id_case": -1,
+            "obj_id": -1,
             "activity": None,
             "enabled_time": None,
             "start_time": None,
@@ -62,7 +61,6 @@ class Buffer(object):
             "prefix": Prefix,
             "relationships": [],
             "attribute_object": dict(),
-            "attribute_event": dict()
         }
         if values:
             self._decopy_value(values)
@@ -85,7 +83,7 @@ class Buffer(object):
         return self.buffer[feature]
 
     def print_values(self):
-        keys_to_print = ["id_case", "activity", "enabled_time", "start_time",
+        keys_to_print = ["obj_id", "activity", "enabled_time", "start_time",
                          "end_time", "role", "resource", "prefix", "relationships", "attribute_object"]
         subset = {k: self.buffer[k] for k in keys_to_print if k in self.buffer}
         print(*subset.values())
@@ -93,7 +91,10 @@ class Buffer(object):
 
     def get_buffer_keys(self):
         return self.buffer.keys()
-
+    
+    def update_object_attribute(self, transition_label, object_attribute):
+        return self.buffer
+    #TODO FIX
     def reset(self):
         self.buffer["enabled_time"] = None
         self.buffer["start_time"] = None
@@ -107,4 +108,3 @@ class Buffer(object):
         self.buffer["ro_single"] = -1
         self.buffer["queue"] = -1
         self.buffer['relationships'] = []
-        self.buffer["attribute_event"] = dict()

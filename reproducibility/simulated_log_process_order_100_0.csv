@@ -1,4 +1,4 @@
-id_case,activity,enabled_time,start_time,end_time,role,resource,wip_wait,wip_start,wip_end,wip_activity,ro_total,ro_single,queue,prefix,relationships,attribute_object,attribute_event
+obj_id,activity,enabled_time,start_time,end_time,role,resource,wip_wait,wip_start,wip_end,wip_activity,ro_total,ro_single,queue,prefix,relationships,attribute_object,attribute_event
 truck_2,Prepare,2026-01-01 09:00:00,2026-01-01 09:00:00,2026-01-01 09:11:26,Role truck,E,3,3,7,3,"[1.0, 0.0, 0.0, 0.0, 0.0]",1.0,0,['Prepare'],{},{},{}
 truck_1,Prepare,2026-01-01 09:00:00,2026-01-01 09:00:00,2026-01-01 09:21:00,Role truck,D,3,3,45,3,"[1.0, 0.0, 0.0, 0.0, 0.0]",1.0,0,['Prepare'],{},{},{}
 truck_0,Prepare,2026-01-01 09:00:00,2026-01-01 09:00:00,2026-01-01 09:25:11,Role truck,C,2,3,62,2,"[1.0, 0.0, 0.0, 0.0, 0.0]",1.0,0,['Prepare'],{},{},{}

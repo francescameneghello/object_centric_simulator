@@ -7,7 +7,7 @@ used as input from a predictive model.
 
 | Feature      | Description  |
 |:------------:|:-------------------------- |
-| id_case | Case id of the object to which the event belongs. |
+| obj_id | Id of the object to which the event belongs. |
 | activity | Name of the activity being executed. |
 | enabled_time | Timestamp of when the activity requests the role to be executed. |
 | start_time |  Timestamp of when the activity starts to run.   |
@@ -24,7 +24,6 @@ used as input from a predictive model.
 | prefix |  List of activities already performed.  |
 | relationships |  Set of objects related to the event.  |
 | attribute_object |  Attributes defined for the object.      |
-| attribute_event |  Attributes defined for the next event to be executed.   |
 
 '''
 
@@ -55,7 +54,7 @@ def find_objects(process, object_id):
             return objects[object_id]
     return None
 
-def custom_cardinality_rule(process, current_object_id, available_items):
+def custom_cardinality_rule(process, current_object_id, available_objects):
     """
         Custom function that defines the shipment characteristics. Since items are liked to orders, they inherity the attribute city. 
         The user can define a custom rule to decide which items to ship together, for example, by grouping the items by city and choosing the largest group.
@@ -72,7 +71,7 @@ def custom_cardinality_rule(process, current_object_id, available_items):
 
     city_groups = {}
 
-    for item_id in available_items:
+    for item_id in available_objects:
         if item_id not in items_dict:
             continue
 
@@ -105,15 +104,10 @@ def custom_cardinality_rule(process, current_object_id, available_items):
 
 def custom_arrivals_time(case, previous):
     """
-    Function to define a new arrival of a trace. 
-    The input parameters are the case id number and 
-    the start timestamp of the previous trace.
-    For example, we used an AutoRegression model 
-    for the *arrivals example*.
+    Function to define a new arrival of an object. 
+
     """
-    loaded = AutoRegResults.load('example/example_arrivals/arrival_AutoReg_model.pkl')
-    return loaded.predict(case+1, case+1)[0]
-# return 0
+    return 0
 
 
 def custom_processing_time(buffer: Buffer):
@@ -123,7 +117,7 @@ def custom_processing_time(buffer: Buffer):
 
     ```json
             {
-                "id_case": order_92,
+                "obj_id": order_92,
                 "activity": "Check out",
                 "enabled_time": "2026-01-01 09:48:17",
                 "start_time": "2026-01-01 09:10:13",
@@ -140,7 +134,6 @@ def custom_processing_time(buffer: Buffer):
                 "prefix": "['Place Order', 'Check out']",
                 "relationships": "{'item_92_0', 'item_92_1'}",
                 "attribute_object": {'City': 'Bolzano'},
-                "attribute_event": {}
             }
     ```
     """
@@ -163,7 +156,7 @@ def custom_waiting_time(buffer: Buffer):
     Example of features that can be used to predict:
     ```json
     {
-                "id_case": order_92,
+                "obj_id": order_92,
                 "activity": "Check out",
                 "enabled_time": "2026-01-01 09:48:17",
                 "start_time": "2026-01-01 09:10:13",
@@ -180,7 +173,6 @@ def custom_waiting_time(buffer: Buffer):
                 "prefix": "['Place Order', 'Check out']",
                 "relationships": "{'item_92_0', 'item_92_1'}",
                 "attribute_object": {'City': 'Bolzano'},
-                "attribute_event": {}
             }
     ```
     """
@@ -195,7 +187,7 @@ def custom_decision_mining(buffer: Buffer, objects_related: list, possible_trans
     Example of features that can be used to predict:
     ```json
         {
-            "id_case": item_152_1,
+            "obj_id": item_152_1,
             "activity": "Pick Item",
             "enabled_time": "2026-01-02 04:30:16",
             "start_time": "2026-01-02 04:30:16",
@@ -212,8 +204,6 @@ def custom_decision_mining(buffer: Buffer, objects_related: list, possible_trans
             "prefix": "['Select', 'Pick Item']",
             "relationships": {'order_152'}
             "attribute_object": {'Price': 58, 'City': 'Milano'},
-            "attribute_event": {}
-
         }
     ```
     """

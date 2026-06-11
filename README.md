@@ -42,7 +42,7 @@ Once the packages are installed, user can:
 2. Specify the channels between object types and additional parameters in `specification.json`
 3. Add `custom_function.py` for the experiment
 
-Then to prepare the input json for the simulation, inside `input/experiments`:
+Then to prepare the input json for the simulation, inside `input`:
 ```shell
 python preparation.py experiment_name
 ```

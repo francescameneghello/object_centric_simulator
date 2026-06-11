@@ -3,7 +3,7 @@
     "objects": {
         "truck": {
             "n_objects": 2,
-            "path_petrinet": "../input/petrinet/truck_objects.pnml",
+            "path_petrinet": "petrinet/truck_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
                 "name": "uniform",
@@ -78,8 +78,8 @@
             }
         },
         "order": {
-            "n_objects": 6,
-            "path_petrinet": "../input/petrinet/order_objects.pnml",
+            "n_objects": 4,
+            "path_petrinet": "petrinet/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
                 "name": "uniform",
@@ -200,7 +200,7 @@
         },
         "item": {
             "start_timestamp": "",
-            "path_petrinet": "../input/petrinet/item_objects.pnml",
+            "path_petrinet": "petrinet/item_objects.pnml",
             "interTriggerTimer": {
             },
             "processing_time": {

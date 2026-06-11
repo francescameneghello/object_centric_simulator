@@ -84,7 +84,7 @@
             }
         },
         "order": {
-            "n_objects": 10,
+            "n_objects": 4,
             "path_petrinet": "petrinet/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
@@ -166,13 +166,13 @@
                 "Payment Complete": "Role order"
             },
             "probability": {
-                "tau_3": "AUTO",
                 "tau_4": "AUTO",
+                "tau_1": "AUTO",
                 "Pay BT": "AUTO",
                 "Close Order": "AUTO",
                 "Pay CC": "AUTO",
-                "tau_1": "AUTO",
-                "tau_2": "AUTO"
+                "tau_2": "AUTO",
+                "tau_3": "AUTO"
             },
             "generator_by": [],
             "generate": ["item"],
@@ -263,8 +263,8 @@
                 "Go Back": "Role truck"
             },
             "probability": {
-                "tau_1": "AUTO",
-                "Go Back": "AUTO"
+                "Go Back": 1.0,
+                "tau_1": 0.0
             },
             "generator_by": [],
             "generate": [],

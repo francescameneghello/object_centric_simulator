@@ -28,7 +28,7 @@ for file_path in glob.glob(pattern):
     df = df.replace(r'^\s*$', pd.NA, regex=True).dropna(how='all')
 
     # Create object column
-    df["object"] = df["id_case"].astype(str).str.split("_").str[0]
+    df["object"] = df["obj_id"].astype(str).str.split("_").str[0]
 
     # Define start and end times
     df["start_time"] = pd.to_datetime(df["start_time"])
@@ -89,14 +89,14 @@ for file_path in glob.glob(pattern):
 
     # (4) Count Delivered cases
     df_delivered = df[df["activity"] == "Delivered"]
-    delivered_cases = df_delivered["id_case"].unique()
+    delivered_cases = df_delivered["obj_id"].unique()
     metrics["Delivered_items_count"] = len(delivered_cases)
 
     # (5) Time from Packing → Delivered
-    df_packing = df[df["activity"] == "Packing"][["id_case", "start_time"]]
-    df_del = df[df["activity"] == "Delivered"][["id_case", "end_time"]]
+    df_packing = df[df["activity"] == "Packing"][["obj_id", "start_time"]]
+    df_del = df[df["activity"] == "Delivered"][["obj_id", "end_time"]]
 
-    merged = pd.merge(df_del, df_packing, on="id_case", how="inner")
+    merged = pd.merge(df_del, df_packing, on="obj_id", how="inner")
 
     time_diffs = (merged["end_time"] - merged["start_time"]).dt.total_seconds()
 
@@ -148,13 +148,13 @@ for file_path in glob.glob(pattern):
 
     # (6) Count orders
     df_order = df[df["activity"] == "Place Order"]
-    order_cases = df_order["id_case"].unique()
+    order_cases = df_order["obj_id"].unique()
     metrics["Order_count"] = len(order_cases)
 
     # (7) Unique cases for "Add Item"
 
     df_add = df[df["activity"] == "Add Item"]
-    metrics["Add_Item_orders"] = df_add["id_case"].nunique()
+    metrics["Add_Item_orders"] = df_add["obj_id"].nunique()
 
     # (8) Unique relationships for "Remove Item"
     df_remove = df[df["activity"] == "Remove Item"]
