@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module custom_function</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>custom_function</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/denise/object_centric_simulator/input/experiments/o2d/custom_function.py">/home/denise/object_centric_simulator/input/experiments/o2d/custom_function.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;file&nbsp;contains&nbsp;all&nbsp;the&nbsp;customizable&nbsp;functions,&nbsp;which&nbsp;the&nbsp;user&nbsp;can&nbsp;define,<br>
+and&nbsp;which&nbsp;are&nbsp;called&nbsp;by&nbsp;the&nbsp;simulator&nbsp;in&nbsp;the&nbsp;specific&nbsp;steps.<br>
+&nbsp;<br>
+The&nbsp;following&nbsp;table&nbsp;describes&nbsp;the&nbsp;case&nbsp;and&nbsp;inter-case&nbsp;features&nbsp;that&nbsp;can&nbsp;be<br>
+used&nbsp;as&nbsp;input&nbsp;from&nbsp;a&nbsp;predictive&nbsp;model.<br>
+&nbsp;<br>
+|&nbsp;Feature&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;Description&nbsp;&nbsp;|<br>
+|:------------:|:--------------------------&nbsp;|<br>
+|&nbsp;obj_id&nbsp;|&nbsp;Id&nbsp;of&nbsp;the&nbsp;object&nbsp;to&nbsp;which&nbsp;the&nbsp;event&nbsp;belongs.&nbsp;|<br>
+|&nbsp;activity&nbsp;|&nbsp;Name&nbsp;of&nbsp;the&nbsp;activity&nbsp;being&nbsp;executed.&nbsp;|<br>
+|&nbsp;enabled_time&nbsp;|&nbsp;Timestamp&nbsp;of&nbsp;when&nbsp;the&nbsp;activity&nbsp;requests&nbsp;the&nbsp;role&nbsp;to&nbsp;be&nbsp;executed.&nbsp;|<br>
+|&nbsp;start_time&nbsp;|&nbsp;&nbsp;Timestamp&nbsp;of&nbsp;when&nbsp;the&nbsp;activity&nbsp;starts&nbsp;to&nbsp;run.&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;end_time&nbsp;|&nbsp;&nbsp;&nbsp;Timestamp&nbsp;of&nbsp;when&nbsp;the&nbsp;activity&nbsp;ends&nbsp;to&nbsp;run.&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;role&nbsp;|&nbsp;&nbsp;&nbsp;Designated&nbsp;role&nbsp;to&nbsp;perform&nbsp;the&nbsp;activity.&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;resource&nbsp;|&nbsp;&nbsp;Role&nbsp;resource&nbsp;available&nbsp;to&nbsp;perform&nbsp;the&nbsp;activity.&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;wip_wait&nbsp;|&nbsp;Work-in-progress&nbsp;measure&nbsp;at&nbsp;the&nbsp;time&nbsp;the&nbsp;activity&nbsp;is&nbsp;waiting&nbsp;for&nbsp;execution|<br>
+|&nbsp;wip_start&nbsp;|&nbsp;&nbsp;Represents&nbsp;the&nbsp;number&nbsp;of&nbsp;objects&nbsp;running&nbsp;in&nbsp;the&nbsp;simulation&nbsp;once&nbsp;an&nbsp;available&nbsp;resource&nbsp;is&nbsp;obtained&nbsp;to&nbsp;run&nbsp;the&nbsp;activity.&nbsp;|<br>
+|&nbsp;wip_end&nbsp;|&nbsp;Represents&nbsp;the&nbsp;number&nbsp;of&nbsp;objects&nbsp;running&nbsp;in&nbsp;the&nbsp;simulation&nbsp;at&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;activity&nbsp;execution.&nbsp;|<br>
+|&nbsp;wip_activity&nbsp;|&nbsp;&nbsp;Represents&nbsp;the&nbsp;number&nbsp;of&nbsp;events&nbsp;running&nbsp;in&nbsp;the&nbsp;simulation&nbsp;that&nbsp;perform&nbsp;the&nbsp;same&nbsp;activity,&nbsp;once&nbsp;an&nbsp;available&nbsp;resource&nbsp;is&nbsp;obtained.&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;ro_total&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;percentage&nbsp;of&nbsp;occupancy&nbsp;in&nbsp;terms&nbsp;of&nbsp;resources&nbsp;in&nbsp;use&nbsp;for&nbsp;the&nbsp;roles&nbsp;defined&nbsp;in&nbsp;the&nbsp;simulation.&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;ro_single&nbsp;|&nbsp;&nbsp;&nbsp;The&nbsp;percentage&nbsp;of&nbsp;occupancy&nbsp;in&nbsp;terms&nbsp;of&nbsp;resources&nbsp;in&nbsp;use&nbsp;for&nbsp;the&nbsp;role&nbsp;defined&nbsp;for&nbsp;the&nbsp;next&nbsp;activity.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;queue&nbsp;|&nbsp;&nbsp;Represents&nbsp;the&nbsp;length&nbsp;of&nbsp;the&nbsp;queue&nbsp;for&nbsp;the&nbsp;required&nbsp;resource.&nbsp;&nbsp;|<br>
+|&nbsp;prefix&nbsp;|&nbsp;&nbsp;List&nbsp;of&nbsp;activities&nbsp;already&nbsp;performed.&nbsp;&nbsp;|<br>
+|&nbsp;relationships&nbsp;|&nbsp;&nbsp;Set&nbsp;of&nbsp;objects&nbsp;related&nbsp;to&nbsp;the&nbsp;event.&nbsp;&nbsp;|<br>
+|&nbsp;attribute_object&nbsp;|&nbsp;&nbsp;Attributes&nbsp;defined&nbsp;for&nbsp;the&nbsp;object.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="pickle.html">pickle</a><br>
+</td><td width="25%" valign=top><a href="random.html">random</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-custom_arrivals_time"><strong>custom_arrivals_time</strong></a>(case, previous)</dt><dd><tt>Function&nbsp;to&nbsp;define&nbsp;a&nbsp;new&nbsp;arrival&nbsp;of&nbsp;an&nbsp;object.</tt></dd></dl>
+ <dl><dt><a name="-custom_cardinality_rule"><strong>custom_cardinality_rule</strong></a>(process, current_object_id, available_objects)</dt><dd><tt>Custom&nbsp;function&nbsp;that&nbsp;defines&nbsp;the&nbsp;shipment&nbsp;characteristics.&nbsp;Since&nbsp;items&nbsp;are&nbsp;liked&nbsp;to&nbsp;orders,&nbsp;they&nbsp;inherity&nbsp;the&nbsp;attribute&nbsp;city.&nbsp;<br>
+The&nbsp;user&nbsp;can&nbsp;define&nbsp;a&nbsp;custom&nbsp;rule&nbsp;to&nbsp;decide&nbsp;which&nbsp;items&nbsp;to&nbsp;ship&nbsp;together,&nbsp;for&nbsp;example,&nbsp;by&nbsp;grouping&nbsp;the&nbsp;items&nbsp;by&nbsp;city&nbsp;and&nbsp;choosing&nbsp;the&nbsp;largest&nbsp;group.<br>
+Then&nbsp;truck&nbsp;inherits&nbsp;the&nbsp;city&nbsp;attribute&nbsp;of&nbsp;the&nbsp;items,&nbsp;and&nbsp;the&nbsp;function&nbsp;returns&nbsp;the&nbsp;set&nbsp;of&nbsp;items&nbsp;to&nbsp;ship&nbsp;together.<br>
+When&nbsp;truck&nbsp;loads&nbsp;again&nbsp;other&nbsp;items,&nbsp;the&nbsp;function&nbsp;is&nbsp;called&nbsp;again,&nbsp;and&nbsp;the&nbsp;city&nbsp;attribute&nbsp;of&nbsp;the&nbsp;truck&nbsp;can&nbsp;be&nbsp;updated&nbsp;with&nbsp;the&nbsp;city&nbsp;of&nbsp;the&nbsp;new&nbsp;items.</tt></dd></dl>
+ <dl><dt><a name="-custom_decision_mining"><strong>custom_decision_mining</strong></a>(buffer: utility.Buffer, objects_related: list, possible_transitions: list)</dt><dd><tt>Function&nbsp;to&nbsp;define&nbsp;the&nbsp;next&nbsp;activity&nbsp;from&nbsp;a&nbsp;decision&nbsp;point&nbsp;in&nbsp;the&nbsp;Petri&nbsp;net&nbsp;model.<br>
+&nbsp;<br>
+Example&nbsp;of&nbsp;features&nbsp;that&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;predict:<br>
+```json<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"obj_id":&nbsp;item_152_1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"activity":&nbsp;"Pick&nbsp;Item",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"enabled_time":&nbsp;"2026-01-02&nbsp;04:30:16",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"start_time":&nbsp;"2026-01-02&nbsp;04:30:16",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"end_time":&nbsp;"2026-01-02&nbsp;04:32:37",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"role":&nbsp;"Role&nbsp;2&nbsp;item",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"resource":&nbsp;"Sue",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_wait":&nbsp;472,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_start":&nbsp;472,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_end":&nbsp;474,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_activity":&nbsp;2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ro_total":&nbsp;"[0.0,&nbsp;1.0,&nbsp;0.0,&nbsp;0.0,&nbsp;0.5]",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ro_single":&nbsp;0.5,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"queue":&nbsp;0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"prefix":&nbsp;"['Select',&nbsp;'Pick&nbsp;Item']",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"relationships":&nbsp;{'order_152'}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"attribute_object":&nbsp;{'Price':&nbsp;58,&nbsp;'City':&nbsp;'Milano'},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+```</tt></dd></dl>
+ <dl><dt><a name="-custom_processing_time"><strong>custom_processing_time</strong></a>(buffer: utility.Buffer)</dt><dd><tt>Define&nbsp;the&nbsp;processing&nbsp;time&nbsp;of&nbsp;the&nbsp;activity&nbsp;(return&nbsp;the&nbsp;duration&nbsp;in&nbsp;seconds).<br>
+Example&nbsp;of&nbsp;features&nbsp;that&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;predict:<br>
+&nbsp;<br>
+```json<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"obj_id":&nbsp;order_92,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"activity":&nbsp;"Check&nbsp;out",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"enabled_time":&nbsp;"2026-01-01&nbsp;09:48:17",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"start_time":&nbsp;"2026-01-01&nbsp;09:10:13",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"end_time":&nbsp;"2026-01-02&nbsp;05:19:18",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"role":&nbsp;"Role&nbsp;1&nbsp;order",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"resource":&nbsp;"Sue",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_wait":&nbsp;167,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_start":&nbsp;483,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_end":&nbsp;483,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_activity":&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ro_total":&nbsp;"[0.0,&nbsp;1.0,&nbsp;0.0,&nbsp;1.0,&nbsp;0.0]",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ro_single":&nbsp;1.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"queue":&nbsp;151,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"prefix":&nbsp;"['Place&nbsp;Order',&nbsp;'Check&nbsp;out']",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"relationships":&nbsp;"{'item_92_0',&nbsp;'item_92_1'}",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"attribute_object":&nbsp;{'City':&nbsp;'Bolzano'},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+```</tt></dd></dl>
+ <dl><dt><a name="-custom_waiting_time"><strong>custom_waiting_time</strong></a>(buffer: utility.Buffer)</dt><dd><tt>Define&nbsp;the&nbsp;waiting&nbsp;time&nbsp;of&nbsp;the&nbsp;activity&nbsp;(return&nbsp;the&nbsp;duration&nbsp;in&nbsp;seconds).<br>
+Example&nbsp;of&nbsp;features&nbsp;that&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;predict:<br>
+```json<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"obj_id":&nbsp;order_92,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"activity":&nbsp;"Check&nbsp;out",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"enabled_time":&nbsp;"2026-01-01&nbsp;09:48:17",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"start_time":&nbsp;"2026-01-01&nbsp;09:10:13",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"end_time":&nbsp;"2026-01-02&nbsp;05:19:18",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"role":&nbsp;"Role&nbsp;1&nbsp;order",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"resource":&nbsp;"Sue",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_wait":&nbsp;167,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_start":&nbsp;483,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_end":&nbsp;483,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"wip_activity":&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ro_total":&nbsp;"[0.0,&nbsp;1.0,&nbsp;0.0,&nbsp;1.0,&nbsp;0.0]",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"ro_single":&nbsp;1.0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"queue":&nbsp;151,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"prefix":&nbsp;"['Place&nbsp;Order',&nbsp;'Check&nbsp;out']",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"relationships":&nbsp;"{'item_92_0',&nbsp;'item_92_1'}",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"attribute_object":&nbsp;{'City':&nbsp;'Bolzano'},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+```</tt></dd></dl>
+ <dl><dt><a name="-find_objects"><strong>find_objects</strong></a>(process, object_id)</dt></dl>
+ <dl><dt><a name="-object_function_attribute"><strong>object_function_attribute</strong></a>(object_type: str)</dt><dd><tt>Function&nbsp;to&nbsp;add&nbsp;one&nbsp;or&nbsp;more&nbsp;attributes&nbsp;to&nbsp;each&nbsp;object&nbsp;type.<br>
+Each&nbsp;object&nbsp;instance&nbsp;can&nbsp;get&nbsp;a&nbsp;different&nbsp;value&nbsp;for&nbsp;the&nbsp;defined&nbsp;attribute(s).&nbsp;For&nbsp;example,&nbsp;we&nbsp;added&nbsp;a&nbsp;"Price"&nbsp;attribute&nbsp;to&nbsp;the&nbsp;"item"&nbsp;object&nbsp;type.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>here</strong> = PosixPath('/home/denise/object_centric_simulator/input/experiments/o2d/custom_function.py')<br>
+<strong>project_root</strong> = PosixPath('/home/denise/object_centric_simulator')<br>
+<strong>simulation_dir</strong> = PosixPath('/home/denise/object_centric_simulator/simulation')</td></tr></table>
+</body></html>

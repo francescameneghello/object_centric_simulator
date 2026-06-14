@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module role_simulator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>role_simulator</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/denise/object_centric_simulator/simulation/role_simulator.py">/home/denise/object_centric_simulator/simulation/role_simulator.py</a></font></td></tr></table>
+    <p><tt>Class&nbsp;to&nbsp;define&nbsp;the&nbsp;role&nbsp;<a href="builtins.html#object">object</a>&nbsp;within&nbsp;the&nbsp;simulation.<br>
+The&nbsp;role&nbsp;is&nbsp;defined&nbsp;by&nbsp;its&nbsp;name&nbsp;(*name*),&nbsp;the&nbsp;amount&nbsp;of&nbsp;resources&nbsp;available&nbsp;(*capacity*),<br>
+and&nbsp;the&nbsp;schedule&nbsp;assigned&nbsp;to&nbsp;it&nbsp;(*calendar*).<br>
+&nbsp;<br>
+Each&nbsp;role&nbsp;needs&nbsp;to&nbsp;be&nbsp;defined&nbsp;within&nbsp;the&nbsp;json&nbsp;file&nbsp;in&nbsp;the&nbsp;following&nbsp;format.<br>
+The&nbsp;example&nbsp;describes&nbsp;*Role&nbsp;2*,&nbsp;Ellen&nbsp;and&nbsp;Sue,&nbsp;who&nbsp;work&nbsp;Monday<br>
+through&nbsp;Saturday,&nbsp;from&nbsp;8&nbsp;a.m.&nbsp;to&nbsp;7&nbsp;p.m.<br>
+```shell<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"resource":&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;........<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name_of_role":&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"resources":&nbsp;#List&nbsp;of&nbsp;resources,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"calendar":&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"days":&nbsp;#List&nbsp;of&nbsp;working&nbsp;days&nbsp;of&nbsp;the&nbsp;role,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#given&nbsp;as&nbsp;integer&nbsp;0&nbsp;means&nbsp;Sunday&nbsp;and&nbsp;6&nbsp;means&nbsp;Saturday.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hour_min":&nbsp;#the&nbsp;hour&nbsp;of&nbsp;the&nbsp;start&nbsp;of&nbsp;the&nbsp;working&nbsp;day,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hour_max":&nbsp;#the&nbsp;hour&nbsp;of&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;working&nbsp;day<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;........<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+```<br>
+&nbsp;<br>
+```json<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"Role&nbsp;2":&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"resources":&nbsp;["Ellen",&nbsp;"Sue"],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"calendar":&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"days":&nbsp;[1,&nbsp;2,&nbsp;3,&nbsp;4,&nbsp;5,&nbsp;6],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hour_min":&nbsp;8,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"hour_max":&nbsp;19<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+```<br>
+Finally,&nbsp;in&nbsp;the&nbsp;simulation&nbsp;parameters&nbsp;file,&nbsp;we&nbsp;have&nbsp;to&nbsp;indicate&nbsp;the&nbsp;role&nbsp;assigned&nbsp;to&nbsp;the&nbsp;execution&nbsp;of&nbsp;each&nbsp;activity.<br>
+(Here&nbsp;to&nbsp;view&nbsp;complete&nbsp;examples)<br>
+&nbsp;<br>
+```json<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"resource_table":&nbsp;[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"role":&nbsp;"Role&nbsp;1",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"task":&nbsp;"A_SUBMITTED"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"role":&nbsp;"Role&nbsp;2",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"task":&nbsp;"A_PARTLYSUBMITTED"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+```</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="simpy.html">simpy</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="role_simulator.html#RoleSimulator">RoleSimulator</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="RoleSimulator">class <strong>RoleSimulator</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#RoleSimulator">RoleSimulator</a>(env:&nbsp;simpy.core.Environment,&nbsp;name:&nbsp;str,&nbsp;capacity,&nbsp;calendar:&nbsp;dict)<br>
+&nbsp;<br>
+<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="RoleSimulator-__init__"><strong>__init__</strong></a>(self, env: simpy.core.Environment, name: str, capacity, calendar: dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="RoleSimulator-release"><strong>release</strong></a>(self, request)</dt><dd><tt>Method&nbsp;to&nbsp;release&nbsp;the&nbsp;role&nbsp;resource&nbsp;that&nbsp;was&nbsp;used&nbsp;to&nbsp;perform&nbsp;the&nbsp;activity.</tt></dd></dl>
+
+<dl><dt><a name="RoleSimulator-request"><strong>request</strong></a>(self)</dt><dd><tt>Method&nbsp;to&nbsp;require&nbsp;a&nbsp;resource&nbsp;of&nbsp;the&nbsp;role&nbsp;needed&nbsp;to&nbsp;perform&nbsp;the&nbsp;activity.</tt></dd></dl>
+
+<dl><dt><a name="RoleSimulator-to_time_schedule"><strong>to_time_schedule</strong></a>(self, timestamp)</dt><dd><tt>Method&nbsp;to&nbsp;check&nbsp;the&nbsp;schedule&nbsp;of&nbsp;the&nbsp;requested&nbsp;resource&nbsp;and<br>
+eventually&nbsp;it&nbsp;returns&nbsp;the&nbsp;time&nbsp;to&nbsp;wait&nbsp;before&nbsp;executing&nbsp;the&nbsp;activity.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
