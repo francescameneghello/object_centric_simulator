@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 ### Preparation step
 Once the packages are installed, user can: 
-1. Upload the bpmn files for each object typ into `input/experiments/experiment_name/bpmn`
+1. Upload the bpmn files for each object type into `input/experiments/experiment_name/bpmn`
 2. Specify the channels between object types and additional parameters in `specification.json`
 3. Add `custom_function.py` for the experiment
 

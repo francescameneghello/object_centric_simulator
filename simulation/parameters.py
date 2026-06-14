@@ -49,26 +49,6 @@ class Parameters(object):
                             self.channels[a] = ob
         else:
             raise ValueError('Parameter file does not exist')
-        
-    # def read_metadata_file(self):
-    #     '''
-    #     Method to read parameters from json file, see *main page* to get the whole list of simulation parameters.
-    #     '''
-        # if os.path.exists(self.PATH_PARAMETERS):
-        #     with open(self.PATH_PARAMETERS) as file:
-        #         data = json.load(file)
-        #         self.START_SIMULATION = self._check_default_parameters(data, 'start_simulation')
-        #         for ob in data["objects"]:
-        #             self.objects[ob] = data["objects"][ob]
-        #             self._define_roles_resources(data["objects"][ob]['resource'])
-        #             self.all_activities += list(data["objects"][ob]["resource_table"].keys())
-        #             for act in data["objects"][ob]["object_constraints"]:
-        #                 #activities = data["objects"][ob]["object_constraints"][act][1]
-        #                 activities = data["objects"][ob]["object_constraints"][act]["trans"]
-        #                 for a in activities:
-        #                     self.channels[a] = ob
-        # else:
-        #     raise ValueError('Parameter file does not exist')
 
     def _define_roles_resources(self, roles):
         for idx, key in enumerate(roles):

@@ -28,12 +28,11 @@ used as input from a predictive model.
 '''
 
 from statsmodels.tsa.ar_model import AutoRegResults
-from utility import Buffer
+from simulation.utility import Buffer
 import random
 import pickle
 from datetime import datetime
 import os
-from pathlib import Path
 
 
 def object_function_attribute(object_type: str):

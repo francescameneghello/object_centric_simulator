@@ -14,6 +14,7 @@ import os
 import argparse
 from pathlib import Path
 
+SIMULATION_ROOT = Path(__file__).resolve().parent.parent
 
 def setup(env: simpy.Environment, params, i, name, f, experiments_root):
     #these imports must stay inside due to the different location of custom_function in a different folder with respect to the core of the simulation
@@ -62,7 +63,7 @@ def setup(env: simpy.Environment, params, i, name, f, experiments_root):
 
 
 def run_simulation(path_parameter: str, name: str, n_simulation=1):    
-    project_root = Path(__file__).resolve().parent.parent
+    project_root = SIMULATION_ROOT
     experiments_root = project_root / "input" / "experiments"
     
     for i in range(0, n_simulation):
@@ -79,7 +80,8 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
 def main(path_parameter: str, name: str):
     print(path_parameter, name)
     run_simulation(path_parameter, name, n_simulation=1)
-
+    #n_simulation PARAM TO CHANGE to run multiple simuulations
+    
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
 
@@ -87,10 +89,14 @@ if __name__ == "__main__":
     parser.add_argument("experiment_name")  # order2deliverly, hospital, etc.
     args = parser.parse_args()
 
-    script_dir = Path(__file__).resolve().parent
-    experiment_dir = script_dir.parent / "input" / "experiments" / args.experiment_name
+    experiment_dir = SIMULATION_ROOT / "input" / "experiments" / args.experiment_name
 
-    sys.path.insert(0, str(experiment_dir))
+    if str(experiment_dir) not in sys.path:
+        sys.path.insert(0, str(experiment_dir))
+
+    # Make the simulation core importable for custom_file.py imports 
+    if str(SIMULATION_ROOT) not in sys.path:
+        sys.path.insert(0, str(SIMULATION_ROOT))
 
     json_files = [
         f for f in experiment_dir.glob("*.json")
@@ -104,6 +110,8 @@ if __name__ == "__main__":
         )
 
     json_path = json_files[0]
+    
+    #Logic to import specifications.yml 
     # json_files = list(experiment_dir.glob("*.json"))
     # if len(json_files) != 1:
     #     raise ValueError(f"Expected exactly one JSON file in {experiment_dir}, found {len(json_files)}")

@@ -129,7 +129,6 @@ def visualize_petrinet(input_pnml):
     print("Figures saved (.png)")
     
     
-    
 ### From pnml + spec to produce json file 
 def parse_pnml(pnml_path):
     tree = ET.parse(pnml_path)
@@ -169,21 +168,21 @@ def parse_pnml(pnml_path):
     return all_transitions, visible_transitions, places, arcs
 
 
-def read_specifications(yml_path):
-    abs_path = os.path.abspath(yml_path)
+def read_specifications(spec_path):
+    abs_path = os.path.abspath(spec_path)
     if not os.path.exists(abs_path):
-        raise FileNotFoundError(f"YAML specifications not found: {abs_path}")
+        raise FileNotFoundError(f"Specification file not found: {abs_path}")
 
     with open(abs_path, 'r', encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+        #data = yaml.safe_load(f)
+        data = json.load(f) 
         
     if data is None: 
-        raise ValueError(f"YAML file is empty or invalid: {abs_path}")
+        raise ValueError(f"Specification file is empty or invalid: {abs_path}")
         
     specifications = data.get("objects", {})
     global_start_time = data.get("start_simulation", "")
 
-    # IF JSON CHECK DIFFERNT CONDITION BUT FUNCTION STAYS THE SAME
     return specifications, global_start_time
 
 def build_ordered_transitions(all_transitions, places, arcs):
@@ -386,9 +385,8 @@ if __name__ == "__main__":
     
     bpmn_dir = experiment_dir / "bpmn"
     pnml_dir = experiment_dir / "petrinet"
-    spec_path = experiment_dir / "specifications.yml"
-    #if json: substitute with 
-    #spec_path = experiment_dir / "specifications.json"
+    #spec_path = experiment_dir / "specifications.yml"
+    spec_path = experiment_dir / "specifications.json"
     output_json = experiment_dir / "input.json"
     
     #Check that bpmn folder exists and is nonempty 
