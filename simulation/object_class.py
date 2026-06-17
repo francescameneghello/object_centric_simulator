@@ -11,15 +11,13 @@ import numpy as np
 import copy
 import csv
 from utility import Buffer, ParallelObject
-import asyncio
-from reactivex import operators as ops
-import custom_function as custom
+from importlib import import_module
 
 class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
                  params: Parameters, process: SimulationProcess, prefix: Prefix, type: str, writer: csv.writer,
-                 name_object: str, parallel_object: ParallelObject, father=None, values_buffer=None):
+                 name_object: str, parallel_object: ParallelObject, name_exp: str, father=None, values_buffer=None):
         self._id = id
         self._process = process
         self._start_time = params.START_SIMULATION
@@ -29,6 +27,8 @@ class Object(object):
         self.prefix = prefix
         self._type = type
         self._name_object = name_object
+        self._name_exp = name_exp
+        self._custom = import_module(f"input.experiments.{self._name_exp}.custom_function")
         self._object_params = params.objects[name_object]
         if type == 'sequential':
             self.see_activity = False
@@ -39,7 +39,7 @@ class Object(object):
         self._id_object = 0
         self._father = father
         self._last_activity = None
-        self._attribute = custom.object_function_attribute(self._name_object)
+        self._attribute = self._custom.object_function_attribute(self._name_object)
         if father is not None and hasattr(father, "_attribute") and father._attribute:
             self._attribute.update(copy.deepcopy(father._attribute))
         self._buffer.set_feature("attribute_object", self._attribute)
@@ -69,7 +69,7 @@ class Object(object):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
                 id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
                 obj_class = Object(id, net, im, self._general_params, self._process, Prefix(),
-                               'sequential', self._writer, name_obj, parallel_object=ParallelObject(), father=self)
+                               'sequential', self._writer, name_obj, parallel_object=ParallelObject(), name_exp=self._name_exp, father=self)
                 self._process.add_object(obj_class, name_obj, id)
                 self._process.set_relationships(self._id, id)
                 env.process(obj_class.simulation(0, env))
@@ -147,7 +147,7 @@ class Object(object):
                 }
                 
             elif cardinality == "CUSTOM":
-                proceed, matched = custom.custom_cardinality_rule(
+                proceed, matched = self._custom.custom_cardinality_rule(
                     process=self._process, 
                     current_object_id = self._id,
                     available_objects=available,
@@ -531,13 +531,13 @@ class Object(object):
         """
         Call to the custom functions in the file *custom_function.py*.
         """
-        return custom.custom_processing_time(self._buffer)
+        return self._custom.custom_processing_time(self._buffer)
 
     def call_custom_waiting_time(self):
         """
             Call to the custom functions in the file *custom_function.py*.
         """
-        return custom.custom_waiting_time(self._buffer)
+        return self._custom.custom_waiting_time(self._buffer)
 
     def call_custom_xor_function(self, all_enabled_transition):
         """
@@ -547,4 +547,4 @@ class Object(object):
         object_class_list = []
         for key in objects_related_keys:
             object_class_list.append(self._process.get_specific_object(key.split("_")[0], key))
-        return custom.custom_decision_mining(self._buffer, object_class_list, all_enabled_transition)
+        return self._custom.custom_decision_mining(self._buffer, object_class_list, all_enabled_transition)

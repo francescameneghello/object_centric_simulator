@@ -1,10 +1,7 @@
 import csv
 import simpy
 import utility
-from datetime import datetime, timedelta
 from parameters import Parameters
-import sys, getopt
-import numpy as np
 from utility import *
 import random
 import pm4py
@@ -13,14 +10,14 @@ import sys
 import os 
 import argparse
 from pathlib import Path
+from process import SimulationProcess
+from object_class import Object
+from inter_trigger_timer import InterTriggerTimer
 
 SIMULATION_ROOT = Path(__file__).resolve().parent.parent
 
 def setup(env: simpy.Environment, params, i, name, f, experiments_root):
     #these imports must stay inside due to the different location of custom_function in a different folder with respect to the core of the simulation
-    from process import SimulationProcess
-    from object_class import Object
-    from inter_trigger_timer import InterTriggerTimer
     
     simulation_process = SimulationProcess(env, params)
     
@@ -56,7 +53,7 @@ def setup(env: simpy.Environment, params, i, name, f, experiments_root):
                 itime = inter_trigger_timer.get_next_arrival(env, obj)
                 net, im, fm = pm4py.read_pnml(pnml_path)
                 id = f"{obj}_{i}"
-                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj, parallel_object)
+                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj, parallel_object, name)
                 simulation_process.add_object(obj_class, obj, id)
                 env.process(obj_class.simulation(itime, env))
                 
