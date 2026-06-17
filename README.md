@@ -30,8 +30,9 @@ pip install -r requirements.txt
 * `analysis`
     * `experiments`
         * `o2d`
-            * `ouput_log`: folder that stores the output of the simulation. 
-        * SCRIPTS FOR GENERAL SIMULATION ANALYSIS
+            * `output_log`: folder that stores the output of the simulation.
+            * `output_analysis`: folder automatically created when running *statistics.py* containing general analysis on the simulation
+        * `statistics.py`: file to run statistics on single runs or on multiple runs
 
 
 ## Getting Started
@@ -39,7 +40,7 @@ pip install -r requirements.txt
 ### Preparation step
 Once the packages are installed, user can: 
 1. Upload the bpmn files for each object type into `input/experiments/experiment_name/bpmn`
-2. Specify the channels between object types and additional parameters in `specification.json`
+2. Specify the channels between object types and additional parameters in `specifications.json`
 3. Add `custom_function.py` for the experiment
 
 Then to prepare the input json for the simulation, inside `input`:
@@ -57,6 +58,12 @@ The `input.json` is created according to the parameters inserted in `specificati
 
 ```shell
 python run_simulation.py experiment_name
+```
+
+### Analysis 
+<ins>Inside analysis folder</ins> you can run `statistics.py` to obtain general statistics on the simulation on a specific experiment. 
+```shell
+python statistics.py experiment_name
 ```
 
 
