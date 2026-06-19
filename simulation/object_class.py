@@ -53,7 +53,7 @@ class Object(object):
                     delete.append(p)
         return delete
 
-    def sample_distribution(self, distribution, parameters):
+    def _sample_distribution(self, distribution, parameters):
         n_sample = getattr(np.random, distribution)(**parameters, size=1)[0]
         if n_sample < 0:
             print("WARNING: Negative value", n_sample)
@@ -61,10 +61,24 @@ class Object(object):
         return int(n_sample)
 
     def check_generator(self, env, next_act):
+        """
+        Method used to check whether the transition next_act emits an object.
+        If it does, the method generates *n* corresponding objects according to the parameters specified in the **input.json file**.
+        For instance:
+        ```json
+        "Place Order": {
+          "obj": "item",
+          "name": "uniform",
+          "parameters": {
+            "low": 2,
+            "high": 3
+          }
+        }
+        ```
+        """
         if next_act in self._object_params["task_generator"]:
-            # "Place Order": {"obj": "item", "name": "uniform", "parameters": {"low": 2, "high": 3} },
             name_obj = self._object_params["task_generator"][next_act]["obj"]
-            n_obj = self.sample_distribution(self._object_params["task_generator"][next_act]["name"], self._object_params["task_generator"][next_act]["parameters"])
+            n_obj = self._sample_distribution(self._object_params["task_generator"][next_act]["name"], self._object_params["task_generator"][next_act]["parameters"])
             for i in range(0, n_obj):
                 net, im, fm = pm4py.read_pnml(self._general_params.objects[name_obj]["path_petrinet"])
                 id = f"{name_obj}_{int(self._id.rsplit('_', 1)[1])}_{self._id_object}"
@@ -78,12 +92,17 @@ class Object(object):
 
     def check_constraints(self, next_act):
         """
-        Constraint format (JSON):
-        Name of the transition: {
+        Checks whether the next transition to be executed has any relationships with transitions of
+        other objects. If such relationships exist, the method extracts the corresponding parameters
+        from the input.json file.
+        For instance:
+        ```json
+        "Name of the transition": {
             "obj": "item",
             "trans": ["Pick Item", "Remove Item"],
-            "card": "All" | "Any" | int | [min, max] | "CUSTOM"
+            "card": "All | Any | int | [min, max] | CUSTOM"
         }
+        ```
         """
 
         info = self._object_params["object_constraints"][next_act]
@@ -93,7 +112,7 @@ class Object(object):
         cardinality = info.get("card", "All")
 
         proceed = False
-        matched = set()
+        selected_messages = {}
 
         if next_act in self._object_params.get("create_relationship", {}):
             type_objects = set(self._process.get_specific_type(obj_type).keys())
@@ -207,17 +226,14 @@ class Object(object):
         """
             The main function to handle the simulation
         """
-        #wait before start
         yield env.timeout(inter_trigger_timer)
         transition = self.next_transition(env)
-        #register trace in process
-        request_resource = None
-        resource_trace = self._process._get_resource_trace()
-        resource_trace_request = resource_trace.request() if self._type == 'sequential' else None
+        resource_object = self._process._get_resource_object()
+        resource_object_request = resource_object.request() if self._type == 'sequential' else None
 
         while transition is not None:
             if not self.see_activity and self._type == 'sequential':
-                yield resource_trace_request
+                yield resource_object_request
             if type(transition) == list:
                 yield AllOf(env, transition)
                 am_after = self._parallel_object._get_last_events()
@@ -241,8 +257,10 @@ class Object(object):
                 self._buffer.set_feature("activity", transition.label)
                 self._buffer.set_feature("prefix",
                                          self.prefix.get_prefix(self._start_time + timedelta(seconds=env.now)))
-                #self._buffer.update_object_attribute(transition.label, self._attribute, self._buffer)                
-                #AGGIUNGERE TODOFIX
+
+                self._attribute = self._custom.update_object_attribute(self._name_object, transition.label, self._attribute)
+                self._buffer.set_feature("attribute_object", self._attribute)
+
 
                 ### call predictor for waiting time
                 if transition.label in self._object_params["resource_table"]:
@@ -250,8 +268,7 @@ class Object(object):
                 else:
                     raise ValueError('Not resource/role defined for this activity', transition.label)
 
-                # self._buffer.set_feature("wip_wait", 0 if type != 'sequential' else resource_trace.count-1)
-                self._buffer.set_feature("wip_wait", resource_trace.count)
+                self._buffer.set_feature("wip_wait", 0 if type != 'sequential' else resource_object.count-1)
                 self._buffer.set_feature("ro_single", self._process.get_occupations_single_role(resource._get_name()))
                 self._buffer.set_feature("ro_total", self._process.get_occupations_all_role())
                 self._buffer.set_feature("role", resource._get_name())
@@ -265,7 +282,6 @@ class Object(object):
                 self._buffer.set_feature("enabled_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
 
                 waiting = self.define_waiting_time(transition.label)
-                #if self.see_activity:
                 yield env.timeout(waiting)
 
                 request_resource = resource.request()
@@ -277,7 +293,7 @@ class Object(object):
                 yield resource_task_request
 
                 ### call predictor for processing time
-                self._buffer.set_feature("wip_start", resource_trace.count)
+                self._buffer.set_feature("wip_start", resource_object.count)
                 self._buffer.set_feature("ro_single", self._process.get_occupations_single_role(resource._get_name()))
                 self._buffer.set_feature("ro_total", self._process.get_occupations_all_role())
                 self._buffer.set_feature("wip_activity", resource_task.count)
@@ -288,7 +304,7 @@ class Object(object):
                 duration = self.define_processing_time(transition.label)
                 yield env.timeout(duration)
 
-                self._buffer.set_feature("wip_end", resource_trace.count)
+                self._buffer.set_feature("wip_end", resource_object.count)
                 self._buffer.set_feature("end_time", (self._start_time + timedelta(seconds=env.now)).replace(microsecond=0))
                 self.prefix.add_activity(transition.label)
                 self.check_generator(env, transition.label)
@@ -326,7 +342,7 @@ class Object(object):
         if self._type == 'sequential':
             self._process.remove_element(self._id)
             self._process.delete_specific_object(self._name_object, self._id)
-            resource_trace.release(resource_trace_request)
+            resource_object.release(resource_object_request)
 
     def _define_relationships(self):
         relationships = self._process.get_relationships(self._id)
@@ -427,21 +443,21 @@ class Object(object):
             **Be careful**: A negative value generated by the distribution is not valid for the simulator.
             ```json
              "processing_time": {
-                 "A_FINALIZED": { "name": "uniform", "parameters": { "low": 3600, "high": 7200}},
+                 "Add Item": { "name": "uniform", "parameters": { "low": 3600, "high": 7200}},
              }
             ```
             * Custom method: it is possible to define a dedicated method that, given the activity and its
             characteristics, returns the duration of processing time required. (CUSTOM)
             ```json
             "processing_time": {
-                 "A_FINALIZED":  { "name": "custom"}
+                 "Add Item":  { "name": "custom"}
             }
             ```
             * Mixed: It is possible to define a distribution function for some activities and a dedicated method for the others.
             ```json
             "processing_time": {
-                 "A_FINALIZED":  { "name": "custom"},
-                 "A_REGISTERED":  { "name": "uniform", "parameters": { "low": 3600, "high": 7200}}
+                 "Add Item":  { "name": "custom"},
+                 "Close Order":  { "name": "uniform", "parameters": { "low": 3600, "high": 7200}}
             }
             ```
         """
@@ -466,21 +482,21 @@ class Object(object):
             **Be careful**: A negative value generated by the distribution is not valid for the simulator.
             ```json
              "waiting_time": {
-                 "A_PARTLYSUBMITTED":  { "name": "uniform", "parameters": { "low": 3600, "high": 7200}}
+                 "Place Order":  { "name": "uniform", "parameters": { "low": 3600, "high": 7200}}
              }
             ```
             * Custom method: it is possible to define a dedicated method that, given the next activity with its
             features, returns the duration of waiting time. (CUSTOM)
             ```json
             "waiting_time": {
-                 "A_PARTLYSUBMITTED": { "name": "custom"}
+                 "Place Order": { "name": "custom"}
             }
             ```
             * Mixed: As the processing time, it is possible to define a mix of methods for each activity.
             ```json
             "waiting_time": {
-                 "A_PARTLYSUBMITTED":  { "name": "custom"},
-                 "A_APPROVED":  { "name": "uniform", "parameters": { "low": 3600, "high": 7200}}
+                 "Place Order":  { "name": "custom"},
+                 "Packing":  { "name": "uniform", "parameters": { "low": 3600, "high": 7200}}
             }
             ```
         """
@@ -501,7 +517,7 @@ class Object(object):
 
     def next_transition(self, env):
         """
-        Method to define the next activity in the petrinet.
+        Method for defining the next activity in the object's Petri net
         """
         all_enabled_transition = semantics.enabled_transitions(self._net, self._am)
         all_enabled_transition = list(all_enabled_transition)

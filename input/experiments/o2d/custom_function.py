@@ -2,7 +2,7 @@
 This file contains all the customizable functions, which the user can define,
 and which are called by the simulator in the specific steps.
 
-The following table describes the case and inter-case features that can be
+The following table describes the case and inter-object features that can be
 used as input from a predictive model.
 
 | Feature      | Description  |
@@ -27,18 +27,18 @@ used as input from a predictive model.
 
 '''
 
-from statsmodels.tsa.ar_model import AutoRegResults
 from simulation.utility import Buffer
+from simulation.process import SimulationProcess
 import random
 import pickle
-from datetime import datetime
 import os
 
 
 def object_function_attribute(object_type: str):
     """
         Function to add one or more attributes to each object type.
-        Each object instance can get a different value for the defined attribute(s). For example, we added a "Price" attribute to the "item" object type.
+        Each object instance can get a different value for the defined attribute(s).
+        For example, we added a "Price" attribute to the "item" object type.
     """
     if object_type == 'item':
         return {"Price": random.randint(50, 1000)}
@@ -46,14 +46,27 @@ def object_function_attribute(object_type: str):
         return {"City": random.choice(["Bolzano", "Milano", "Roma"])}
     else:
         return {}
-    
-def find_objects(process, object_id):
+
+
+def update_object_attribute(object_type: str, transition: str, attribute: dict):
+    """
+            Function to update or add one or more attributes to each object type,
+            during the simulation.
+            Each object instance can get a different value for the defined attribute(s).
+    """
+    if object_type == 'item' and transition == 'Packing':
+        attribute["Price"] += 10
+    return attribute
+
+
+def _find_objects(process, object_id):
     for object_type, objects in process.existing_objects.items():
         if object_id in objects:
             return objects[object_id]
     return None
 
-def custom_cardinality_rule(process, current_object_id, available_objects):
+
+def custom_cardinality_rule(process: SimulationProcess, current_object_id: str, available_objects: list):
     """
         Custom function that defines the shipment characteristics. Since items are liked to orders, they inherity the attribute city. 
         The user can define a custom rule to decide which items to ship together, for example, by grouping the items by city and choosing the largest group.
@@ -63,7 +76,7 @@ def custom_cardinality_rule(process, current_object_id, available_objects):
     min_same_city = 2  # Example parameter for the custom rule
     max_same_city= 4
     items_dict = process.get_specific_type("item")
-    truck = find_objects(process, current_object_id)
+    truck = _find_objects(process, current_object_id)
     
     if truck is None: 
         return False, set()    
@@ -101,7 +114,7 @@ def custom_cardinality_rule(process, current_object_id, available_objects):
     return True, selected
 
 
-def custom_arrivals_time(case, previous):
+def custom_arrivals_time(object: str, previous: int):
     """
     Function to define a new arrival of an object. 
 
@@ -136,6 +149,7 @@ def custom_processing_time(buffer: Buffer):
             }
     ```
     """
+    # se vuoi fare user distribution tua la definisci vuota e lascia return 0. l'input deve essere l'oggetto e il buffer
     buffer.print_values()
     input_feature = list()
     input_feature.append(buffer.get_feature("wip_start"))
@@ -146,8 +160,6 @@ def custom_processing_time(buffer: Buffer):
         open(os.getcwd()+'/example/example_process_times/processing_time_random_forest.pkl', 'rb'))
     y_pred_f = loaded_model.predict([input_feature])
     return int(y_pred_f[0])
-#se vuoi fare user distribution tua la definisci vuota e lascia return 0. l'input deve essere l'oggetto e il buffer 
-
 
 
 def custom_waiting_time(buffer: Buffer):

@@ -32,7 +32,7 @@ class SimulationProcess(object):
         self._date_start = params.START_SIMULATION
         self._resources = self.define_single_role()
         self._resource_events = self._define_resource_events(env)
-        self._resource_trace = simpy.Resource(env, math.inf)
+        self._resource_object = simpy.Resource(env, math.inf)
         self._am_parallel = []
         self.board = MessageBoard(env)
         self.relationships = {}
@@ -114,8 +114,8 @@ class SimulationProcess(object):
     def _get_resource_event(self, task):
         return self._resource_events[task]
 
-    def _get_resource_trace(self):
-        return self._resource_trace
+    def _get_resource_object(self):
+        return self._resource_object
 
     def _define_resource_events(self, env):
         resources = dict()
