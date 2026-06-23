@@ -64,7 +64,6 @@
                         <li><a href="process.html">process</a></li>
                         <li><a href="run_simulation.html">run_simulation</a></li>
                         <li><a href="role_simulator.html">role_simulator</a></li>
-                        <li><a href="example.html">example</a></li>
                         <li><a href="utility.html">utility</a></li>
                 </ul>
             </li></ul>
@@ -353,120 +352,6 @@ This document explains how to configure and fix parameters for each object type 
 
 <h2 id="output">Output files</h2>
 
-<h2>Additional specification</h2>
-
-<h3>Example 1: Create channel 1:N between order and item</h3>
-
-<p>
-Transition <em>Place Order</em> and <em>Add Item</em> spawn new Items.
-</p>
-
-<p><img src="images/place_order.png" alt="Alt Text" width="540"></p>
-
-<pre><code class="language-python">
-"order": {
-    "generator_by": [],
-    "task_generator": {
-        "Place Order": {
-            "obj": "item",
-            "name": "uniform",
-            "parameters": {"low": 2, "high": 3}
-        },
-        "Add Item": {
-            "obj": "item",
-            "name": "uniform",
-            "parameters": {"low": 1, "high": 1}
-        }
-    }
-},
-
-"item": {
-    "generator_by": ["order"]
-}
-</code></pre>
-
-<p>
-In this example the dictionary <code>generator_by</code> belonging to the <em>order</em> object is empty. The <code>task_generator</code> refers to transitions responsible for generation of new object types.
-</p>
-
-<h3>Example 2: Sync channel 1:ALL between order and item</h3>
-
-<p><img src="images/check_out.png" alt="Alt Text" width="540"></p>
-
-<pre><code class="language-python">
-"order": {
-    "object_constraints": {
-        "Check out": {
-            "obj": "item",
-            "trans": ["Pick Item", "Remove Item"],
-            "card": "All"
-        }
-    }
-}
-</code></pre>
-
-<p>
-An order can be checked out only when all its active items have been picked.
-</p>
-
-<pre><code class="language-python">
-"item": {
-    "destroy_relationship": {
-        "Remove Item": "order"
-    }
-}
-</code></pre>
-
-<p>
-Executing <em>Remove Item</em> destroys the relationship between item and order.
-</p>
-
-<h3>Example 3: Sync and create channels between order, item, and truck</h3>
-
-<p><img src="images/packing_deliver.png" alt="Alt Text" width="540"></p>
-
-<pre><code class="language-python">
-"item": {
-    "object_constraints": {
-        "Packing": {
-            "obj": "order",
-            "trans": ["Payment Complete"],
-            "card": "All"
-        },
-        "Delivered": {
-            "obj": "truck",
-            "trans": ["Ship"],
-            "card": "All"
-        }
-    }
-}
-</code></pre>
-
-<p>
-Once shipment is complete, the relationship between item and truck is destroyed.
-</p>
-
-<pre><code class="language-python">
-"truck": {
-    "object_constraints": {
-        "Load": {
-            "obj": "item",
-            "trans": ["Packing"],
-            "card": [10, 20]
-        }
-    },
-    "create_relationship": {
-        "Load": "item"
-    },
-    "destroy_relationship": {
-        "Ship": "item"
-    }
-}
-</code></pre>
-
-<p>
-The Load transition defines how many items are loaded onto a truck, with minimum 10 and maximum 20.
-</p>
 
 <h2 id="authors">Authors</h2>
 <footer>
