@@ -54,8 +54,8 @@ def update_object_attribute(object_type: str, transition: str, attribute: dict):
             during the simulation.
             Each object instance can get a different value for the defined attribute(s).
     """
-    if object_type == 'item' and transition == 'Packing':
-        attribute["Price"] += 10
+    if object_type == 'order' and transition == 'Payment Complete':
+        attribute["status"] = 'paid'
     return attribute
 
 
