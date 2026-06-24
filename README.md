@@ -2,7 +2,7 @@
 
 
 
-Here to see the full documentation, [DORY](https://francescameneghello.github.io/object_centric_simulator/index.html)
+Here to see the full documentation, [DORY](https://francescameneghello.github.io/object_centric_simulator/index_1.html)
 
 
 ## Installation guide
