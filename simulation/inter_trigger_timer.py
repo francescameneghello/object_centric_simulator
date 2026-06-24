@@ -1,5 +1,5 @@
 """
-Class to manage the arrivals times of tokes in the process.
+Class to manage the arrivals times of objects in the process.
 """
 
 import numpy as np
