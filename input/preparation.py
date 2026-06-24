@@ -176,7 +176,6 @@ def read_specifications(spec_path):
         raise FileNotFoundError(f"Specification file not found: {abs_path}")
 
     with open(abs_path, 'r', encoding="utf-8") as f:
-        #data = yaml.safe_load(f)
         data = json.load(f) 
         
     if data is None: 
