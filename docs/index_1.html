@@ -135,32 +135,31 @@ video {
 <h2 id="installation-guide">Installation guide</h2>
 
 <p>It is possible to clone the project from the <a href="https://github.com/francescameneghello/object_centric_simulator">github repository Dory</a>.
-To execute this code, use <b>Python 3.10</b> and install the following main packages:
+To execute this code, use <b>Python 3.10</b> and install the following main packages:</p>
 
 <ul>
-<li>scikit-learn==1.2.1</li>
-<li>scipy==1.11.2</li>
-<li>simpy==4.0.1</li>
-<li>pm4py==2.7.5.2</li>
-<li>statsmodels==0.14.0</li>
-<li>pandas==1.5.3</li>
-</ul></p>
+    <li>scikit-learn==1.2.1</li>
+    <li>scipy==1.11.2</li>
+    <li>simpy==4.0.1</li>
+    <li>pm4py==2.7.5.2</li>
+    <li>statsmodels==0.14.0</li>
+    <li>pandas==1.5.3</li>
+</ul>
 
-<p>or you can use the configuration file called <em>requirements.txt</em> to install all specified package versions.</p>
+<p>Or you can use the configuration file called <em>requirements.txt</em> to install all specified package versions.</p>
 
 <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="w">   </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-   <span class="w"></span>conda<span class="w"> </span>activate<span class="w"> </span>rims_tool</code></pre>
+<pre><span></span><code>pip install -r requirements.txt
+</code></pre>
 </div>
 
 <p>Otherwise, with the anaconda system you can create an environment using the environment.yml specification provided in the repository.</p>
 
- <div class="pdoc-code codehilite">
-<pre><span></span><code><span class="w">   </span>conda<span class="w"> </span>activate<span class="w"> </span>rims_tool
-   <span class="w"></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>rims_tool.yml
+<div class="pdoc-code codehilite">
+<pre><span></span><code>conda env create -f environment.yml
+conda activate dory
 </code></pre>
 </div>
-
 <h2 id="structure">Structure</h2>
 
 <ul>

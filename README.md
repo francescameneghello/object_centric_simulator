@@ -1,8 +1,13 @@
-# Simulating Dynamic Relationships in Object-Centric Processes
+# DORY: Dynamic Object-centric Relations for sYnthetic simulation
 
+Object-centric process mining models real-world scenarios where multiple interdependent objects co-evolve during execution. Unlike traditional case-based approaches, object-centric event logs capture the full complexity of these interactions. However, existing simulation tools fail to capture the dynamic evolution of objects and their interactions, including their creation, modification, removal, and evolving relationships over time. DORY is an object-centric process simulator designed to address these limitations. The system supports multi- object processes where instances are dynamically generated, and removed throughout execution. By combining Petri net–based process definitions with configurable simulation parameters, DORY enables the generation of realistic object-centric event logs for process analysis
 
+![](docs/images/pipeline.png)
 
 Here to see the full documentation, [DORY](https://francescameneghello.github.io/object_centric_simulator/index_1.html)
+
+## Video
+The demonstrattion video is in *docs/images* folder or at the following link [video tutorial](https://francescameneghello.github.io/object_centric_simulator/index_1.html#video-tutorial).
 
 
 ## Installation guide
