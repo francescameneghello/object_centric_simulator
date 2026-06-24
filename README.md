@@ -26,6 +26,11 @@ or you can use the configuration file called requirements.txt to install all spe
 ```shell
 pip install -r requirements.txt
 ```
+Otherwise, with the anaconda system you can create an environment using the environment.yml specification provided in the repository.
+```shell
+conda env create -f environment.yml
+conda activate dory
+```
 
 ## Structure 
 * `input`: 
