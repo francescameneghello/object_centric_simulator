@@ -13,6 +13,7 @@ import csv
 from utility import Buffer, ParallelObject
 from importlib import import_module
 
+
 class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
@@ -115,7 +116,7 @@ class Object(object):
         selected_messages = {}
 
         if next_act in self._object_params.get("create_relationship", {}):
-            type_objects = set(self._process.get_specific_type(obj_type).keys())
+            type_objects = set(self._process._get_specific_type(obj_type).keys())
             picked_messages = {
                 (item_id, action, ref)
                 for item_id, action, ref in self._process.board.messages
@@ -340,8 +341,8 @@ class Object(object):
         if self._type == 'parallel':
             self._parallel_object._set_last_events(self._am)
         if self._type == 'sequential':
-            self._process.remove_element(self._id)
-            self._process.delete_specific_object(self._name_object, self._id)
+            self._process._remove_element(self._id)
+            self._process._delete_specific_object(self._name_object, self._id)
             resource_object.release(resource_object_request)
 
     def _define_relationships(self):
@@ -562,5 +563,5 @@ class Object(object):
         objects_related_keys = self._process.get_relationships(self._id)
         object_class_list = []
         for key in objects_related_keys:
-            object_class_list.append(self._process.get_specific_object(key.split("_")[0], key))
+            object_class_list.append(self._process._get_specific_object(key.split("_")[0], key))
         return self._custom.custom_decision_mining(self._buffer, object_class_list, all_enabled_transition)

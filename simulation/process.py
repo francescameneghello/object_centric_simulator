@@ -30,7 +30,7 @@ class SimulationProcess(object):
         self._env = env
         self._params = params
         self._date_start = params.START_SIMULATION
-        self._resources = self.define_single_role()
+        self._resources = self._define_single_role()
         self._resource_events = self._define_resource_events(env)
         self._resource_object = simpy.Resource(env, math.inf)
         self._am_parallel = []
@@ -48,7 +48,7 @@ class SimulationProcess(object):
         else:
             self.relationships[id_obj_2] = {id_obj_1}
 
-    def remove_element(self, id_obj):
+    def _remove_element(self, id_obj):
         del self.relationships[id_obj]
         for o in self.relationships:
             self.relationships[o].discard(id_obj)
@@ -62,22 +62,22 @@ class SimulationProcess(object):
     def get_relationships(self, id_obj):
         return self.relationships[id_obj] if id_obj in self.relationships else {}
 
-    def print_relationships(self):
+    def _print_relationships(self):
         print(self.relationships)
 
     def add_object(self, object, object_type, id_object):
         self.existing_objects.setdefault(object_type, {})[id_object] = object
 
-    def get_specific_type(self, object_type):
+    def _get_specific_type(self, object_type):
         return self.existing_objects[object_type] if object_type in self.existing_objects else {}
 
-    def get_specific_object(self, object_type, id):
+    def _get_specific_object(self, object_type, id):
         return self.existing_objects[object_type][id]
 
-    def delete_specific_object(self, object_type, id):
+    def _delete_specific_object(self, object_type, id):
         del self.existing_objects[object_type][id]
 
-    def define_single_role(self):
+    def _define_single_role(self):
         """
         Definition of a *RoleSimulator* object for each role in the process.
         """

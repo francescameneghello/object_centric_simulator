@@ -75,7 +75,7 @@ def custom_cardinality_rule(process: SimulationProcess, current_object_id: str, 
     """
     min_same_city = 2  # Example parameter for the custom rule
     max_same_city= 4
-    items_dict = process.get_specific_type("item")
+    items_dict = process._get_specific_type("item")
     truck = _find_objects(process, current_object_id)
     
     if truck is None: 
