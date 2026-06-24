@@ -4,10 +4,9 @@ Object-centric process mining models real-world scenarios where multiple interde
 
 ![](docs/images/pipeline.png)
 
-Here to see the full documentation, [DORY](https://francescameneghello.github.io/object_centric_simulator/index_1.html)
-
+Here to see the full documentation, [DORY](https://francescameneghello.github.io/object_centric_simulator/)
 ## Video
-The demonstrattion video is in *docs/images* folder or at the following link [video tutorial](https://francescameneghello.github.io/object_centric_simulator/index_1.html#video-tutorial).
+The demonstrattion video is in *docs/images* folder or at the following link [video tutorial](https://francescameneghello.github.io/object_centric_simulator/#video-tutorial).
 
 
 ## Installation guide
