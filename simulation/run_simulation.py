@@ -49,7 +49,7 @@ def setup(env: simpy.Environment, params, i, name, f, experiments_root):
                 #interval = getattr(np.random, distribution)(**parameters, size=1)[0]
                 #itime = interval
                 timer_config = params.objects[obj]["interTriggerTimer"]
-                inter_trigger_timer = InterTriggerTimer(timer_config, simulation_process, params.START_SIMULATION)
+                inter_trigger_timer = InterTriggerTimer(timer_config, simulation_process, params.START_SIMULATION, name)
                 itime = inter_trigger_timer.get_next_arrival(env, obj)
                 net, im, fm = pm4py.read_pnml(pnml_path)
                 id = f"{obj}_{i}"
@@ -68,6 +68,7 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
         output_dir.mkdir(parents=True, exist_ok=True)
         
         log_file = output_dir / f"simulated_log_{name}_{i}.csv"
+        
         with open(log_file, 'w') as f:
             params = Parameters(path_parameter)
             env = simpy.Environment()
@@ -77,7 +78,7 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
 def main(path_parameter: str, name: str):
     print(path_parameter, name)
     run_simulation(path_parameter, name, n_simulation=1)
-    #n_simulation PARAM TO CHANGE to run multiple simuulations
+    #n_simulation PARAM TO CHANGE to run multiple simulations
     
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")

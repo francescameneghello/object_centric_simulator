@@ -42,7 +42,7 @@
   <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
   <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
 </svg>                &nbsp;
-                Module Index
+                DORY
             </a>
 
 
@@ -81,37 +81,34 @@
 
    <p><img src="images/framework.png" alt="Alt Text" width="540"></p>
 
-   <p> A customer creates an order, specifying the delivery address. The order pertains a number of items.
-       Each item has its own price, and represents a good to be delivered.
+   <p> Here we present a order-to-ship process. The image above shows the simulation framework to represents this process. 
+    Below, you will find the implementation details related to channel specifications to be inserted in the <code>specifications.json</code> file.<br>
+    In particular, customer creates an order, specifying the delivery address. The order pertains a number of items.
+       Each item has its own price, and represents a good to be delivered.<br>
        Before checking out, the customer can modify the order by removing or adding items.
-       Once all the items are confirmed, the order can proceed to check out and payment.
+       Once all the items are confirmed, the order can proceed to check out and payment.<br>
        The payment can be made by credit card or bank transfer: if the price of all items is lower than 1000 (EUR) the order is paid by Bank transfer,
-       otherwise by Credit Card. As soon as the payment is confirmed the order proceeds with the packing and delivery by trucks.
+       otherwise by Credit Card. As soon as the payment is confirmed the order proceeds with the packing and delivery by trucks.<br>
        Trucks are responsible for delivering items, which may belong to different orders; each truck has a capacity, namely the maximum
-       number of items that it can deliver. After re-fueling and check-up, a truck is ready to load items that are ready to be shipped - namely, those that have completed packing - based on its capacity and/or the delivery addresses associated with the items. When the truck has terminated the delivery of all packages, it moves back to the warehouse and may load other ready items. The process terminates when all items belonging to the created orders have been delivered by truck.</p>
+       number of items that it can deliver. After re-fueling and check-up, a truck is ready to load items that are ready to be shipped - namely, those that have completed packing - 
+       based on its capacity and/or the delivery addresses associated with the items. <br>
+       When the truck has terminated the delivery of all packages, it moves back to the warehouse and may load other ready items. 
+       The process terminates when all items belonging to the created orders have been delivered by truck.</p>
 
-<h3>Example 1: Create channel 1:N between order and item</h3>
-
+<h3>Case 1: Create channel 1:N between <em>order</em> and <em>item</em></h3> 
 <p>
 Transition <em>Place Order</em> and <em>Add Item</em> spawn new Items.
 </p>
 
-<p><img src="images/place_order.png" alt="Alt Text" width="540"></p>
+<p><img src="images/place_order.png" alt="Alt Text" width="300"></p>
+
 
 <pre><code class="language-python">
 "order": {
     "generator_by": [],
     "task_generator": {
-        "Place Order": {
-            "obj": "item",
-            "name": "uniform",
-            "parameters": {"low": 2, "high": 3}
-        },
-        "Add Item": {
-            "obj": "item",
-            "name": "uniform",
-            "parameters": {"low": 1, "high": 1}
-        }
+        "Place Order": {"obj": "item","name": "uniform","parameters": {"low": 2, "high": 3}},
+        "Add Item": {"obj": "item","name": "uniform","parameters": {"low": 1, "high": 1}}
     }
 },
 
@@ -121,27 +118,29 @@ Transition <em>Place Order</em> and <em>Add Item</em> spawn new Items.
 </code></pre>
 
 <p>
-In this example the dictionary <code>generator_by</code> belonging to the <em>order</em> object is empty. The <code>task_generator</code> refers to transitions responsible for generation of new object types.
+In this example the dictionary <code>generator_by</code> belonging to the <em>order</em> object is empty. 
+The <code>task_generator</code> refers to transitions responsible for generation of new object types, in this case the object type <em>order</em> instantiates new <em>items</em>.
+The values of both <code>Place Order</code> and <code>Add Item</code>keys are dictionaries themselves: <code>obj</code> refers to the type of objects that will be spawned when the transition is executed;
+<code>name</code> is the probability distribution used to decide how many objects to generates, in this case <code>uniform</code>, with its own <code>parameters</code>. 
 </p>
 
-<h3>Example 2: Sync channel 1:ALL between order and item</h3>
+<p>On the other hand, in the <em>item</em> object specification of the input parameters, <code>generator_by": ["order"]</code>, specifies this create channel between items and order.</p>
 
-<p><img src="images/check_out.png" alt="Alt Text" width="540"></p>
+<h3>Case 2: Sync channel 1:ALL between <em>order</em> and <em>item</em></h3>
+
+<p><img src="images/check_out.png" alt="Alt Text" width="400", height="auto"></p>
 
 <pre><code class="language-python">
 "order": {
     "object_constraints": {
-        "Check out": {
-            "obj": "item",
-            "trans": ["Pick Item", "Remove Item"],
-            "card": "All"
-        }
+        "Check out": {"obj": "item","trans": ["Pick Item", "Remove Item"],"card": "All"}
     }
 }
 </code></pre>
 
 <p>
 An order can be checked out only when all its active items have been picked.
+This is represented respectively by the <em>item</em> element, the transition <code>Pick Item</code>,  and the <code>"card": "All"</code>, which specifies the cardinality of the channel.
 </p>
 
 <pre><code class="language-python">
@@ -153,55 +152,49 @@ An order can be checked out only when all its active items have been picked.
 </code></pre>
 
 <p>
+This example also shows the case in which an item is removed from an order.  
+In the <em>Item</em> specification, the <code>destroy_relationship</code> field defines which relationships should be removed when a given action is executed.
 Executing <em>Remove Item</em> destroys the relationship between item and order.
 </p>
 
-<h3>Example 3: Sync and create channels between order, item, and truck</h3>
+<h3>Case 3: Sync and create channels between <em>order</em>, <em>item</em>, and <em>truck</em></h3>
+<p><img src="images/packing_deliver.png" alt="Alt Text" width="300"></p>
 
-<p><img src="images/packing_deliver.png" alt="Alt Text" width="540"></p>
+<p>
+This example collects some new elements and some already explained previously. 
+In particular, as soon as the payment of the <em>order</em> is confirmed, the <em>item</em> proceeds with the packing and delivery by <em>trucks</em>.
+</p>
+
 
 <pre><code class="language-python">
 "item": {
     "object_constraints": {
-        "Packing": {
-            "obj": "order",
-            "trans": ["Payment Complete"],
-            "card": "All"
-        },
-        "Delivered": {
-            "obj": "truck",
-            "trans": ["Ship"],
-            "card": "All"
-        }
+        "Packing": {"obj": "order","trans": ["Payment Complete"],"card": "All"},
+        "Delivered": {"obj": "truck","trans": ["Ship"], "card": "All"}
     }
 }
 </code></pre>
 
+
 <p>
-Once shipment is complete, the relationship between item and truck is destroyed.
+ The truck ships the items it has loaded.
+ Once the shipment is complete, two things happen: the <code>Delivered</code>transition is fired in the item process, and the relationship between <em>item</em> and <em>truck</em> is destroyed.
 </p>
 
 <pre><code class="language-python">
 "truck": {
     "object_constraints": {
-        "Load": {
-            "obj": "item",
-            "trans": ["Packing"],
-            "card": [10, 20]
-        }
+        "Load": {"obj": "item","trans": ["Packing"],"card": [10, 20]}
     },
-    "create_relationship": {
-        "Load": "item"
-    },
-    "destroy_relationship": {
-        "Ship": "item"
-    }
+    "create_relationship": {"Load": "item"},
+    "destroy_relationship": {"Ship": "item"}
 }
 </code></pre>
-
-<p>
-The Load transition defines how many items are loaded onto a truck, with minimum 10 and maximum 20.
+<p>The <code>object_contrstraints</code> refers to the <code>Load</code> transition that has to be executed on <em>item</em> objects that has to be packed. 
+    The parameters represent the minimun number of items to be loaded onto the truck (10) and the capacity of the truck (20). 
+    With the keyword "CUSTOM" in the <code>"card"</code> entry is possible to define custom logics in <code>custom_functions.py</code> file for each experiment. 
 </p>
+
 <script>
     function escapeHTML(html) {
         return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;

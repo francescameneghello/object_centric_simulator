@@ -141,7 +141,7 @@ Here additional example are provided to simplify the specification of the parame
 
     This example also shows the case in which an item is removed from an order. In the *item* specification, the `"destroy_relationship"` field defines which relationships should be removed when a given action is executed. For example, `{"Remove Item": "order"}` means that executing the *Remove Item* action will destroy the relationship between *item* and *order*.
     
-3. Sync channel 1:1 *order* and *item*; Create channel 1:N *item* and *truck*, Sync channel 1:N *item* and *truck*
+3. Sync and create channels between *order*, *item*, and *truck*
 
     ![](docs/images/packing_deliver.png)
 
@@ -155,7 +155,6 @@ Here additional example are provided to simplify the specification of the parame
         }
     }
     ```
-    <!-- "object_constraints": { "Packing":  ["order", ["Payment Complete"],"All"], "Delivered": ["truck", ["Ship"], "All"]},} -->
 
     The truck ships the items it has loaded. Once the shipment is complete, two things happen: the *Delivered* transition is fired in the item process, and the relationship between *item* and *truck* is destroyed.
 
@@ -166,5 +165,4 @@ Here additional example are provided to simplify the specification of the parame
         "destroy_relationship": {"Ship": "item"}
     }
     ```
-    <!-- "object_constraints": {"Load": ["item", ["Packing"], 10, 20]}, -->
     The `"object_constraints"` refers to the *Load* transition that has to be executed on *item* objects that has to be packed. The parameters represent the minimun number of items to be loaded onto the truck (10) and the capacity of the truck (20). 
