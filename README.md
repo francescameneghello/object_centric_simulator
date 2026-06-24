@@ -1,5 +1,10 @@
 # Simulating Dynamic Relationships in Object-Centric Processes
 
+
+
+Here to see the full documentation, [DORY](https://francescameneghello.github.io/object_centric_simulator/index.html)
+
+
 ## Installation guide
 
 To execute this code, use **Python 3.10** and install the following main packages:
