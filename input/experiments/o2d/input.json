@@ -12,14 +12,14 @@
                         "high": 5
                     }
                 },
-                "Remove Item": {
+                "Pick Item": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
                         "high": 5
                     }
                 },
-                "Pick Item": {
+                "Remove Item": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
@@ -54,14 +54,14 @@
             },
             "resource_table": {
                 "Select": "Role item",
-                "Remove Item": "Role item",
                 "Pick Item": "Role item",
+                "Remove Item": "Role item",
                 "Packing": "Role item",
                 "Delivered": "Role item"
             },
             "probability": {
-                "Remove Item": "AUTO",
-                "Pick Item": "AUTO"
+                "Pick Item": "AUTO",
+                "Remove Item": "AUTO"
             },
             "generator_by": ["order"],
             "generate": [],
@@ -84,7 +84,7 @@
             }
         },
         "order": {
-            "n_objects": 4,
+            "n_objects": 10,
             "path_petrinet": "petrinet/order_objects.pnml",
             "interTriggerTimer": {
                 "type": "distribution",
@@ -166,13 +166,13 @@
                 "Payment Complete": "Role order"
             },
             "probability": {
-                "tau_4": "AUTO",
-                "tau_1": "AUTO",
+                "tau_2": "AUTO",
+                "tau_3": "AUTO",
                 "Pay BT": "AUTO",
                 "Close Order": "AUTO",
                 "Pay CC": "AUTO",
-                "tau_2": "AUTO",
-                "tau_3": "AUTO"
+                "tau_4": "AUTO",
+                "tau_1": "AUTO"
             },
             "generator_by": [],
             "generate": ["item"],
@@ -263,8 +263,8 @@
                 "Go Back": "Role truck"
             },
             "probability": {
-                "Go Back": 1.0,
-                "tau_1": 0.0
+                "tau_1": "AUTO",
+                "Go Back": "AUTO"
             },
             "generator_by": [],
             "generate": [],
@@ -273,7 +273,7 @@
                 "Load": {
                     "obj": "item",
                     "trans": ["Packing"],
-                    "card": "CUSTOM"
+                    "card": ["CUSTOM"]
                 }
             },
             "create_relationship": {

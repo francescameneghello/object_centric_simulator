@@ -10,14 +10,6 @@
           <text>sink</text>
         </name>
       </place>
-      <place id="source">
-        <name>
-          <text>source</text>
-        </name>
-        <initialMarking>
-          <text>1</text>
-        </initialMarking>
-      </place>
       <place id="place_1">
         <name>
           <text>place_1</text>
@@ -33,16 +25,14 @@
           <text>place_3</text>
         </name>
       </place>
-      <transition id="Remove Item">
+      <place id="source">
         <name>
-          <text>Remove Item</text>
+          <text>source</text>
         </name>
-      </transition>
-      <transition id="Pick Item">
-        <name>
-          <text>Pick Item</text>
-        </name>
-      </transition>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
       <transition id="Select">
         <name>
           <text>Select</text>
@@ -53,21 +43,31 @@
           <text>Packing</text>
         </name>
       </transition>
+      <transition id="Pick Item">
+        <name>
+          <text>Pick Item</text>
+        </name>
+      </transition>
+      <transition id="Remove Item">
+        <name>
+          <text>Remove Item</text>
+        </name>
+      </transition>
       <transition id="Delivered">
         <name>
           <text>Delivered</text>
         </name>
       </transition>
-      <arc id="135633698061184" source="place_2" target="Remove Item" />
-      <arc id="135633698060944" source="Delivered" target="sink" />
-      <arc id="135633698060560" source="Packing" target="place_3" />
-      <arc id="135633695853728" source="place_3" target="Delivered" />
-      <arc id="135633698059696" source="Remove Item" target="sink" />
-      <arc id="135633698061280" source="place_2" target="Pick Item" />
-      <arc id="135633695856848" source="place_1" target="Packing" />
-      <arc id="135633698048848" source="Pick Item" target="place_1" />
-      <arc id="135633698062048" source="source" target="Select" />
-      <arc id="135633698056432" source="Select" target="place_2" />
+      <arc id="133063040907776" source="Select" target="place_2" />
+      <arc id="133063038678064" source="place_2" target="Pick Item" />
+      <arc id="133063040907920" source="Remove Item" target="sink" />
+      <arc id="133063038673456" source="place_3" target="Packing" />
+      <arc id="133063040908208" source="Pick Item" target="place_3" />
+      <arc id="133063038674512" source="place_1" target="Delivered" />
+      <arc id="133063038677968" source="place_2" target="Remove Item" />
+      <arc id="133063040907488" source="Packing" target="place_1" />
+      <arc id="133063038678160" source="source" target="Select" />
+      <arc id="133063038677872" source="Delivered" target="sink" />
     </page>
     <finalmarkings>
       <marking>

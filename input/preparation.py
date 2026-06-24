@@ -77,8 +77,10 @@ def rename_petrinet(input_pnml, output_pnml):
             tau_counter += 1
             id_map[old_id] = new_id
             trans.attrib["id"] = new_id
-            if name is not None and text is not None:
-                text.text = new_id
+            if name is not None: 
+                text = name.find("text")
+                if text is not None:
+                    text.text = new_id
         # 2.b Activities
         else:
             if name_text is None:
@@ -369,7 +371,47 @@ def dumps_compact_lists(obj, indent=4, level=0):
 
     return json.dumps(obj)
 
+def get_input_mode_and_files(bpmn_dir, pnml_dir):
+    """Decides whether to use BPMN or existing PNML files."""
+    bpmn_files = list(bpmn_dir.glob("*.bpmn")) if bpmn_dir.exists() else []
+    pnml_files = list(pnml_dir.glob("*.pnml")) if pnml_dir.exists() else []
 
+    if bpmn_files:
+        return "bpmn", bpmn_files
+    return "pnml", pnml_files
+
+
+def process_bpmn_folder(bpmn_files, pnml_dir):
+    pnml_dir.mkdir(exist_ok=True, parents=True)
+
+    for file_path in bpmn_files:
+        print(f"\nProcessing BPMN: {file_path}")
+
+        pnml_path = bpmn_to_pnml(str(file_path), str(pnml_dir))
+        if pnml_path is None:
+            print("Stopped execution due to unsound conversion.")
+            return False
+
+        if not rename_petrinet(pnml_path, pnml_path):
+            print("Stopped execution due to unsound renaming.")
+            return False
+
+        visualize_petrinet(pnml_path)
+
+    return True
+
+
+def process_pnml_folder(pnml_files):
+    for file_path in pnml_files:
+        print(f"\nProcessing PNML: {file_path}")
+
+        if not rename_petrinet(str(file_path), str(file_path)):
+            print("Stopped execution due to unsound renaming.")
+            return False
+
+        visualize_petrinet(str(file_path))
+
+    return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -385,41 +427,30 @@ if __name__ == "__main__":
     
     bpmn_dir = experiment_dir / "bpmn"
     pnml_dir = experiment_dir / "petrinet"
-    #spec_path = experiment_dir / "specifications.yml"
     spec_path = experiment_dir / "specifications.json"
     output_json = experiment_dir / "input.json"
     
-    #Check that bpmn folder exists and is nonempty 
-    if not bpmn_dir.exists():
-        raise FileNotFoundError(f"BPMN folder does not exist: {bpmn_dir}")
+    bpmn_files = list(bpmn_dir.glob("*.bpmn")) if bpmn_dir.exists() else []
+    pnml_files = list(pnml_dir.glob("*.pnml")) if pnml_dir.exists() else []
     
-    bpmn_files = list(bpmn_dir.glob("*.bpmn"))
-    if len(bpmn_files) == 0:
-        raise ValueError(f"No BPMN files found in: {bpmn_dir}")
-
-
-    pnml_dir.mkdir(exist_ok=True, parents=True)
+    mode, files = get_input_mode_and_files(bpmn_dir, pnml_dir)
     
-    pattern = str(bpmn_dir / '*.bpmn')
+    if not files:
+        raise FileNotFoundError(
+            f"No BPMN files found in '{bpmn_dir}' and no PNML files found in '{pnml_dir}'."
+        )
+
+    print(f"Detected mode: {mode}")
+
+    if mode == "bpmn":
+        ok = process_bpmn_folder(files, pnml_dir)
+    else:
+        ok = process_pnml_folder(files)
+
+    if not ok:
+        print("Pipeline stopped due to errors.")
+        exit(1)
     
-    for file_path in glob.glob(pattern):
-        print(f"\nProcessing: {file_path}")
-
-        # 1. Transform step
-        pnml_path = bpmn_to_pnml(file_path, pnml_dir)
-        if pnml_path is None:
-            print("Stopped execution due to unsound network conversion.")
-            break
-
-        # 2. Rename step
-        rename_success = rename_petrinet(pnml_path, pnml_path)
-        if not rename_success:
-            print("Stopped execution due to unsound renaming layout.")
-            break
-
-        # 3. Visualize step
-        visualize_petrinet(pnml_path)
-        
     if spec_path.exists():
         result = build_per_object_template(str(pnml_dir), str(spec_path), str(experiment_dir))
         
