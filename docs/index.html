@@ -19,44 +19,49 @@
         flex-wrap:wrap;
     }header.pdoc
                 img{max-width:200px;max-height:150px;padding-right:2rem;}
-    header.pdoc input[type=search]{outline-offset:0;font-size:1.5rem;min-width:60%;flex-grow:1;padding-left:.5rem;margin:1.75rem 0;}</style><script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']]
+    header.pdoc input[type=search]{outline-offset:0;font-size:1.5rem;min-width:60%;flex-grow:1;padding-left:.5rem;margin:1.75rem 0;}</style>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        /* Re-invoke MathJax when DOM content changes, for example during search. */
+        document.addEventListener("DOMContentLoaded", () => {
+            new MutationObserver(() => MathJax.typeset()).observe(
+                document.querySelector("main.pdoc").parentNode,
+                {childList: true}
+            );
+        })
+    </script>
+    <style>
+        mjx-container {
+            overflow-x: auto;
         }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-    /* Re-invoke MathJax when DOM content changes, for example during search. */
-    document.addEventListener("DOMContentLoaded", () => {
-        new MutationObserver(() => MathJax.typeset()).observe(
-            document.querySelector("main.pdoc").parentNode,
-            {childList: true}
-        );
-    })
-</script>
-<style>
-    mjx-container {
-        overflow-x: auto;
-    }
-</style></head>
+    </style>
+</head>
 <body>
     <nav class="pdoc">
-        <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
+        <label id="navtoggle" for="togglestate" class="pdoc-button">
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
+                <path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/>
+            </svg>
+        </label>
         <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
-        <div>    <h2><a href="https://github.com/francescameneghello/object_centric_simulator">$\textsf{DORY}$</a></h2><p></p>
-    <ul>
-            <li><a href="#logo">Overview</a></li>
-            <li><a href="#video-tutorial">Video tutorial</a></li>
-            <li><a href="#installation-guide">Installation guide</a></li>
-            <li><a href="#getting-started">Getting Started</a></li>
-            <li><a href="#input">Input files</a></li>
-            <li><a href="#output">Output files</a></li>
-            <li><a href="documentation.html">Documentation</a></li>
-                <ul class="memberlist">
-            <li>
-                            <ul class="memberlist">
+        <div>    
+            <h2><a href="https://github.com/francescameneghello/object_centric_simulator">$\textsf{DORY}$</a></h2><p></p>
+            <ul>
+                <li><a href="#logo">Overview</a></li>
+                <li><a href="#video-tutorial">Video tutorial</a></li>
+                <li><a href="#installation-guide">Installation guide</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#input">Input files</a></li>
+                <li><a href="#output">Output files</a></li>
+                <li><a href="documentation.html">Documentation</a></li>
+                    <ul class="memberlist">
                         <li><a href="custom_function.html">custom_function</a></li>
                         <li><a href="object_class.html">object_class</a></li>
                         <li><a href="inter_trigger_timer.html">inter_trigger_timer</a></li>
@@ -65,485 +70,453 @@
                         <li><a href="run_simulation.html">run_simulation</a></li>
                         <li><a href="role_simulator.html">role_simulator</a></li>
                         <li><a href="utility.html">utility</a></li>
-                </ul>
-            </li></ul>
-            <li><a href="example.html">Example</a></li>
-
-    </ul>
-</div>
+                    </ul>
+                </li>
+                <li> <a href="example.html">Example</a></li>
+            </ul>
+        </div>
     </nav>
     <header>
-            <style>
-            img {
-              display: block;
-              margin-left: auto;
-              margin-right: auto;
-                max-width: 100%;
+        <style>
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+        }
+        </style>
+        
+        <style>
+            .caption-text {
+                font-style: italic;
+                text-align: center;
             }
-            </style>
-
-    <img id="logo" src="images/logo.png" alt="Paris" style="width:25%;">
-    <style>
-        .caption-text {
-            font-style: italic;
-        }
-    </style>
-    <style>
-        .align-center {
-            text-align: center;
-        }
-    </style>
-    <img><span class="align-center">
-        <h2 class="caption-text">$\textsf{DORY}$: Dynamic Object-centric Relations for sYnthetic simulation</h2></span></img>
-
+        </style>
+        <img id="logo" src="images/logo.png" alt="Paris" style="width:25%;">
+        <h2 class="caption-text">$\textsf{DORY}$: Dynamic Object-centric Relations for sYnthetic simulation</h2>
     </header>
 
     <main class="pdoc">
         <section class="module-info">
-                    <h1 class="modulename"></h1>
+            <div class="docstring">
+                <p>
+                    Object-centric process mining models real-world scenarios where multiple interdependent objects co-evolve
+                    during execution. Unlike traditional case-based approaches, object-centric event logs capture the full complexity
+                    of these interactions. However, existing simulation tools fail to capture the dynamic evolution of objects and
+                    their interactions, including their creation, modification, removal, and evolving relationships over time.
+                    DORY is an object-centric process simulator designed to address these limitations. The system supports multi-
+                    object processes where instances are dynamically generated and removed throughout execution. By combining
+                    Petri net–based process definitions with configurable simulation parameters, DORY enables the generation of
+                    realistic object-centric event logs for process analysis.
+                </p>
+            </div>
+        </section>
+        <h2 id="video-tutorial">Video tutorial</h2>
+        <style>
+            video {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+                width: 100%;
+                height: 400px;
+            }
+        </style>
+        <div class="embed-responsive embed-responsive-1by1">
 
-                        <p class="docstring">
+            <video width="320" height="240" controls>
 
-                            <p>Object-centric process mining models real-world scenarios where multiple interdependent objects co-evolve
-during execution. Unlike traditional case-based approaches, object-centric event logs capture the full complexity
-of these interactions. However, existing simulation tools fail to capture the dynamic evolution of objects and
-their interactions, including their creation, modification, removal, and evolving relationships over time.
-DORY is an object-centric process simulator designed to address these limitations. The system supports multi-
-object processes where instances are dynamically generated, and removed throughout execution. By combining
-Petri net–based process definitions with configurable simulation parameters, DORY enables the generation of
-realistic object-centric event logs for process analysis.</p>
-
-<h2 id="video-tutorial">Video tutorial</h2>
-<style>
-video {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-    width: 100%;
-    height: 400px;
-}
-</style>
-<div class="embed-responsive embed-responsive-1by1">
-
-    <video width="320" height="240" controls>
-
-      <source src="images/video_correct.mp4" type=video/mp4>
-    </video>
-</div>
-
-
-<h2 id="installation-guide">Installation guide</h2>
-
-<p>It is possible to clone the project from the <a href="https://github.com/francescameneghello/object_centric_simulator">github repository Dory</a>.
-To execute this code, use <b>Python 3.10</b> and install the following main packages:</p>
-
-<ul>
-    <li>scikit-learn==1.2.1</li>
-    <li>scipy==1.11.2</li>
-    <li>simpy==4.0.1</li>
-    <li>pm4py==2.7.5.2</li>
-    <li>statsmodels==0.14.0</li>
-    <li>pandas==1.5.3</li>
-</ul>
-
-<p>Or you can use the configuration file called <em>requirements.txt</em> to install all specified package versions.</p>
-
-<div class="pdoc-code codehilite">
-<pre><span></span><code>pip install -r requirements.txt
-</code></pre>
-</div>
-
-<p>Otherwise, with the anaconda system you can create an environment using the environment.yml specification provided in the repository.</p>
-
-<div class="pdoc-code codehilite">
-<pre><span></span><code>conda env create -f environment.yml
-conda activate dory
-</code></pre>
-</div>
-<h2 id="structure">Structure</h2>
-
-<ul>
-
-  <li class="folder">input
-    <ul>
-      <li class="folder">experiments
+            <source src="images/video_correct.mp4" type=video/mp4>
+            </video>
+        </div>
+        <h2 id="installation-guide">Installation guide</h2>
+        <p>It is possible to clone the project from the <a href="https://github.com/francescameneghello/object_centric_simulator">github repository Dory</a>.
+        To execute this code, use <b>Python 3.10</b> and install the following main packages:</p>
         <ul>
-          <li class="folder">o2d (order-2-delivery example)
-            <ul>
-              <li class="folder">bpmn <span class="note">- BPMN files for each object type</span></li>
-              <li class="folder">petrinet <span class="note">- Generated Petri nets and PNG images</span></li>
-              <li class="file">custom_function.py <span class="note">- Custom rules for experiment</span></li>
-              <li class="file">specification.json <span class="note">- Parameters for simulation input.json construction</span></li>
-            </ul>
-          </li>
+            <li>scikit-learn==1.2.1</li>
+            <li>scipy==1.11.2</li>
+            <li>simpy==4.0.1</li>
+            <li>pm4py==2.7.5.2</li>
+            <li>statsmodels==0.14.0</li>
+            <li>pandas==1.5.3</li>
         </ul>
-      </li>
+        <p>Or you can use the configuration file called <em>requirements.txt</em> to install all specified package versions.</p>
+        <pre><code>pip install -r requirements.txt</code></pre>
 
-      <li class="file">preparation.py <span class="note">- Converts BPMN to Petri nets and builds input.json</span></li>
-    </ul>
-  </li>
+        <p>Otherwise, with the anaconda system you can create an environment using the dory.yml specification provided in the repository.</p>
+        <pre><code>
+        conda env create -f dory.yml
+        conda activate dory
+        </code></pre>
 
-  <li class="folder">simulation <span class="note">- Simulation engine code</span></li>
-
-  <li class="folder">analysis
-    <ul>
-      <li class="folder">experiments
+        <h2 id="structure">Structure</h2>
         <ul>
-          <li class="folder">o2d
+        <li class="folder">
+            input
             <ul>
-              <li class="folder">output_log <span class="note">- Simulation outputs</span></li>
-              <li class="folder">output_analysis <span class="note">- Auto-generated statistics</span></li>
+            <li class="folder">
+                experiments
+                <ul>
+                <li class="folder">
+                    o2d (order-2-delivery example)
+                    <ul>
+                    <li class="folder">bpmn: <span class="note">BPMN files for each object type</span></li>
+                    <li class="folder">petrinet: <span class="note">Generated Petri nets and PNG images for each object type</span></li>
+                    <li class="file">custom_function.py: <span class="note">Custom rules for a specific experiment</span></li>
+                    <li class="file">specification.json: <span class="note">Parameters for simulation input.json construction</span></li>
+                    </ul>
+                </li>
+                </ul>
+            </li>
+
+            <li class="file">preparation.py <span class="note">Converts BPMN to Petri nets and builds input.json</span></li>
             </ul>
-          </li>
+        </li>
+
+        <li class="folder">simulation: <span class="note">Simulation engine code</span>
+        </li>
+
+        <li class="folder">
+            analysis
+            <ul>
+            <li class="folder">
+                experiments
+                <ul>
+                <li class="folder"> o2d
+                    <ul>
+                    <li class="folder">output_log: <span class="note">Simulation outputs</span></li>
+                    <li class="folder">output_analysis: <span class="note">Auto-generated statistics</span></li>
+                    </ul>
+                </li>
+                </ul>
+            </li>
+
+            <li class="file">statistics.py: <span class="note">Run statistics on single or multiple runs</span></li>
+            </ul>
+        </li>
         </ul>
-      </li>
 
-      <li class="file">statistics.py <span class="note">- Run statistics on single or multiple runs</span></li>
-    </ul>
-  </li>
+        <h2 id="getting-started">Getting started: Pipeline</h2>
+        <p><img src="images/pipeline.png" alt="Alt Text" width="780"></p>
+        
+        <h3 id="preparation-step">Preparation step</h3>
+        <p>Once the packages are installed, user can:</p>
+        <ul>
+            <li>Upload the bpmn files for each object type into <em>input/experiments/experiment_name/bpmn</em></li>
+            <li>Specify the channels between object types and additional parameters in <em>specifications.json</em></li>
+            <li>Add <em>custom_function.py</em> for the experiment</li>
+        </ul>
+        <pre><code>python preparation.py experiment_name</code></pre>
 
-</ul>
+        <p>
+        The <code>input.json</code> is created according to the parameters inserted in <code>specifications.json</code>. The empty fields of probabilities will be completed with default value, so it is very important that the user checks the parameters inserted in order to have meaningful simulation results.
+        </p>
 
+        <h2>Simulation step</h2>
+        <p>
+        Inside the simulation folder you can run one or more simulations by specifying the following parameters in <em>main</em> function of <em>run_simulation.py</em>.
+        </p>
+        <ul>
+            <li><code>path_parameter</code>: specify the path to the simulation parameter file, in JSON format</li>
+            <li><code>name</code>: name of the process to run</li>
+            <li><code>n_simulation</code>: specify the total number of simulation to run</li>
+        </ul>
 
+        <pre><code>python run_simulation.py experiment_name</code></pre>
 
-<h2 id="getting-started">Getting started: Pipeline</h2>
+        <h2>Analysis</h2>
+        <p>
+        Inside analysis folder you can run <code>statistics.py</code> to obtain general statistics on the simulation on a specific experiment.
+        </p>
+        <pre><code>python statistics.py experiment_name</code></pre>
 
-<p><img src="images/pipeline.png" alt="Alt Text" width="780"></p>
+        <h2 id="input">Input files</h2>
+        <p>
+        This document explains how to configure and fix parameters for each object type in the process, for instance <em>truck</em>, <em>order</em>, <em>item</em> of the motivating example.
+        </p>
 
-<h3 id="preparation-step">Preparation step</h3>
+        <p>
+        <code>start_simulation</code>: "YYYY-MM-DD HH:MM:SS" : global start of simulation
+        </p>
 
-<p>Once the packages are installed, user can:</p>
+        <p>Then for each object insert that information:</p>
 
-<ul>
-<li>Upload the bpmn files for each object type into <em>input/experiments/experiment_name/bpmn</em></li>
-<li>Specify the channels between object types and additional parameters in <em>specifications.json</em></li>
-<li>Add <em>custom_function.py</em> for the experiment</li>
-</ul>
+        <table border="1" cellpadding="6" cellspacing="0">
+            <tr>
+                <th>Field</th>
+                <th>Type / Example</th>
+                <th>Explanation</th>
+            </tr>
+            <tr>
+                <td>object_name</td>
+                <td>string (key)</td>
+                <td>Name of the object, used to distinguish different objects and specify the channel</td>
+            </tr>
+            <tr>
+                <td>n_objects</td>
+                <td>int</td>
+                <td>Number of object identifiers to generate in the simulation</td>
+            </tr>
+            <tr>
+                <td>path_petrinet</td>
+                <td>string (path)</td>
+                <td>Path to the Petri net associated with this object</td>
+            </tr>
+            <tr>
+                <td>interTriggerTimer</td>
+                <td>object / dict</td>
+                <td>Distribution describing the arrival time of the object in the simulation</td>
+            </tr>
+            <tr>
+                <td>processing_time</td>
+                <td>object / dict</td>
+                <td>Assignment of processing times for all transitions in the Petri net as distribution functions</td>
+            </tr>
+            <tr>
+                <td>waiting_time</td>
+                <td>object / dict</td>
+                <td>Optional assignment of waiting times for transitions in the Petri net as distribution functions</td>
+            </tr>
+            <tr>
+                <td>resource</td>
+                <td>object / dict</td>
+                <td>Resources involved in the execution of this object</td>
+            </tr>
+            <tr>
+                <td>resource_table</td>
+                <td>object / dict</td>
+                <td>Allocation rules between resources and transitions</td>
+            </tr>
+            <tr>
+                <td>probability</td>
+                <td>object / dict</td>
+                <td>Probability associated with each decision point, or CUSTOM to define a specific rule in custom_function.py</td>
+            </tr>
+            <tr>
+                <td>generator_by</td>
+                <td>list / array</td>
+                <td>Indicates if the object is generated by another object; in this case, interTriggerTimer and n_objects are ignored</td>
+            </tr>
+            <tr>
+                <td>task_generator</td>
+                <td>object / dict</td>
+                <td>Specifies whether any transition can generate another object</td>
+            </tr>
+            <tr>
+                <td>generate</td>
+                <td>list / array</td>
+                <td>List of objects type that can be generated</td>
+            </tr>
+            <tr>
+                <td>object_constraints</td>
+                <td>object / dict</td>
+                <td>Specifies synchronization channels, rules, and involved transitions</td>
+            </tr>
+            <tr>
+                <td>create_relationship</td>
+                <td>object / dict</td>
+                <td>Specifies transitions linked to a creation channel</td>
+            </tr>
+            <tr>
+                <td>destroy_relationship</td>
+                <td>object / dict</td>
+                <td>Specifies transitions linked to a destruction channel</td>
+            </tr>   
+        </table>
+        <h2 id="output">Output files</h2>
+        The results of each simulation runs are stored in the <em>analysis</em> folder, in particular inside the <em>output_log</em> folder of the specific experiment. 
+        Below there is a section of the produced log. 
+        <p><img src="images/output.png" alt="Alt Text" width="780"></p>
+        To retreieve some basic statistics either related to a single run or multiple runs, in the <em>analysis</em> folder, you can run <em>statistics.py</em> to obtain general statistics on the simulation on a specific experiment. The results are stored in the <em>output_analysis</em> folder of the specific experiment.
+        <h2 id="authors">Authors</h2>
+        <footer>
+        <p>Francesca Meneghello: Technical University of Denmark <em></em><a href="mailto:frmen@dtu.dk">frmen@dtu.dk</a><br>
+        Denise Cosolo: <em>Free University of Bolzen</em> <a href="mailto:Denise.Cosolo@student.unibz.it>">denise.cosolo@student.unibz.it</a><br>
+        <p>Demo paper  <a href="images/paper.pdf">Dory: Dynamic Object-centric Relations for sYnthetic
+        simulation</a>.</p>
+        </footer>
+    </main>
 
-<div class="pdoc-code codehilite">
-<pre><span></span><code><span class="w">   </span>python<span class="w"> </span>preparation.py<span class="w"> </span>experiment_name
-</code></pre>
-</div>
-
-<p>
-The <code>input.json</code> is created according to the parameters inserted in <code>specifications.json</code>. The empty fields of probabilities will be completed with default value, so it is very important that the user checks the parameters inserted in order to have meaningful simulation results.
-</p>
-
-<h2>Simulation step</h2>
-
-<p>
-Inside the simulation folder you can run one or more simulations by specifying the following parameters in <em>main</em> function of <em>run_simulation.py</em>.
-</p>
-
-<ul>
-    <li><code>path_parameter</code>: specify the path to the simulation parameter file, in JSON format</li>
-    <li><code>name</code>: name of the process to run</li>
-    <li><code>n_simulation</code>: specify the total number of simulation to run</li>
-</ul>
-
-<pre><code class="language-shell">
-python run_simulation.py experiment_name
-</code></pre>
-
-<h2>Analysis</h2>
-
-<p>
-Inside analysis folder you can run <code>statistics.py</code> to obtain general statistics on the simulation on a specific experiment.
-</p>
-
-<pre><code class="language-shell">
-python statistics.py experiment_name
-</code></pre>
-
-<h2 id="input">Input files</h2>
-
-<p>
-This document explains how to configure and fix parameters for each object type in the process, for instance <em>truck</em>, <em>order</em>, <em>item</em> of the motivating example.
-</p>
-
-<p>
-<code>start_simulation</code>: "YYYY-MM-DD HH:MM:SS" : global start of simulation
-</p>
-
-<p>Then for each object insert that information:</p>
-
-<table border="1" cellpadding="6" cellspacing="0">
-    <tr>
-        <th>Field</th>
-        <th>Type / Example</th>
-        <th>Explanation</th>
-    </tr>
-    <tr>
-        <td>object_name</td>
-        <td>string (key)</td>
-        <td>Name of the object, used to distinguish different objects and specify the channel</td>
-    </tr>
-    <tr>
-        <td>n_objects</td>
-        <td>int</td>
-        <td>Number of object identifiers to generate in the simulation</td>
-    </tr>
-    <tr>
-        <td>path_petrinet</td>
-        <td>string (path)</td>
-        <td>Path to the Petri net associated with this object</td>
-    </tr>
-    <tr>
-        <td>interTriggerTimer</td>
-        <td>object / dict</td>
-        <td>Distribution describing the arrival time of the object in the simulation</td>
-    </tr>
-    <tr>
-        <td>processing_time</td>
-        <td>object / dict</td>
-        <td>Assignment of processing times for all transitions in the Petri net as distribution functions</td>
-    </tr>
-    <tr>
-        <td>waiting_time</td>
-        <td>object / dict</td>
-        <td>Optional assignment of waiting times for transitions in the Petri net as distribution functions</td>
-    </tr>
-    <tr>
-        <td>resource</td>
-        <td>object / dict</td>
-        <td>Resources involved in the execution of this object</td>
-    </tr>
-    <tr>
-        <td>resource_table</td>
-        <td>object / dict</td>
-        <td>Allocation rules between resources and transitions</td>
-    </tr>
-    <tr>
-        <td>probability</td>
-        <td>object / dict</td>
-        <td>Probability associated with each decision point, or CUSTOM to define a specific rule in custom_function.py</td>
-    </tr>
-    <tr>
-        <td>generator_by</td>
-        <td>list / array</td>
-        <td>Indicates if the object is generated by another object; in this case, interTriggerTimer and n_objects are ignored</td>
-    </tr>
-    <tr>
-        <td>task_generator</td>
-        <td>object / dict</td>
-        <td>Specifies whether any transition can generate another object</td>
-    </tr>
-    <tr>
-        <td>generate</td>
-        <td>list / array</td>
-        <td>List of objects type that can be generated</td>
-    </tr>
-    <tr>
-        <td>object_constraints</td>
-        <td>object / dict</td>
-        <td>Specifies synchronization channels, rules, and involved transitions</td>
-    </tr>
-    <tr>
-        <td>create_relationship</td>
-        <td>object / dict</td>
-        <td>Specifies transitions linked to a creation channel</td>
-    </tr>
-    <tr>
-        <td>destroy_relationship</td>
-        <td>object / dict</td>
-        <td>Specifies transitions linked to a destruction channel</td>
-    </tr>
-</table>
-
-<h2 id="output">Output files</h2>
-The results of each simulation runs are stored in the <em>analysis</em> folder, in particular inside the <em>output_log</em> folder of the specific experiment. 
-Below there is a section of the produced log. 
-<p><img src="images/output.png" alt="Alt Text" width="780"></p>
-To retreieve some basic statistics either related to a single run or multiple runs, in the <em>analysis</em> folder, you can run <em>statistics.py</em> to obtain general statistics on the simulation on a specific experiment. The results are stored in the <em>output_analysis</em> folder of the specific experiment.
-<h2 id="authors">Authors</h2>
-<footer>
-  <p>Francesca Meneghello: Technical University of Denmark <em></em><a href="mailto:frmen@dtu.dk">frmen@dtu.dk</a><br>
-  Denise Cosolo: <em>Free University of Bolzen</em> <a href="mailto:Denise.Cosolo@student.unibz.it>">denise.cosolo@student.unibz.it</a><br>
-  <p>Demo paper  <a href="images/paper.pdf">Dory: Dynamic Object-centric Relations for sYnthetic
-simulation</a>.</p>
-</footer>
-</main>
-
-<script>
-    function escapeHTML(html) {
-        return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;
-    }
-
-    const originalContent = document.querySelector("main.pdoc");
-    let currentContent = originalContent;
-
-    function setContent(innerHTML) {
-        let elem;
-        if (innerHTML) {
-            elem = document.createElement("main");
-            elem.classList.add("pdoc");
-            elem.innerHTML = innerHTML;
-        } else {
-            elem = originalContent;
+    <script>
+        function escapeHTML(html) {
+            return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;
         }
-        if (currentContent !== elem) {
-            currentContent.replaceWith(elem);
-            currentContent = elem;
+
+        const originalContent = document.querySelector("main.pdoc");
+        let currentContent = originalContent;
+
+        function setContent(innerHTML) {
+            let elem;
+            if (innerHTML) {
+                elem = document.createElement("main");
+                elem.classList.add("pdoc");
+                elem.innerHTML = innerHTML;
+            } else {
+                elem = originalContent;
+            }
+            if (currentContent !== elem) {
+                currentContent.replaceWith(elem);
+                currentContent = elem;
+            }
         }
-    }
 
-    function getSearchTerm() {
-        return (new URL(window.location)).searchParams.get("search");
-    }
-
-    const searchBox = document.querySelector(".pdoc input[type=search]");
-    searchBox.addEventListener("input", function () {
-        let url = new URL(window.location);
-        if (searchBox.value.trim()) {
-            url.hash = "";
-            url.searchParams.set("search", searchBox.value);
-        } else {
-            url.searchParams.delete("search");
+        function getSearchTerm() {
+            return (new URL(window.location)).searchParams.get("search");
         }
-        history.replaceState("", "", url.toString());
-        onInput();
-    });
-    window.addEventListener("popstate", onInput);
+
+        const searchBox = document.querySelector(".pdoc input[type=search]");
+        searchBox.addEventListener("input", function () {
+            let url = new URL(window.location);
+            if (searchBox.value.trim()) {
+                url.hash = "";
+                url.searchParams.set("search", searchBox.value);
+            } else {
+                url.searchParams.delete("search");
+            }
+            history.replaceState("", "", url.toString());
+            onInput();
+        });
+        window.addEventListener("popstate", onInput);
 
 
-    let search, searchErr;
+        let search, searchErr;
 
-    async function initialize() {
-        try {
-            search = await new Promise((resolve, reject) => {
-                const script = document.createElement("script");
-                script.type = "text/javascript";
-                script.async = true;
-                script.onload = () => resolve(window.pdocSearch);
-                script.onerror = (e) => reject(e);
-                script.src = "search.js";
-                document.getElementsByTagName("head")[0].appendChild(script);
+        async function initialize() {
+            try {
+                search = await new Promise((resolve, reject) => {
+                    const script = document.createElement("script");
+                    script.type = "text/javascript";
+                    script.async = true;
+                    script.onload = () => resolve(window.pdocSearch);
+                    script.onerror = (e) => reject(e);
+                    script.src = "search.js";
+                    document.getElementsByTagName("head")[0].appendChild(script);
+                });
+            } catch (e) {
+                console.error("Cannot fetch pdoc search index");
+                searchErr = "Cannot fetch search index.";
+            }
+            onInput();
+
+            document.querySelector("nav.pdoc").addEventListener("click", e => {
+                if (e.target.hash) {
+                    searchBox.value = "";
+                    searchBox.dispatchEvent(new Event("input"));
+                }
             });
-        } catch (e) {
-            console.error("Cannot fetch pdoc search index");
-            searchErr = "Cannot fetch search index.";
         }
-        onInput();
 
-        document.querySelector("nav.pdoc").addEventListener("click", e => {
-            if (e.target.hash) {
-                searchBox.value = "";
-                searchBox.dispatchEvent(new Event("input"));
+        function onInput() {
+            setContent((() => {
+                const term = getSearchTerm();
+                if (!term) {
+                    return null
+                }
+                if (searchErr) {
+                    return `<h3>Error: ${searchErr}</h3>`
+                }
+                if (!search) {
+                    return "<h3>Searching...</h3>"
+                }
+
+                window.scrollTo({top: 0, left: 0, behavior: 'auto'});
+
+                const results = search(term);
+
+                let html;
+                if (results.length === 0) {
+                    html = `No search results for '${escapeHTML(term)}'.`
+                } else {
+                    html = `<h4>${results.length} search result${results.length > 1 ? "s" : ""} for '${escapeHTML(term)}'.</h4>`;
+                }
+                for (let result of results.slice(0, 10)) {
+                    let doc = result.doc;
+                    let url = `${doc.modulename.replaceAll(".", "/")}.html`;
+                    if (doc.qualname) {
+                        url += `#${doc.qualname}`;
+                    }
+
+                    let heading;
+                    switch (result.doc.kind) {
+                        case "function":
+                            if (doc.fullname.endsWith(".__init__")) {
+                                heading = `<span class="name">${doc.fullname.replace(/\.__init__$/, "")}</span>${doc.signature}`;
+                            } else {
+                                heading = `<span class="def">${doc.funcdef}</span> <span class="name">${doc.fullname}</span>${doc.signature}`;
+                            }
+                            break;
+                        case "class":
+                            heading = `<span class="def">class</span> <span class="name">${doc.fullname}</span>`;
+                            if (doc.bases)
+                                heading += `<wbr>(<span class="base">${doc.bases}</span>)`;
+                            heading += `:`;
+                            break;
+                        case "variable":
+                            heading = `<span class="name">${doc.fullname}</span>`;
+                            if (doc.annotation)
+                                heading += `<span class="annotation">${doc.annotation}</span>`;
+                            if (doc.default_value)
+                                heading += `<span class="default_value"> = ${doc.default_value}</span>`;
+                            break;
+                        default:
+                            heading = `<span class="name">${doc.fullname}</span>`;
+                            break;
+                    }
+                    html += `
+                            <section class="search-result">
+                            <a href="${url}" class="attr ${doc.kind}">${heading}</a>
+                            <div class="docstring">${doc.doc}</div>
+                            </section>
+                        `;
+
+                }
+                return html;
+            })());
+        }
+
+        if (getSearchTerm()) {
+            initialize();
+            searchBox.value = getSearchTerm();
+            onInput();
+        } else {
+            searchBox.addEventListener("focus", initialize, {once: true});
+        }
+
+        searchBox.addEventListener("keydown", e => {
+            if (["ArrowDown", "ArrowUp", "Enter"].includes(e.key)) {
+                let focused = currentContent.querySelector(".search-result.focused");
+                if (!focused) {
+                    currentContent.querySelector(".search-result").classList.add("focused");
+                } else if (
+                    e.key === "ArrowDown"
+                    && focused.nextElementSibling
+                    && focused.nextElementSibling.classList.contains("search-result")
+                ) {
+                    focused.classList.remove("focused");
+                    focused.nextElementSibling.classList.add("focused");
+                    focused.nextElementSibling.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest",
+                        inline: "nearest"
+                    });
+                } else if (
+                    e.key === "ArrowUp"
+                    && focused.previousElementSibling
+                    && focused.previousElementSibling.classList.contains("search-result")
+                ) {
+                    focused.classList.remove("focused");
+                    focused.previousElementSibling.classList.add("focused");
+                    focused.previousElementSibling.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest",
+                        inline: "nearest"
+                    });
+                } else if (
+                    e.key === "Enter"
+                ) {
+                    focused.querySelector("a").click();
+                }
             }
         });
-    }
-
-    function onInput() {
-        setContent((() => {
-            const term = getSearchTerm();
-            if (!term) {
-                return null
-            }
-            if (searchErr) {
-                return `<h3>Error: ${searchErr}</h3>`
-            }
-            if (!search) {
-                return "<h3>Searching...</h3>"
-            }
-
-            window.scrollTo({top: 0, left: 0, behavior: 'auto'});
-
-            const results = search(term);
-
-            let html;
-            if (results.length === 0) {
-                html = `No search results for '${escapeHTML(term)}'.`
-            } else {
-                html = `<h4>${results.length} search result${results.length > 1 ? "s" : ""} for '${escapeHTML(term)}'.</h4>`;
-            }
-            for (let result of results.slice(0, 10)) {
-                let doc = result.doc;
-                let url = `${doc.modulename.replaceAll(".", "/")}.html`;
-                if (doc.qualname) {
-                    url += `#${doc.qualname}`;
-                }
-
-                let heading;
-                switch (result.doc.kind) {
-                    case "function":
-                        if (doc.fullname.endsWith(".__init__")) {
-                            heading = `<span class="name">${doc.fullname.replace(/\.__init__$/, "")}</span>${doc.signature}`;
-                        } else {
-                            heading = `<span class="def">${doc.funcdef}</span> <span class="name">${doc.fullname}</span>${doc.signature}`;
-                        }
-                        break;
-                    case "class":
-                        heading = `<span class="def">class</span> <span class="name">${doc.fullname}</span>`;
-                        if (doc.bases)
-                            heading += `<wbr>(<span class="base">${doc.bases}</span>)`;
-                        heading += `:`;
-                        break;
-                    case "variable":
-                        heading = `<span class="name">${doc.fullname}</span>`;
-                        if (doc.annotation)
-                            heading += `<span class="annotation">${doc.annotation}</span>`;
-                        if (doc.default_value)
-                            heading += `<span class="default_value"> = ${doc.default_value}</span>`;
-                        break;
-                    default:
-                        heading = `<span class="name">${doc.fullname}</span>`;
-                        break;
-                }
-                html += `
-                        <section class="search-result">
-                        <a href="${url}" class="attr ${doc.kind}">${heading}</a>
-                        <div class="docstring">${doc.doc}</div>
-                        </section>
-                    `;
-
-            }
-            return html;
-        })());
-    }
-
-    if (getSearchTerm()) {
-        initialize();
-        searchBox.value = getSearchTerm();
-        onInput();
-    } else {
-        searchBox.addEventListener("focus", initialize, {once: true});
-    }
-
-    searchBox.addEventListener("keydown", e => {
-        if (["ArrowDown", "ArrowUp", "Enter"].includes(e.key)) {
-            let focused = currentContent.querySelector(".search-result.focused");
-            if (!focused) {
-                currentContent.querySelector(".search-result").classList.add("focused");
-            } else if (
-                e.key === "ArrowDown"
-                && focused.nextElementSibling
-                && focused.nextElementSibling.classList.contains("search-result")
-            ) {
-                focused.classList.remove("focused");
-                focused.nextElementSibling.classList.add("focused");
-                focused.nextElementSibling.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                    inline: "nearest"
-                });
-            } else if (
-                e.key === "ArrowUp"
-                && focused.previousElementSibling
-                && focused.previousElementSibling.classList.contains("search-result")
-            ) {
-                focused.classList.remove("focused");
-                focused.previousElementSibling.classList.add("focused");
-                focused.previousElementSibling.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                    inline: "nearest"
-                });
-            } else if (
-                e.key === "Enter"
-            ) {
-                focused.querySelector("a").click();
-            }
-        }
-    });
-</script></body>
+    </script>
+</body>
 </html>
