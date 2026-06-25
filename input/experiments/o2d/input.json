@@ -102,14 +102,14 @@
                         "high": 5
                     }
                 },
-                "Check out": {
+                "Add Item": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
                         "high": 5
                     }
                 },
-                "Add Item": {
+                "Check out": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
@@ -123,14 +123,14 @@
                         "high": 5
                     }
                 },
-                "Close Order": {
+                "Pay CC": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
                         "high": 5
                     }
                 },
-                "Pay CC": {
+                "Close Order": {
                     "name": "uniform",
                     "parameters": {
                         "low": 1,
@@ -158,21 +158,21 @@
             },
             "resource_table": {
                 "Place Order": "Role order",
-                "Check out": "Role order",
                 "Add Item": "Role order",
+                "Check out": "Role order",
                 "Pay BT": "Role order",
-                "Close Order": "Role order",
                 "Pay CC": "Role order",
+                "Close Order": "Role order",
                 "Payment Complete": "Role order"
             },
             "probability": {
+                "tau_4": "AUTO",
                 "tau_2": "AUTO",
                 "tau_3": "AUTO",
+                "tau_1": "AUTO",
                 "Pay BT": "AUTO",
-                "Close Order": "AUTO",
                 "Pay CC": "AUTO",
-                "tau_4": "AUTO",
-                "tau_1": "AUTO"
+                "Close Order": "AUTO"
             },
             "generator_by": [],
             "generate": ["item"],
@@ -263,8 +263,8 @@
                 "Go Back": "Role truck"
             },
             "probability": {
-                "tau_1": "AUTO",
-                "Go Back": "AUTO"
+                "Go Back": "AUTO",
+                "tau_1": "AUTO"
             },
             "generator_by": [],
             "generate": [],
@@ -273,7 +273,7 @@
                 "Load": {
                     "obj": "item",
                     "trans": ["Packing"],
-                    "card": ["CUSTOM"]
+                    "card": "CUSTOM"
                 }
             },
             "create_relationship": {

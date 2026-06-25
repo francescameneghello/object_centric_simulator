@@ -105,11 +105,4 @@ if __name__ == "__main__":
 
     json_path = json_files[0]
     
-    #Logic to import specifications.yml 
-    # json_files = list(experiment_dir.glob("*.json"))
-    # if len(json_files) != 1:
-    #     raise ValueError(f"Expected exactly one JSON file in {experiment_dir}, found {len(json_files)}")
-
-    # json_path = json_files[0]
-
     main(path_parameter=str(json_path), name=args.experiment_name, type_log=args.type_log)
