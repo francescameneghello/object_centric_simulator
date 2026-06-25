@@ -16,9 +16,7 @@ from inter_trigger_timer import InterTriggerTimer
 
 SIMULATION_ROOT = Path(__file__).resolve().parent.parent
 
-def setup(env: simpy.Environment, params, i, name, f, experiments_root, type_log):
-    #these imports must stay inside due to the different location of custom_function in a different folder with respect to the core of the simulation
-    
+def setup(env: simpy.Environment, params, i, name, f, experiments_root, type_log):    
     simulation_process = SimulationProcess(env, params)
     
     output_dir = experiments_root.parent.parent / "analysis" / "experiments" / name / "output_log"
@@ -61,7 +59,6 @@ def run_simulation(path_parameter: str, name: str, type_log, n_simulation=1):
         output_dir.mkdir(parents=True, exist_ok=True)
         
         log_file = output_dir / f"simulated_log_{name}_{i}.csv"
-        
         with open(log_file, 'w') as f:
             params = Parameters(path_parameter)
             env = simpy.Environment()
@@ -80,7 +77,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("experiment_name") # order2deliverly, hospital, etc.
-    parser.add_argument("type_log")
+    parser.add_argument("type_log", nargs="?", default="ocel") #other type log allowed is snapshot
     args = parser.parse_args()
 
     experiment_dir = SIMULATION_ROOT / "input" / "experiments" / args.experiment_name

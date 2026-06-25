@@ -73,6 +73,9 @@ The `input.json` is created according to the parameters inserted in `specificati
 ```shell
 python run_simulation.py experiment_name
 ```
+An additional parameter is related to the format of the file generated from the simulation. 
+By default the simulation produces an OCEL, recording only event-to-object relationships. Optionally, object-to-object relationships can also be logged at each event adopting a snapshot semantics with the additional parameter `snapshot` when running the simulation.
+
 
 ### Analysis 
 <ins>Inside analysis folder</ins> you can run `statistics.py` to obtain general statistics on the simulation on a specific experiment. 

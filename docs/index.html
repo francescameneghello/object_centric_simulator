@@ -223,6 +223,11 @@
 
         <pre><code>python run_simulation.py experiment_name</code></pre>
 
+        <p>An additional parameter is related to the format of the file generated from the simulation. 
+            By default the simulation produces an OCEL, recording only event-to-object relationships. 
+            Optionally, object-to-object relationships can also be logged at each event adopting a snapshot semantics with the additional
+            parameter <code>snapshot</code> when running the simulation.</p>
+
         <h2>Analysis</h2>
         <p>
         Inside analysis folder you can run <code>statistics.py</code> to obtain general statistics on the simulation on a specific experiment.
