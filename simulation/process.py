@@ -62,6 +62,9 @@ class SimulationProcess(object):
     def get_relationships(self, id_obj):
         return self.relationships[id_obj] if id_obj in self.relationships else {}
 
+    def _get_all_relationships(self):
+        return self.relationships
+
     def _print_relationships(self):
         print(self.relationships)
 

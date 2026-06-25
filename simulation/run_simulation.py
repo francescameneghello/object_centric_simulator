@@ -16,7 +16,7 @@ from inter_trigger_timer import InterTriggerTimer
 
 SIMULATION_ROOT = Path(__file__).resolve().parent.parent
 
-def setup(env: simpy.Environment, params, i, name, f, experiments_root):
+def setup(env: simpy.Environment, params, i, name, f, experiments_root, type_log):
     #these imports must stay inside due to the different location of custom_function in a different folder with respect to the core of the simulation
     
     simulation_process = SimulationProcess(env, params)
@@ -32,9 +32,6 @@ def setup(env: simpy.Environment, params, i, name, f, experiments_root):
     for obj in params.objects:
         if not params.objects[obj]["generator_by"]:
             n_objects = params.objects[obj]["n_objects"]
-            distribution = params.objects[obj]["interTriggerTimer"]['name']
-            parameters = params.objects[obj]["interTriggerTimer"]['parameters']
-                       
             pnml_path = params.objects[obj]["path_petrinet"]      
             if not os.path.isabs(pnml_path):
                 pnml_path = os.path.join(experiments_root, pnml_path)
@@ -42,24 +39,20 @@ def setup(env: simpy.Environment, params, i, name, f, experiments_root):
             if not os.path.exists(pnml_path):
                 raise FileNotFoundError(f"PNML not found: {pnml_path}")
 
-            start_simulation_object = params.START_SIMULATION
             for i in range(0, n_objects):
                 prefix = Prefix()
                 parallel_object = utility.ParallelObject()
-                #interval = getattr(np.random, distribution)(**parameters, size=1)[0]
-                #itime = interval
                 timer_config = params.objects[obj]["interTriggerTimer"]
                 inter_trigger_timer = InterTriggerTimer(timer_config, simulation_process, params.START_SIMULATION, name)
                 itime = inter_trigger_timer.get_next_arrival(env, obj)
                 net, im, fm = pm4py.read_pnml(pnml_path)
                 id = f"{obj}_{i}"
-                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj, parallel_object, name)
+                obj_class = Object(id, net, im, params, simulation_process, prefix, 'sequential', writer, obj, parallel_object, name, type_log)
                 simulation_process.add_object(obj_class, obj, id)
                 env.process(obj_class.simulation(itime, env))
                 
 
-
-def run_simulation(path_parameter: str, name: str, n_simulation=1):    
+def run_simulation(path_parameter: str, name: str, type_log, n_simulation=1):
     project_root = SIMULATION_ROOT
     experiments_root = project_root / "input" / "experiments"
     
@@ -72,19 +65,22 @@ def run_simulation(path_parameter: str, name: str, n_simulation=1):
         with open(log_file, 'w') as f:
             params = Parameters(path_parameter)
             env = simpy.Environment()
-            setup(env, params, i, name, f, experiments_root)
+            setup(env, params, i, name, f, experiments_root, type_log)
             env.run()
 
-def main(path_parameter: str, name: str):
-    print(path_parameter, name)
-    run_simulation(path_parameter, name, n_simulation=1)
+
+def main(path_parameter: str, name: str, type_log='ocel'):
+    print(path_parameter, name, type_log)
+    run_simulation(path_parameter, name, type_log, n_simulation=1)
     #n_simulation PARAM TO CHANGE to run multiple simulations
-    
+
+
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("experiment_name")  # order2deliverly, hospital, etc.
+    parser.add_argument("experiment_name") # order2deliverly, hospital, etc.
+    parser.add_argument("type_log")
     args = parser.parse_args()
 
     experiment_dir = SIMULATION_ROOT / "input" / "experiments" / args.experiment_name
@@ -116,4 +112,4 @@ if __name__ == "__main__":
 
     # json_path = json_files[0]
 
-    main(path_parameter=str(json_path), name=args.experiment_name)
+    main(path_parameter=str(json_path), name=args.experiment_name, type_log=args.type_log)

@@ -18,7 +18,7 @@ class Object(object):
 
     def __init__(self, id: str, net: pm4py.objects.petri_net.obj.PetriNet, am: pm4py.objects.petri_net.obj.Marking,
                  params: Parameters, process: SimulationProcess, prefix: Prefix, type: str, writer: csv.writer,
-                 name_object: str, parallel_object: ParallelObject, name_exp: str, father=None, values_buffer=None):
+                 name_object: str, parallel_object: ParallelObject, name_exp: str, type_log= 'ocel', father=None, values_buffer=None):
         self._id = id
         self._process = process
         self._start_time = params.START_SIMULATION
@@ -45,6 +45,7 @@ class Object(object):
             self._attribute.update(copy.deepcopy(father._attribute))
         self._buffer.set_feature("attribute_object", self._attribute)
         self._parallel_object = parallel_object
+        self._type_log = type_log
 
     def _delete_places(self, places):
         delete = []
@@ -346,9 +347,12 @@ class Object(object):
             resource_object.release(resource_object_request)
 
     def _define_relationships(self):
-        relationships = self._process.get_relationships(self._id)
-        if self._father:
-            relationships.add(self._father._id)
+        if self._type_log == 'snapshot':
+            relationships = self._process._get_all_relationships()
+        else:
+            relationships = self._process.get_relationships(self._id)
+            if self._father:
+                relationships.add(self._father._id)
         return relationships if relationships else {}
 
     def _update_marking(self, transition):
