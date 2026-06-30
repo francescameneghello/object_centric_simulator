@@ -544,7 +544,7 @@ class Object(object):
                         del new_am[p]
                     path = env.process(
                         Object(self._id, self._net, new_am, self._general_params, self._process, self.prefix, "parallel",
-                             self._writer, self._name_object, self._parallel_object, values_buffer=self._buffer._get_dictionary()).simulation(0, env))
+                             self._writer, self._name_object, self._parallel_object, values_buffer=self._buffer._get_dictionary(),name_exp=self._name_exp).simulation(0, env))
                     events.append(path)
                 return events
                 
