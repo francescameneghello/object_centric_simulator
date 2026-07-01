@@ -49,7 +49,8 @@ class SimulationProcess(object):
             self.relationships[id_obj_2] = {id_obj_1}
 
     def _remove_element(self, id_obj):
-        del self.relationships[id_obj]
+        if id_obj in self.relationships:
+            del self.relationships[id_obj]
         for o in self.relationships:
             self.relationships[o].discard(id_obj)
 
